@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import LogoGypem from "../../assets/images/gypem_logo.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ function Navbar() {
         <div className="px-4 mx-auto max-w-screen-2xl">
           <div className="flex items-center justify-between">
             {/* Logo Section */}
-            <div className="flex items-center space-x-2">
+            <Link to="/" className="flex items-center space-x-2">
               <div className="flex items-center justify-center w-8 h-8 rounded">
                 <img
                   src={LogoGypem}
@@ -32,7 +32,7 @@ function Navbar() {
                 />
               </div>
               <span className="text-lg font-semibold">Gypem Twibone</span>
-            </div>
+            </Link>
 
             {/* Desktop Search Bar */}
             <div className="flex-1 hidden max-w-md mx-8 md:flex">
@@ -51,13 +51,16 @@ function Navbar() {
               <button className="p-2 hover:bg-[#6B1E7A] rounded-full transition-colors">
                 <HelpCircle className="w-5 h-5" />
               </button>
-              <button className="bg-yellow-400 text-[#4C0D68] px-4 py-2 rounded-full font-semibold flex items-center space-x-2 hover:bg-yellow-300 transition-colors">
+              <Link
+                to="/create"
+                className="bg-yellow-400 text-[#4C0D68] px-4 py-2 rounded-full font-semibold flex items-center space-x-2 hover:bg-yellow-300 transition-colors"
+              >
                 <Plus className="w-4 h-4" />
                 <span className="hidden capitalize lg:inline">
                   Tambah Twibone
                 </span>
                 <span className="lg:hidden">Mulai</span>
-              </button>
+              </Link>
               <button
                 className="p-2 hover:bg-[#6B1E7A] rounded-full transition-colors"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}

@@ -2,7 +2,7 @@ import React from "react";
 import { X } from "lucide-react";
 import ModalKeluarEditor from "../modal/modalKeluarEditor";
 import { useModalStore } from "../../helper/store/modal.store";
-function NavbarEditor() {
+function NavbarEditor({title}) {
   const { openModal } = useModalStore();
 
   const handleOpenExitModal = () => {
@@ -17,14 +17,14 @@ function NavbarEditor() {
             {/* Desktop: Logo di kiri */}
             <div className="items-center hidden md:flex">
               <h1 className="text-lg font-semibold text-white truncate">
-                IMPACT FIKKIA Olympiade and Research 2024
+                {title}
               </h1>
             </div>
 
             {/* Mobile: Logo di tengah */}
             <div className="flex justify-center flex-1 md:hidden">
               <h1 className="text-sm font-semibold text-white ">
-                IMPACT FIKKIA Olympiade and Research 2024
+                {title}
               </h1>
             </div>
 

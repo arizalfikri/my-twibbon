@@ -3,7 +3,7 @@ import Navbar from "../components/layoutpage/Navbar";
 import { User, Share2, Bell } from "lucide-react";
 import CardEditor from "../components/cards/CardEditor";
 import CardResult from "../components/cards/CardResult";
-import frameImage from "../assets/images/frame.png";
+import frameImage from "../assets/images/frame2.png";
 import frameImage1 from "../assets/images/frame3.png";
 
 import Bg1 from "../assets/images/background_hero.png";
@@ -53,7 +53,7 @@ const dummyCards = [
   },
 ];
 
-function Home() {
+function MainTwibone() {
   const { image, setImage } = useImageStore();
   const navigate = useNavigate();
   const currentURL = window.location.href;
@@ -187,4 +187,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default MainTwibone;
