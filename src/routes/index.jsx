@@ -2,11 +2,10 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "../pages/MainTwibone.jsx";
 import EditorPage from "../pages/EditorPage.jsx";
 import Result from "../pages/Result.jsx";
-import LoginPage from "../pages/LoginPage.jsx";
-import RegisterPage from "../pages/RegisterPage.jsx";
 import TwiboneHomepage from "../pages/twiboneHomePage.jsx";
 import MainTwibone from "../pages/MainTwibone.jsx";
 import TwiboneCreatePage from "../pages/twiboneCreatePage.jsx";
+import SignIn from "../pages/SignIn.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -25,13 +24,10 @@ export const router = createBrowserRouter([
         element: <Result />,
       },
       {
-        path: "Login",
-        element: <LoginPage />,
+        path: "SignIn",
+        element: <SignIn />,
       },
-      {
-        path: "Register",
-        element: <RegisterPage />,
-      },
+
       {
         path: "Main",
         element: <MainTwibone />,

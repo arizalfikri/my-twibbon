@@ -1,14 +1,45 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import LoginImage from "../assets/images/login_image.png";
 import LogoGypem from "../assets/images/gypem_logo.png";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { usePOST } from "../services/api";
+import { useGlobalStore } from "../helper/store/global.store";
+import { useModalStore } from "../helper/store/modal.store";
+import InputWithLabel from "../components/FormControl/InputWithLabel";
 
-const LoginPage = () => {
+const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { openToast } = useModalStore();
+  const { setEmail: setGlobalEmail, setToken } = useGlobalStore();
+
   const navigate = useNavigate();
+  const { mutateAsync, isPending } = usePOST("/auth/login");
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    mutateAsync({ url: "/auth/login", data: { email, password } })
+      .then((response) => {
+        if (response.status === 200) {
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("email", response.data.user.email);
+          setGlobalEmail(response.data.user.email);
+          setToken(response.data.token);
+          navigate("/");
+        }
+      })
+      .catch((error) => {
+        if (error.status === 401) {
+          openToast("toast", true, "Akun tidak terdaftar");
+        } else {
+          openToast("toast", true, "Kesalahan Server");
+        }
+      });
+  };
+
   return (
     <div id="root">
       <div className="grid items-center justify-center h-screen grid-cols-1 overflow-x-hidden md:grid-cols-2 lg:grid-cols-3">
@@ -27,41 +58,35 @@ const LoginPage = () => {
             />
           </a>
 
-          <form className="mt-10 md:mt-5">
+          <form className="mt-10 md:mt-5" onSubmit={handleOnSubmit}>
             <div className="flex flex-col gap-5">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700 capitalize"
-                >
-                  Email
-                </label>
-                <input
-                  type="text"
-                  id="email"
-                  name="email"
-                  autoComplete="email"
-                  className="block w-full p-3 mt-1 text-sm text-gray-900 border border-gray-300 focus:outline-none focus:ring-2 rounded-xl focus:bg-gray-100 bg-gray-50 focus:ring-purple-600"
-                  onChange={(e) => setEmail(e.target.value)}
-                  value={email}
-                />
-              </div>
+              <InputWithLabel
+                htmlFor="email"
+                label={<span className="capitalize">Email</span>}
+                type="text"
+                placeholder="Masukkan email"
+                name="email"
+                id="email"
+                value={email}
+                style="rounded-xl"
+                error={null}
+                control={null}
+                onChange={(e) => setEmail(e.target.value)}
+              />
 
               <div className="relative">
-                <label
+                <InputWithLabel
                   htmlFor="password"
-                  className="text-sm font-medium text-gray-700 capitalize"
-                >
-                  Password
-                </label>
-                <input
+                  label={<span className="capitalize">Password</span>}
                   type={showPassword ? "text" : "password"}
-                  id="password"
+                  placeholder="Masukkan kata sandi"
                   name="password"
-                  autoComplete="current-password"
-                  className="block w-full p-3 mt-1 text-sm text-gray-900 border border-gray-300 focus:outline-none focus:ring-2 rounded-xl focus:bg-gray-100 bg-gray-50 focus:ring-purple-600"
-                  onChange={(e) => setPassword(e.target.value)}
+                  id="password"
                   value={password}
+                  style="rounded-xl"
+                  error={null}
+                  control={null}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
@@ -81,12 +106,12 @@ const LoginPage = () => {
 
             <div className="flex flex-col gap-2 md:flex-row">
               <button
-                type="button"
-                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold bg-purple-700 text-white px-4 py-2.5 w-full rounded-xl hover:bg-purple-900"
+                type="submit"
+                disabled={isPending}
+                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold bg-purple-700 text-white px-4 py-2.5 w-full rounded-xl hover:bg-purple-900 disabled:opacity-50"
               >
-                Masuk
+                {isPending ? "Loading..." : "Masuk"}
               </button>
-            
             </div>
 
             <button
@@ -102,4 +127,5 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+
+export default SignIn;

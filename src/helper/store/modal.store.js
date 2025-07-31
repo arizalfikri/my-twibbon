@@ -6,6 +6,7 @@ export const useModalStore = create((set) => ({
     typeToast: "",
 
     modalLogout: false,
+    modalFileError: false,
 
     openToast: (name, status, text, typeToast = "error") =>
         set({ [name]: status, textToast: text, typeToast }),

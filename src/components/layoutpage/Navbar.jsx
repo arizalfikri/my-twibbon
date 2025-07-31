@@ -111,7 +111,7 @@ function Navbar() {
 
                 {/* Mobile Login Button */}
                 <button
-                  onClick={() => navigate("/Login")}
+                  onClick={() => navigate("/SignIn")}
                   className="w-full bg-white text-[#4C0D68] px-4 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-gray-100 transition-colors"
                 >
                   <User className="w-5 h-5" />
@@ -159,7 +159,7 @@ function Navbar() {
             {/* Login Button */}
             <button
               className="w-full bg-[#4C0D68] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-[#6B1E7A] transition-colors"
-              onClick={() => navigate("/Login")}
+              onClick={() => navigate("/SignIn")}
             >
               <User className="w-5 h-5" />
               <span>Login</span>
