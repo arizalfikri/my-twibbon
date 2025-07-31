@@ -213,23 +213,7 @@ function TwiboneHomepage() {
           </button>
         </div>
       </main>
-
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] text-white py-16 mt-16">
-        <div className="max-w-screen-xl px-4 mx-auto text-center">
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-            Siap Membuat Twibone Anda?
-          </h2>
-          <p className="mb-8 text-xl text-purple-100">
-            Bergabunglah dengan jutaan pengguna yang telah membuat twibone
-            menakjubkan
-          </p>
-          <button className="bg-yellow-400 text-[#4C0D68] px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-colors flex items-center gap-2 mx-auto">
-            <Plus className="w-5 h-5" />
-            Mulai Gratis Sekarang
-          </button>
-        </div>
-      </section>
+    
 
       {/* Footer */}
       <Footer />

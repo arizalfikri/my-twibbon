@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import LoginImage from "../assets/images/login_image.png";
 import LogoGypem from "../assets/images/gypem_logo.png";
 import { Eye, EyeOff } from "lucide-react";
@@ -8,6 +7,8 @@ import { usePOST } from "../services/api";
 import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
+import { q } from "motion/react-client";
+import { useForm } from "react-hook-form";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,7 +16,10 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const { openToast } = useModalStore();
   const { setEmail: setGlobalEmail, setToken } = useGlobalStore();
-
+  const {
+     control,
+     formState: { errors },
+   } = useForm()
   const navigate = useNavigate();
   const { mutateAsync, isPending } = usePOST("/auth/login");
 
@@ -69,8 +73,7 @@ const SignIn = () => {
                 id="email"
                 value={email}
                 style="rounded-xl"
-                error={null}
-                control={null}
+                control={control}
                 onChange={(e) => setEmail(e.target.value)}
               />
 
@@ -84,13 +87,12 @@ const SignIn = () => {
                   id="password"
                   value={password}
                   style="rounded-xl"
-                  error={null}
-                  control={null}
+                  control={control}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
-                  className="absolute z-10 p-2 text-gray-700 border border-gray-300 rounded-lg bg-zinc-50 end-1 bottom-1"
+                  className="absolute z-10 p-2 text-gray-700 border border-gray-300 rounded-lg bg-zinc-50 end-1 bottom-2"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -126,6 +128,5 @@ const SignIn = () => {
     </div>
   );
 };
-
 
 export default SignIn;
