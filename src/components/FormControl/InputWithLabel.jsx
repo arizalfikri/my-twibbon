@@ -13,6 +13,7 @@ const InputWithLabel = (props) => {
         value,
         style,
         control,
+        onChange,
         error,
     } = props;
 
@@ -26,6 +27,7 @@ const InputWithLabel = (props) => {
                 id={id}
                 value={value}
                 style={style}
+                onChange={onChange}
                 control={control}
                 error={error}
             />

@@ -8,6 +8,7 @@ import {
   Calendar,
   Tag,
   User,
+  ArrowRightFromLine ,
   Globe,
   Camera,
   Palette,
@@ -74,13 +75,11 @@ function TwiboneCreatePage() {
   const steps = isDesktop
     ? [
         { title: "Rincian Kampanye" },
-        { title: "Detail Tambahan" },
         { title: "Kontak & Visibilitas" },
       ]
     : [
         { title: "Gambar" },
         { title: "Rincian Kampanye" },
-        { title: "Detail Tambahan" },
         { title: "Kontak & Visibilitas" },
       ];
 
@@ -155,90 +154,26 @@ function TwiboneCreatePage() {
         </div>
       );
 
+
     case 2:
       return (
         <div className="space-y-6">
-          <InputSelectWithLabel
-            control={control}
-            option_label="label"
-            option_value="value"
-            name="category"
-            htmlFor="category"
-            defaultValue=""
-            label={
-              <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                <Tag size={16} className="text-gray-500" />
-                <span>Kategori</span>
-              </div>
-            }
-            options={categoryOptions}
-            error={errors}
-          />
-
           <InputWithLabel
             control={control}
-            name="tags"
-            htmlFor="tags"
-            defaultValue=""
-            label={
-              <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                <Tag size={16} className="text-gray-500" />
-                <span>Tags</span>
-              </div>
-            }
-            placeholder="Masukkan tags dipisahkan dengan koma"
-            error={errors.tags?.message}
-          />
-
-          <InputWithLabel
-            control={control}
-            name="author"
-            htmlFor="author"
-            defaultValue=""
-            label={
-              <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                <User size={16} className="text-gray-500" />
-                <span>Nama Pembuat</span>
-              </div>
-            }
-            placeholder="Nama organisasi atau individu"
-            error={errors.author?.message}
-          />
-        </div>
-      );
-
-    case 3:
-      return (
-        <div className="space-y-6">
-          <InputWithLabel
-            control={control}
-            name="website"
-            htmlFor="website"
+            name="Template_Caption"
+            htmlFor="Template_Caption"
             defaultValue=""
             label={
               <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
                 <Globe size={16} className="text-gray-500" />
-                <span>Website</span>
+                <span>Template_Caption</span>
               </div>
             }
             placeholder="https://example.com"
             error={errors.website?.message}
           />
 
-          <InputWithLabel
-            control={control}
-            name="socialMedia"
-            htmlFor="socialMedia"
-            defaultValue=""
-            label={
-              <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                <LinkIcon size={16} className="text-gray-500" />
-                <span>Media Sosial</span>
-              </div>
-            }
-            placeholder="@username atau link media sosial"
-            error={errors.socialMedia?.message}
-          />
+      
 
           <InputSelectWithLabel
             control={control}

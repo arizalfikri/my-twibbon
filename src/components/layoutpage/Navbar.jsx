@@ -5,6 +5,7 @@ import {
   Menu,
   X,
   User,
+  ArrowRightFromLine ,
   UserPlus,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -106,7 +107,7 @@ function Navbar() {
               </div>
 
               {/* Mobile Auth Buttons - Directly in mobile menu */}
-              <div className="space-y-2 pt-4 border-t border-[#6B1E7A]">
+              <div className="space-y-2 pt-4 border-t border-[#6B1E7A] text-center">
                 <h4 className="mb-2 text-sm font-medium text-gray-300">Akun</h4>
 
                 {/* Mobile Login Button */}
@@ -117,6 +118,13 @@ function Navbar() {
                   <User className="w-5 h-5" />
                   <span>Login</span>
                 </button>
+                <h4>
+                  sudah memiliki akun gypem?
+                  <a href="" className="text-yellow-400">
+                    {" "}
+                    Klik DIsini
+                  </a>
+                </h4>
               </div>
             </div>
           )}
@@ -161,18 +169,18 @@ function Navbar() {
               className="w-full bg-[#4C0D68] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-[#6B1E7A] transition-colors"
               onClick={() => navigate("/SignIn")}
             >
-              <User className="w-5 h-5" />
-              <span>Login</span>
+              <ArrowRightFromLine  className="w-5 h-5" />
+              <span>Login Coordinator</span>
             </button>
-              <button
-              className="w-full bg-[#4C0D68] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-[#6B1E7A] transition-colors"
-              onClick={() => navigate("/SignIn")}
+
+            <button
+              onClick={() => navigate("/SignInParticipant")}
+              className="w-full text-[#4C0D68]  px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2  transition-colors border border-[#4C0D68]"
             >
               <User className="w-5 h-5" />
-              <span>Login</span>
+              Login Peserta
             </button>
           </div>
-          
 
           {/* Divider */}
           <div className="mb-6 border-t border-gray-200"></div>

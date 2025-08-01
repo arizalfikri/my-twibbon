@@ -41,7 +41,7 @@ const mockTwibbons = [
   },
 ];
 
-const categories = ["Online", "Nasional", "Offline"];
+const categories = ["Semua","Online", "Nasional", "Offline"];
 
 function TwiboneHomepage() {
   const [selectedCategory, setSelectedCategory] = useState("Semua");
@@ -213,7 +213,8 @@ function TwiboneHomepage() {
           </button>
         </div>
       </main>
-    
+
+      
 
       {/* Footer */}
       <Footer />

@@ -8,16 +8,16 @@ import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
 import { useForm } from "react-hook-form";
-import { InputType } from "../components/FormControl";
 import InputPassword from "../components/FormControl/InputPassword";
+import { InputType } from "../components/FormControl";
 
-const SignIn = () => {
+const SignInParticipant = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { openToast } = useModalStore();
   const { setEmail: setGlobalEmail, setToken } = useGlobalStore();
 
   const navigate = useNavigate();
-  const { mutateAsync, isPending } = usePOST("/auth/login");
+  const { mutateAsync, isPending } = usePOST("/auth/login-participant");
   const {
     control,
     handleSubmit,
@@ -27,7 +27,7 @@ const SignIn = () => {
   const onSubmit = async (data) => {
     try {
       const response = await mutateAsync({
-        url: "/ auth/login",
+        url: "/auth/login-participant",
         data: {
           email: data.email,
           password: data.password,
@@ -117,20 +117,10 @@ const SignIn = () => {
               Google
             </button>
           </form>
-
-          <div className="mt-4 text-sm text-center text-gray-400 md:text-xl ">
-            Belum memiliki akun?{" "}
-            <a
-              href="/SignUp"
-              className="font-semibold text-purple-700 underline "
-            >
-              Klik di sini
-            </a>
-          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default SignIn;
+export default SignInParticipant;
