@@ -1,6 +1,5 @@
 // components/CardEditor.jsx
 import React, { useRef, useState, useEffect } from "react";
-import frameImage from "../../assets/images/frame4.png";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { useNavigate } from "react-router-dom";
 import useImageStore from "../../helper/store/imagestore";
@@ -10,8 +9,8 @@ import { useMutation } from "@tanstack/react-query";
 import UploadModal from "../modal/UploudModal";
 import CameraCapture from "../modal/CameraCapture";
 import ControlPanel from "../ui/ControlPanel"; // Import komponen baru
-
-function CardEditor() {
+  
+function CardEditor({frameImage}) {
   const containerRef = useRef(null);
   const navigate = useNavigate();
   const { image, setImage, setResultImage } = useImageStore();

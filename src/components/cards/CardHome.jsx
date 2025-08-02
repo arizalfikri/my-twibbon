@@ -67,10 +67,10 @@ CardHome.propTypes = {
     User: PropTypes.number,
     image: PropTypes.string.isRequired,
     isNew: PropTypes.bool,
-    slug: PropTypes.string,
     isTrending: PropTypes.bool,
   }).isRequired,
   isGrid: PropTypes.bool,
 };
+
 
 export default CardHome;

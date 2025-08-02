@@ -3,14 +3,14 @@ import Navbar from "../components/layoutpage/Navbar";
 import { User, Share2, Bell } from "lucide-react";
 import CardEditor from "../components/cards/CardEditor";
 import CardResult from "../components/cards/CardResult";
-import frameImage from "../assets/images/frame2.png";
 import frameImage1 from "../assets/images/frame3.png";
 
 import Bg1 from "../assets/images/background_hero.png";
 import Footer from "../components/layoutpage/Footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useImageStore from "../helper/store/imagestore";
 import DetailResult from "../components/modal/DetailResult";
+import { useGET } from "../services/api";
 
 // Dummy data untuk kartu hasil
 const dummyCards = [
@@ -54,15 +54,32 @@ const dummyCards = [
 ];
 
 function MainTwibone() {
-  const { image, setImage } = useImageStore();
+  const { image, setImage, setFrameImage, frameImage } = useImageStore();
+
   const navigate = useNavigate();
   const currentURL = window.location.href;
+  const { slug } = useParams(); // ← dapatkan slug dari URL
+  const {
+    data: twibbon,
+    isLoading,
+    isError,
+    error,
+  } = useGET(`twibbon/${slug}`);
 
+  const detail = twibbon ?? twibbon;
+  console.log(detail);
   // State untuk kartu
   const [cards, setCards] = useState(dummyCards);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+  useEffect(() => {
+    const template = detail?.template_twibbon;
+    const imageURL = template
+      ? `https://api-twibbon-dev.digiduindo.com/uploads/${template}`
+      : frameImage1;
 
+    setFrameImage(imageURL);
+  }, [detail, setFrameImage]);
   useState(() => {
     if (image) {
       setImage(null);
@@ -120,9 +137,10 @@ function MainTwibone() {
         <div className="grid items-center grid-cols-1 lg:grid-cols-3">
           {/* Left Side - Title */}
           <div className="flex flex-col min-w-0">
-            <h1 className="text-lg font-medium truncate">
-              IMPACT FIKKIA Olympiade and Research 2024
+            <h1 className="text-lg font-medium capitalize truncate">
+              {detail?.event_twibbon?.title ?? "Belum Ada Title"}
             </h1>
+
             <p className="text-sm text-gray-400">Impact Fikkia</p>
           </div>
 
@@ -140,10 +158,14 @@ function MainTwibone() {
             <div className="flex items-center space-x-2">
               <button
                 className="flex gap-5 p-2 transition-colors border border-gray-500 rounded-full hover:bg-gray-100"
-                onClick={() => navigator.clipboard.writeText(currentURL)}
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    detail?.event_twibbon?.link || currentURL
+                  )
+                }
               >
                 <div className="text-sm text-gray-400 truncate max-w-[180px]">
-                  {currentURL}
+                  {detail?.event_twibbon?.link ?? currentURL}
                 </div>
                 <Share2 className="w-5 h-5 text-cyan-400" />
               </button>
@@ -162,7 +184,7 @@ function MainTwibone() {
           className="flex items-center justify-center p-4 "
           style={{ backgroundImage: `url(${Bg1})` }}
         >
-          <CardEditor />
+          <CardEditor frameImage={frameImage} />
         </div>
 
         {/* Kanan: Daftar hasil */}

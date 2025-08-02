@@ -5,18 +5,20 @@ import {
   Menu,
   X,
   User,
-  ArrowRightFromLine ,
+  ArrowRightFromLine,
   UserPlus,
 } from "lucide-react";
 import React, { useState } from "react";
 import LogoGypem from "../../assets/images/gypem_logo.png";
 import { useNavigate, Link } from "react-router-dom";
-
+import { Menu as HeadlessMenu, Transition } from "@headlessui/react";
+import { Fragment } from "react";
 function Navbar() {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
   return (
     <>
@@ -111,20 +113,41 @@ function Navbar() {
                 <h4 className="mb-2 text-sm font-medium text-gray-300">Akun</h4>
 
                 {/* Mobile Login Button */}
-                <button
-                  onClick={() => navigate("/SignIn")}
-                  className="w-full bg-white text-[#4C0D68] px-4 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-gray-100 transition-colors"
-                >
-                  <User className="w-5 h-5" />
-                  <span>Login</span>
-                </button>
-                <h4>
-                  sudah memiliki akun gypem?
-                  <a href="" className="text-yellow-400">
-                    {" "}
-                    Klik DIsini
-                  </a>
-                </h4>
+                {token ? (
+                  <div className="px-4 space-y-3">
+                    <div className="grid grid-cols-[auto_1fr] gap-3 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg">
+                      <div className="bg-[#4C0D68] p-2 rounded-full w-10 h-10 flex items-center justify-center">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm font-semibold text-[#4C0D68]">
+                          User
+                        </p>
+                        <p className="text-xs text-gray-600">arbi.avicena2020@email.com</p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("token");
+                        setToken(null);
+                        setIsMobileMenuOpen(false);
+                        navigate("/");
+                      }}
+                      className="w-full px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => navigate("/SignIn")}
+                    className="w-full bg-white text-[#4C0D68] px-4 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-gray-100 transition-colors"
+                  >
+                    <User className="w-5 h-5" />
+                    <span>Login</span>
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -165,31 +188,35 @@ function Navbar() {
             </h3>
 
             {/* Login Button */}
-            <button
-              className="w-full bg-[#4C0D68] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-[#6B1E7A] transition-colors"
-              onClick={() => navigate("/SignIn")}
-            >
-              <ArrowRightFromLine  className="w-5 h-5" />
-              <span>Login Coordinator</span>
-            </button>
+            {token && (
+              <div className="grid grid-cols-[auto_1fr] gap-4 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg">
+                <div className="bg-[#4C0D68] p-2 rounded-full w-10 h-10 flex items-center justify-center">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[#4C0D68]">User</p>
+                  <p className="text-xs text-gray-600">user@email.com</p>
+                </div>
+              </div>
+            )}
 
-            <button
-              onClick={() => navigate("/SignInParticipant")}
-              className="w-full text-[#4C0D68]  px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2  transition-colors border border-[#4C0D68]"
-            >
-              <User className="w-5 h-5" />
-              Login Peserta
-            </button>
-            
+            {!token && (
+              <button
+                className="w-full bg-[#4C0D68] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-[#6B1E7A] transition-colors"
+                onClick={() => navigate("/SignIn")}
+              >
+                <User className="w-5 h-5" />
+                <span>Login</span>
+              </button>
+            )}
           </div>
 
           {/* Divider */}
           <div className="mb-6 border-t border-gray-200"></div>
-          
         </div>
 
         {/* Sidebar Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-gray-50">
+        <div className="absolute bottom-0 left-0 right-0 p-4 space-y-4 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center space-x-2">
             <img
               src={LogoGypem}
@@ -205,6 +232,21 @@ function Navbar() {
               </p>
             </div>
           </div>
+
+          {/* Logout Button in Sidebar Footer */}
+          {token && (
+            <button
+              onClick={() => {
+                localStorage.removeItem("token");
+                setToken(null);
+                setIsSidebarOpen(false);
+                navigate("/");
+              }}
+              className="w-full px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </>

@@ -19,7 +19,7 @@ const queryClient = new QueryClient({
 });
 
 function EditorPage() {
-  const { image } = useImageStore();
+  const { image, frameImage } = useImageStore();
   const navigate = useNavigate();
 
   // Jika belum ada gambar, redirect user ke halaman upload
@@ -35,12 +35,12 @@ function EditorPage() {
         <NavbarEditor />
 
         <div className="md:hidden h-[calc(100vh-64px)] flex flex-col">
-          <CardEditor />
+          <CardEditor frameImage={frameImage} />
         </div>
 
         <div className="hidden gap-6 p-6 mx-auto md:grid md:grid-cols-3 max-w-7xl">
           <div className="md:col-span-2">
-            <CardEditor />
+            <CardEditor frameImage={frameImage} />
           </div>
           <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
             <h2 className="mb-4 text-xl font-semibold text-gray-800">
@@ -48,7 +48,9 @@ function EditorPage() {
             </h2>
             <div className="space-y-4">
               <div className="p-4 rounded-lg bg-gray-50">
-                <h3 className="mb-2 font-medium text-gray-700">Filter & Efek</h3>
+                <h3 className="mb-2 font-medium text-gray-700">
+                  Filter & Efek
+                </h3>
                 <p className="text-sm text-gray-600">
                   Segera hadir - filter dan efek untuk mempercantik gambar Anda.
                 </p>

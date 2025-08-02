@@ -6,6 +6,9 @@ const useImageStore = create((set) => ({
 
   resultImage: null,
   setResultImage: (img) => set({ resultImage: img }),
+
+  frameImage: null,   
+  setFrameImage: (frame) => set({ frameImage: frame }),
 }));
 
 export default useImageStore;

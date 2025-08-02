@@ -13,11 +13,16 @@ import InputPassword from "../components/FormControl/InputPassword";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(null); // null, 'coordinator', 'participant'
   const { openToast } = useModalStore();
   const { setEmail: setGlobalEmail, setToken } = useGlobalStore();
 
   const navigate = useNavigate();
-  const { mutateAsync, isPending } = usePOST("/auth/login");
+
+  // Setup API hooks untuk kedua endpoint
+  const coordinatorLogin = usePOST("/auth/login");
+  const participantLogin = usePOST("/auth/login-participant");
+
   const {
     control,
     handleSubmit,
@@ -26,15 +31,27 @@ const SignIn = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await mutateAsync({
-        url: "/ auth/login",
-        data: {
-          email: data.email,
-          password: data.password,
-        },
-      });
+      let response;
 
-      if (response.token) {
+      if (selectedRole === "coordinator") {
+        response = await coordinatorLogin.mutateAsync({
+          url: "/auth/login",
+          data: {
+            email: data.email,
+            password: data.password,
+          },
+        });
+      } else if (selectedRole === "participant") {
+        response = await participantLogin.mutateAsync({
+          url: "/auth/login-participant",
+          data: {
+            email: data.email,
+            password: data.password,
+          },
+        });
+      }
+
+      if (response?.token) {
         localStorage.setItem("token", response.token);
         setToken(response.token);
         navigate("/");
@@ -48,6 +65,58 @@ const SignIn = () => {
     }
   };
 
+  const isPending = coordinatorLogin.isPending || participantLogin.isPending;
+
+  // Jika belum memilih role, tampilkan pilihan role
+  if (!selectedRole) {
+    return (
+      <div id="root">
+        <div className="grid items-center justify-center h-screen grid-cols-1 overflow-x-hidden md:grid-cols-2 lg:grid-cols-3">
+          <img
+            className="hidden object-cover w-full h-full col-span-1 lg:block"
+            src={LoginImage}
+            alt="Login"
+          />
+
+          <div className="flex flex-col justify-center col-span-3 px-4 py-16 overflow-auto lg:col-span-2 md:px-32 xl:px-52 md:py-20">
+            <a href="/">
+              <img
+                src={LogoGypem}
+                alt="Logo"
+                className="block w-20 h-full mx-auto md:w-28 md:h-28"
+              />
+            </a>
+
+            <div className="mt-10 md:mt-5">
+              <h2 className="mb-8 text-2xl font-bold text-center text-gray-800">
+                Pilih Role Login
+              </h2>
+
+              <div className="flex flex-col gap-4">
+                <button
+                  type="button"
+                  onClick={() => setSelectedRole("coordinator")}
+                  className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-purple-700 gap-x-1 transition-smooth rounded-xl hover:bg-purple-900"
+                >
+                  Login sebagai Coordinator
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedRole("participant")}
+                  className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-yellow-400 gap-x-1 transition-smooth rounded-xl hover:bg-yellow-600"
+                >
+                  Login sebagai Peserta
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Jika sudah memilih role, tampilkan form login
   return (
     <div id="root">
       <div className="grid items-center justify-center h-screen grid-cols-1 overflow-x-hidden md:grid-cols-2 lg:grid-cols-3">
@@ -65,6 +134,13 @@ const SignIn = () => {
               className="block w-20 h-full mx-auto md:w-28 md:h-28"
             />
           </a>
+
+          <div className="mt-4 mb-6 text-center">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Login sebagai{" "}
+              {selectedRole === "coordinator" ? "Coordinator" : "Peserta"}
+            </h2>
+          </div>
 
           <form className="mt-10 md:mt-5" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-5">
@@ -121,7 +197,11 @@ const SignIn = () => {
           <div className="mt-4 text-sm text-center text-gray-400 md:text-xl ">
             Belum memiliki akun?{" "}
             <a
-              href="/SignUp"
+              href={
+                selectedRole === "participant"
+                  ? "https://gypem.com/register"
+                  : "/SignUp"
+              }
               className="font-semibold text-purple-700 underline "
             >
               Klik di sini
