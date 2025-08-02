@@ -7,48 +7,47 @@ import {
 } from "lucide-react";
 import { useModalStore } from "../../helper/store/modal.store";
 
-function ImageUploadArea() {
+function ImageUploadArea({ name = "image", setValue, error }) {
   const [dragActive, setDragActive] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const { openModal } = useModalStore();
 
-  const handleDrag = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
   const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files?.[0];
+  const handleFile = (file) => {
     if (file && allowedTypes.includes(file.type)) {
       const reader = new FileReader();
       reader.onload = (e) => setUploadedImage(e.target.result);
       reader.readAsDataURL(file);
+      setValue(name, file); // ← kirim file ke react-hook-form
     } else {
       openModal("modalFileError", true);
     }
-    e.target.value = '';
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    handleFile(file);
+    e.target.value = "";
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-
     const file = e.dataTransfer.files?.[0];
-    if (file && allowedTypes.includes(file.type)) {
-      const reader = new FileReader();
-      reader.onload = (e) => setUploadedImage(e.target.result);
-      reader.readAsDataURL(file);
-    } else {
-      openModal("modalFileError", true);
-    }
+    handleFile(file);
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(e.type === "dragenter" || e.type === "dragover");
+  };
+
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    setValue(name, null);
   };
 
   return (
@@ -80,7 +79,7 @@ function ImageUploadArea() {
               />
               <div className="flex space-x-3">
                 <button
-                  onClick={() => setUploadedImage(null)}
+                  onClick={handleRemoveImage}
                   className="flex items-center px-4 py-2 space-x-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
                 >
                   <X size={16} />
@@ -91,7 +90,7 @@ function ImageUploadArea() {
                   <span>Ganti</span>
                   <input
                     type="file"
-                    accept=".jpg, .jpeg, .png"
+                    accept="image/*"
                     onChange={handleFileSelect}
                     className="hidden"
                   />
@@ -120,6 +119,9 @@ function ImageUploadArea() {
               <p className="mt-4 text-xs text-gray-400">
                 Format yang didukung: JPG, PNG (Max 10MB)
               </p>
+              {error && (
+                <p className="mt-2 text-sm text-red-500">{error.message}</p>
+              )}
             </div>
           )}
         </div>

@@ -26,7 +26,7 @@ const getData = async (url) => {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
         })
-        .then((response) => response.data.data)
+        .then((response) => response.data)
         .catch((error) => error);
 };
 

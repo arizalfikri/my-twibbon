@@ -180,10 +180,12 @@ function Navbar() {
               <User className="w-5 h-5" />
               Login Peserta
             </button>
+            
           </div>
 
           {/* Divider */}
           <div className="mb-6 border-t border-gray-200"></div>
+          
         </div>
 
         {/* Sidebar Footer */}

@@ -29,7 +29,8 @@ export const router = createBrowserRouter([
       {
         path: "SignIn",
         element: <SignIn />,
-      },  {
+      },
+      {
         path: "SignInParticipant",
         element: <SignInParticipant />,
       },
@@ -39,6 +40,10 @@ export const router = createBrowserRouter([
       },
       {
         path: "Main",
+        element: <MainTwibone />,
+      },
+      {
+        path: "main/:slug",
         element: <MainTwibone />,
       },
       {
