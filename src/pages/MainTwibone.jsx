@@ -67,19 +67,18 @@ function MainTwibone() {
   } = useGET(`twibbon/${slug}`);
 
   const detail = twibbon ?? twibbon;
-  console.log(detail);
   // State untuk kartu
   const [cards, setCards] = useState(dummyCards);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   useEffect(() => {
-    const template = detail?.template_twibbon;
-    const imageURL = template
-      ? `https://api-twibbon-dev.digiduindo.com/uploads/${template}`
-      : frameImage1;
-
-    setFrameImage(imageURL);
+    if (detail?.event_twibbon.template_twibbon) {
+      const imageURL = `https://api-twibbon-dev.digiduindo.com${detail.event_twibbon.template_twibbon}`;
+      console.log("Full imageURL:", imageURL);
+      setFrameImage(imageURL);
+    }
   }, [detail, setFrameImage]);
+
   useState(() => {
     if (image) {
       setImage(null);
@@ -96,39 +95,41 @@ function MainTwibone() {
   };
 
   // Render 9 cards total (data + placeholder abu-abu)
-  const renderCards = () => {
-    const allCards = [];
+ const renderCards = () => {
+  const allCards = [];
 
-    // Ambil maksimal 9 data teratas
-    const displayCards = cards.slice(0, 9);
+  // Ambil maksimal 9 data teratas
+  const displayCards = cards.slice(0, 9);
 
-    // Render kartu dengan data
-    displayCards.forEach((card) => {
-      allCards.push(
-        <div key={card.id} className="h-full">
-          <CardResult
-            src={card.image}
-            description={card.description}
-            creator={card.creator}
-            createdAt={card.createdAt}
-            onClick={() => handleCardClick(card.id)}
-          />
-        </div>
-      );
-    });
+  // Render kartu dengan data
+  displayCards.forEach((card) => {
+    allCards.push(
+      <div key={card.id} className="w-full aspect-square">
+        <CardResult
+          src={card.image}
+          description={card.description}
+          creator={card.creator}
+          createdAt={card.createdAt}
+          onClick={() => handleCardClick(card.id)}
+        />
+      </div>
+    );
+  });
 
-    // Jika data kurang dari 9, isi sisanya dengan kotak abu-abu
-    const remainingSlots = 9 - displayCards.length;
-    for (let i = 0; i < remainingSlots; i++) {
-      allCards.push(
-        <div key={`empty-${i}`} className="h-full">
-          <div className="flex items-center justify-center h-full bg-gray-200 rounded-lg shadow-md aspect-square"></div>
-        </div>
-      );
-    }
+  // Jika data kurang dari 9, isi sisanya dengan kotak abu-abu
+  const remainingSlots = 9 - displayCards.length;
+  for (let i = 0; i < remainingSlots; i++) {
+    allCards.push(
+      <div
+        key={`empty-${i}`}
+        className="w-full bg-gray-200 rounded-lg shadow-md aspect-square"
+      />
+    );
+  }
 
-    return allCards;
-  };
+  return allCards;
+};
+
 
   return (
     <div>

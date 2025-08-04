@@ -39,13 +39,10 @@ export const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path: "Main",
+        path: ":slug",
         element: <MainTwibone />,
       },
-      {
-        path: "main/:slug",
-        element: <MainTwibone />,
-      },
+
       {
         path: "Create",
         element: <TwiboneCreatePage />,

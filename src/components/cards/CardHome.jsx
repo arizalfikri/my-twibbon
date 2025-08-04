@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 const CardHome = ({ twibon, isGrid = true }) => {
   return (
     <Link
-      to={`/main/${twibon.slug}`}
+      to={`/${twibon.slug}`}
       className={`block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group ${
         isGrid ? "" : "flex"
       }`}
@@ -14,8 +14,10 @@ const CardHome = ({ twibon, isGrid = true }) => {
       <div
         className={`relative ${isGrid ? "aspect-[1/1]" : "w-48 flex-shrink-0"}`}
       >
+        {console.log(`https://api-twibbon-dev.digiduindo.com${twibon.image}`)}
+
         <img
-          src={twibon.image}
+          src={`https://api-twibbon-dev.digiduindo.com${twibon.image}`}
           alt={twibon.title}
           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
         />
@@ -71,6 +73,5 @@ CardHome.propTypes = {
   }).isRequired,
   isGrid: PropTypes.bool,
 };
-
 
 export default CardHome;
