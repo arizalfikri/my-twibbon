@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { usePOST } from "../services/api";
 import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
+import { useNavigate } from "react-router-dom";
 
 function TwiboneCreatePage() {
     const [currentStep, setCurrentStep] = useState(0);
@@ -15,6 +16,7 @@ function TwiboneCreatePage() {
     const { mutateAsync, isPending } = usePOST("/event-twibbon");
     const { openToast } = useModalStore();
     const { token } = useGlobalStore();
+    const navigate = useNavigate();
 
     // Media Query: Deteksi desktop
     useEffect(() => {
@@ -86,6 +88,9 @@ function TwiboneCreatePage() {
             switch (error?.response.status) {
                 case 401:
                     openToast("toast", true, "kurang data");
+                    break;
+                case 400:
+                    openToast("toast", true, error?.response.message);
                     break;
                 case 403:
                     openToast(
