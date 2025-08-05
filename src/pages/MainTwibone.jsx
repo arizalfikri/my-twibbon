@@ -3,14 +3,15 @@ import Navbar from "../components/layoutpage/Navbar";
 import { User, Share2, Bell } from "lucide-react";
 import CardEditor from "../components/cards/CardEditor";
 import CardResult from "../components/cards/CardResult";
-import frameImage from "../assets/images/frame2.png";
-import frameImage1 from "../assets/images/frame3.png";
+import frameImage1 from "../assets/images/frame2.png";
 
 import Bg1 from "../assets/images/background_hero.png";
 import Footer from "../components/layoutpage/Footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useImageStore from "../helper/store/imagestore";
 import DetailResult from "../components/modal/DetailResult";
+import { useGET } from "../services/api";
+import LoadingPage from "../components/layoutpage/LoadingPage";
 
 // Dummy data untuk kartu hasil
 const dummyCards = [
@@ -54,14 +55,30 @@ const dummyCards = [
 ];
 
 function MainTwibone() {
-  const { image, setImage } = useImageStore();
-  const navigate = useNavigate();
-  const currentURL = window.location.href;
+  const { image, setImage, setFrameImage, frameImage } = useImageStore();
 
+  const navigate = useNavigate();
+  const currentURL = window.location.href;  
+  const { slug } = useParams(); 
+  const {
+    data: twibbon,
+    isLoading,
+    isError,
+    error,
+  } = useGET(`twibbon/${slug}`);
+  
+  const detail = twibbon ;
   // State untuk kartu
   const [cards, setCards] = useState(dummyCards);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+  useEffect(() => {
+    if (detail?.data?.template_twibbon) {
+      const imageURL = `https://api-twibbon-dev.digiduindo.com${detail?.data?.template_twibbon}`;
+      console.log("Full imageURL:", imageURL);
+      setFrameImage(imageURL);
+    }
+  }, [detail, setFrameImage]);
 
   useState(() => {
     if (image) {
@@ -77,7 +94,9 @@ function MainTwibone() {
       setShowDetailModal(true);
     }
   };
-
+  if (isLoading) {
+    return <LoadingPage />;
+  }
   // Render 9 cards total (data + placeholder abu-abu)
   const renderCards = () => {
     const allCards = [];
@@ -88,7 +107,7 @@ function MainTwibone() {
     // Render kartu dengan data
     displayCards.forEach((card) => {
       allCards.push(
-        <div key={card.id} className="h-full">
+        <div key={card.id} className="w-full aspect-square">
           <CardResult
             src={card.image}
             description={card.description}
@@ -104,9 +123,10 @@ function MainTwibone() {
     const remainingSlots = 9 - displayCards.length;
     for (let i = 0; i < remainingSlots; i++) {
       allCards.push(
-        <div key={`empty-${i}`} className="h-full">
-          <div className="flex items-center justify-center h-full bg-gray-200 rounded-lg shadow-md aspect-square"></div>
-        </div>
+        <div
+          key={`empty-${i}`}
+          className="w-full bg-gray-200 rounded-lg shadow-md aspect-square"
+        />
       );
     }
 
@@ -120,9 +140,10 @@ function MainTwibone() {
         <div className="grid items-center grid-cols-1 lg:grid-cols-3">
           {/* Left Side - Title */}
           <div className="flex flex-col min-w-0">
-            <h1 className="text-lg font-medium truncate">
-              IMPACT FIKKIA Olympiade and Research 2024
+            <h1 className="text-lg font-medium capitalize truncate">
+              {detail?.data?.title ?? "Belum Ada Title"}
             </h1>
+
             <p className="text-sm text-gray-400">Impact Fikkia</p>
           </div>
 
@@ -140,10 +161,14 @@ function MainTwibone() {
             <div className="flex items-center space-x-2">
               <button
                 className="flex gap-5 p-2 transition-colors border border-gray-500 rounded-full hover:bg-gray-100"
-                onClick={() => navigator.clipboard.writeText(currentURL)}
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    detail?.data?.link 
+                  )
+                }
               >
                 <div className="text-sm text-gray-400 truncate max-w-[180px]">
-                  {currentURL}
+                  {detail?.data?.link }
                 </div>
                 <Share2 className="w-5 h-5 text-cyan-400" />
               </button>
@@ -162,7 +187,7 @@ function MainTwibone() {
           className="flex items-center justify-center p-4 "
           style={{ backgroundImage: `url(${Bg1})` }}
         >
-          <CardEditor />
+          <CardEditor frameImage={frameImage} />
         </div>
 
         {/* Kanan: Daftar hasil */}
