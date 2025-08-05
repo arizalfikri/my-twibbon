@@ -6,10 +6,16 @@ import InputWithLabel from "../components/FormControl/InputWithLabel";
 import ImageUploadArea from "../components/uploadArea/ImageUploadArea";
 import ModalFileTypeError from "../components/modal/modalFileTypeError";
 import { useForm } from "react-hook-form";
+import { usePOST } from "../services/api";
+import { useGlobalStore } from "../helper/store/global.store";
+import { useModalStore } from "../helper/store/modal.store";
 
 function TwiboneCreatePage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
+  const { mutateAsync, isPending } = usePOST("/event-twibbon");
+  const { openToast } = useModalStore();
+  const { token } = useGlobalStore();
 
   // Media Query: Deteksi desktop
   useEffect(() => {
@@ -26,34 +32,35 @@ function TwiboneCreatePage() {
     handleSubmit,
     formState: { errors },
     watch,
-    setValue
+    setValue,
   } = useForm({
     defaultValues: {
       title: "",
-      description: "",
-      linkKampanye: "",
-      visibility: "",
-      Template_Caption: "",
+      caption: "",
+      link: "",
       image: null,
     },
     mode: "onChange",
   });
 
-  const descValue = watch("description") || "";
+  const descValue = watch("caption") || "";
 
-  const visibilityOptions = [
-    { value: "", label: "Pilih tingkat visibilitas" },
-    { value: "publik", label: "Publik" },
-    { value: "terbatas", label: "Terbatas" },
-    { value: "privat", label: "Privat" },
-  ];
+  // const visibilityOptions = [
+  //   { value: "", label: "Pilih tingkat visibilitas" },
+  //   { value: "publik", label: "Publik" },
+  //   { value: "terbatas", label: "Terbatas" },
+  //   { value: "privat", label: "Privat" },
+  // ];
 
   const steps = isDesktop
-    ? [{ title: "Rincian Kampanye" }, { title: "Kontak & Visibilitas" }]
+    ? [
+        { title: "Rincian Kampanye" },
+        // , { title: "Kontak & Visibilitas"  }
+      ]
     : [
         { title: "Gambar" },
         { title: "Rincian Kampanye" },
-        { title: "Kontak & Visibilitas" },
+        // { title: "Kontak & Visibilitas" },
       ];
 
   const totalSteps = steps.length;
@@ -66,11 +73,24 @@ function TwiboneCreatePage() {
     if (currentStep > 0) setCurrentStep((s) => s - 1);
   };
 
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    // bisa juga simpan ke API di sini
+  const onSubmit = async (data) => {
+    try {
+      const response = await mutateAsync({
+        url: "/event-twibbon",
+        data: data,
+      });
+      if (response.status === 201) {
+        navigate("/");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      if (status == 401) {
+        openToast("toast", true, "kurang data");
+      } else {
+        openToast("toast", true, "Kesalahan Server");
+      }
+    }
   };
-
   const renderStepContent = () => {
     const adjustedStep = isDesktop ? currentStep + 1 : currentStep;
     const key = isDesktop ? "desktop" : "mobile";
@@ -108,9 +128,9 @@ function TwiboneCreatePage() {
 
             <InputWithLabel
               control={control}
-              name="description"
-              htmlFor="description"
-              label="Deskripsi (Opsional)"
+              name="caption"
+              htmlFor="caption"
+              label="caption "
               type="textarea"
               placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
               maxLength={250}
@@ -124,8 +144,8 @@ function TwiboneCreatePage() {
 
             <InputWithLabel
               control={control}
-              name="linkKampanye"
-              htmlFor="linkKampanye"
+              name="link"
+              htmlFor="link"
               label="Link Kampanye"
               prefix="twibbo.nz/"
               placeholder="link-kampanye"
@@ -134,41 +154,41 @@ function TwiboneCreatePage() {
           </div>
         );
 
-      case 2:
-        return (
-          <div key={`${currentStep}-${key}`} className="space-y-6">
-            <InputWithLabel
-              control={control}
-              name="Template_Caption"
-              htmlFor="Template_Caption"
-              label={
-                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                  <Globe size={16} className="text-gray-500" />
-                  <span>Template Caption</span>
-                </div>
-              }
-              placeholder="contoh: Ayo dukung kampanye ini!"
-              error={errors.Template_Caption?.message}
-            />
+      // case 2:
+      //   return (
+      //     <div key={`${currentStep}-${key}`} className="space-y-6">
+      //       <InputWithLabel
+      //         control={control}
+      //         name="Template_Caption"
+      //         htmlFor="Template_Caption"
+      //         label={
+      //           <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+      //             <Globe size={16} className="text-gray-500" />
+      //             <span>Template Caption</span>
+      //           </div>
+      //         }
+      //         placeholder="contoh: Ayo dukung kampanye ini!"
+      //         error={errors.Template_Caption?.message}
+      //       />
 
-            <InputSelectWithLabel
-              control={control}
-              option_label="label"
-              option_value="value"
-              name="visibility"
-              htmlFor="visibility"
-              defaultValue=""
-              label={
-                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                  <Tag size={16} className="text-gray-500" />
-                  <span>Visibilitas</span>
-                </div>
-              }
-              options={visibilityOptions}
-              error={errors}
-            />
-          </div>
-        );
+      //       <InputSelectWithLabel
+      //         control={control}
+      //         option_label="label"
+      //         option_value="value"
+      //         name="visibility"
+      //         htmlFor="visibility"
+      //         defaultValue=""
+      //         label={
+      //           <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+      //             <Tag size={16} className="text-gray-500" />
+      //             <span>Visibilitas</span>
+      //           </div>
+      //         }
+      //         options={visibilityOptions}
+      //         error={errors}
+      //       />
+      //     </div>
+      //   );
 
       default:
         return null;

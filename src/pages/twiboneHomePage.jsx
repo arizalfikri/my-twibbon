@@ -12,9 +12,10 @@ function TwiboneHomepage() {
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [viewMode, setViewMode] = useState("grid");
 
-  const twibbonData = data?.event_twibbon || [];
+  const twibbonData = data?.data || [];
 
   const filteredTwibbons = twibbonData.filter(() => true); // semua dimunculkan
+  console.log("twibbonData:", twibbonData);
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -3,7 +3,7 @@ import Navbar from "../components/layoutpage/Navbar";
 import { User, Share2, Bell } from "lucide-react";
 import CardEditor from "../components/cards/CardEditor";
 import CardResult from "../components/cards/CardResult";
-import frameImage1 from "../assets/images/frame3.png";
+import frameImage1 from "../assets/images/frame2.png";
 
 import Bg1 from "../assets/images/background_hero.png";
 import Footer from "../components/layoutpage/Footer";
@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useImageStore from "../helper/store/imagestore";
 import DetailResult from "../components/modal/DetailResult";
 import { useGET } from "../services/api";
+import LoadingPage from "../components/layoutpage/LoadingPage";
 
 // Dummy data untuk kartu hasil
 const dummyCards = [
@@ -57,23 +58,23 @@ function MainTwibone() {
   const { image, setImage, setFrameImage, frameImage } = useImageStore();
 
   const navigate = useNavigate();
-  const currentURL = window.location.href;
-  const { slug } = useParams(); // ← dapatkan slug dari URL
+  const currentURL = window.location.href;  
+  const { slug } = useParams(); 
   const {
     data: twibbon,
     isLoading,
     isError,
     error,
   } = useGET(`twibbon/${slug}`);
-
-  const detail = twibbon ?? twibbon;
+  
+  const detail = twibbon ;
   // State untuk kartu
   const [cards, setCards] = useState(dummyCards);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   useEffect(() => {
-    if (detail?.event_twibbon.template_twibbon) {
-      const imageURL = `https://api-twibbon-dev.digiduindo.com${detail.event_twibbon.template_twibbon}`;
+    if (detail?.data?.template_twibbon) {
+      const imageURL = `https://api-twibbon-dev.digiduindo.com${detail?.data?.template_twibbon}`;
       console.log("Full imageURL:", imageURL);
       setFrameImage(imageURL);
     }
@@ -93,43 +94,44 @@ function MainTwibone() {
       setShowDetailModal(true);
     }
   };
-
-  // Render 9 cards total (data + placeholder abu-abu)
- const renderCards = () => {
-  const allCards = [];
-
-  // Ambil maksimal 9 data teratas
-  const displayCards = cards.slice(0, 9);
-
-  // Render kartu dengan data
-  displayCards.forEach((card) => {
-    allCards.push(
-      <div key={card.id} className="w-full aspect-square">
-        <CardResult
-          src={card.image}
-          description={card.description}
-          creator={card.creator}
-          createdAt={card.createdAt}
-          onClick={() => handleCardClick(card.id)}
-        />
-      </div>
-    );
-  });
-
-  // Jika data kurang dari 9, isi sisanya dengan kotak abu-abu
-  const remainingSlots = 9 - displayCards.length;
-  for (let i = 0; i < remainingSlots; i++) {
-    allCards.push(
-      <div
-        key={`empty-${i}`}
-        className="w-full bg-gray-200 rounded-lg shadow-md aspect-square"
-      />
-    );
+  if (isLoading) {
+    return <LoadingPage />;
   }
+  // Render 9 cards total (data + placeholder abu-abu)
+  const renderCards = () => {
+    const allCards = [];
 
-  return allCards;
-};
+    // Ambil maksimal 9 data teratas
+    const displayCards = cards.slice(0, 9);
 
+    // Render kartu dengan data
+    displayCards.forEach((card) => {
+      allCards.push(
+        <div key={card.id} className="w-full aspect-square">
+          <CardResult
+            src={card.image}
+            description={card.description}
+            creator={card.creator}
+            createdAt={card.createdAt}
+            onClick={() => handleCardClick(card.id)}
+          />
+        </div>
+      );
+    });
+
+    // Jika data kurang dari 9, isi sisanya dengan kotak abu-abu
+    const remainingSlots = 9 - displayCards.length;
+    for (let i = 0; i < remainingSlots; i++) {
+      allCards.push(
+        <div
+          key={`empty-${i}`}
+          className="w-full bg-gray-200 rounded-lg shadow-md aspect-square"
+        />
+      );
+    }
+
+    return allCards;
+  };
 
   return (
     <div>
@@ -139,7 +141,7 @@ function MainTwibone() {
           {/* Left Side - Title */}
           <div className="flex flex-col min-w-0">
             <h1 className="text-lg font-medium capitalize truncate">
-              {detail?.event_twibbon?.title ?? "Belum Ada Title"}
+              {detail?.data?.title ?? "Belum Ada Title"}
             </h1>
 
             <p className="text-sm text-gray-400">Impact Fikkia</p>
@@ -161,12 +163,12 @@ function MainTwibone() {
                 className="flex gap-5 p-2 transition-colors border border-gray-500 rounded-full hover:bg-gray-100"
                 onClick={() =>
                   navigator.clipboard.writeText(
-                    detail?.event_twibbon?.link || currentURL
+                    detail?.data?.link 
                   )
                 }
               >
                 <div className="text-sm text-gray-400 truncate max-w-[180px]">
-                  {detail?.event_twibbon?.link ?? currentURL}
+                  {detail?.data?.link }
                 </div>
                 <Share2 className="w-5 h-5 text-cyan-400" />
               </button>

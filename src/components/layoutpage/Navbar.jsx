@@ -13,6 +13,7 @@ import LogoGypem from "../../assets/images/gypem_logo.png";
 import { useNavigate, Link } from "react-router-dom";
 import { Menu as HeadlessMenu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+
 function Navbar() {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -102,10 +103,13 @@ function Navbar() {
                   <HelpCircle className="w-5 h-5" />
                   <span>Bantuan</span>
                 </button>
-                <button className="bg-yellow-400 text-[#4C0D68] px-4 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors">
+                <Link
+                  to="/create"
+                  className="bg-yellow-400 text-[#4C0D68] px-4 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors"
+                >
                   <Plus className="w-4 h-4" />
-                  <span className="capitalize">tambah twibone</span>
-                </button>
+                  <span className="capitalize">Tambah Twibone</span>
+                </Link>
               </div>
 
               {/* Mobile Auth Buttons - Directly in mobile menu */}
@@ -224,9 +228,7 @@ function Navbar() {
               className="object-contain w-8 h-8"
             />
             <div>
-              <p className="text-sm font-semibold text-gray-800">
-                Gypem Twibone
-              </p>
+              <p className="text-sm font-semibold text-gray-800">Gypem Twibone</p>
               <p className="text-xs text-gray-500">
                 © 2024 All rights reserved
               </p>

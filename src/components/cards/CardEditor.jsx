@@ -9,39 +9,41 @@ import { useMutation } from "@tanstack/react-query";
 import UploadModal from "../modal/UploudModal";
 import CameraCapture from "../modal/CameraCapture";
 import ControlPanel from "../ui/ControlPanel"; // Import komponen baru
-  
-function CardEditor({frameImage}) {
+
+function CardEditor({ frameImage }) {
   const containerRef = useRef(null);
   const navigate = useNavigate();
   const { image, setImage, setResultImage } = useImageStore();
-  
+
   // Zustand UI state
-  const { 
-    showUploadModal, 
+  const {
+    showUploadModal,
     showCamera,
     setShowUploadModal,
     setShowCamera,
     setIsDownloading,
     openCamera,
     closeUploadModal,
-    closeCamera
+    closeCamera,
   } = useUIStore();
-  
-  const [frameAspectRatio, setFrameAspectRatio] = useState('1/1');
-  
+
+  const [frameAspectRatio, setFrameAspectRatio] = useState("1/1");
+
   // Effect untuk mendeteksi aspect ratio frame image
   useEffect(() => {
+    if (!frameImage) return;
+
     const img = new Image();
     img.onload = () => {
       const aspectRatio = img.naturalWidth / img.naturalHeight;
       setFrameAspectRatio(`${img.naturalWidth}/${img.naturalHeight}`);
     };
     img.onerror = () => {
-      setFrameAspectRatio('1/1');
+      setFrameAspectRatio("1/1");
     };
     img.src = frameImage;
-  }, []);
-  
+  }, [frameImage]); 
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -81,13 +83,16 @@ function CardEditor({frameImage}) {
           // Gunakan dimensi asli frame untuk hasil akhir
           const frameWidth = frame.naturalWidth;
           const frameHeight = frame.naturalHeight;
-          
+
           // Dapatkan dimensi container saat ini
           const containerWidth = containerRef.current.offsetWidth;
           const containerHeight = containerRef.current.offsetHeight;
-          
+
           // Hitung scale ratio untuk menyesuaikan dari container ke frame asli
-          const scaleRatio = Math.min(frameWidth / containerWidth, frameHeight / containerHeight);
+          const scaleRatio = Math.min(
+            frameWidth / containerWidth,
+            frameHeight / containerHeight
+          );
 
           // Tunggu sebentar untuk memastikan rendering selesai
           await new Promise((res) => setTimeout(res, 500));
@@ -103,12 +108,12 @@ function CardEditor({frameImage}) {
             logging: false,
             onclone: (clonedDoc) => {
               // Pastikan semua gambar di dokumen klon sudah loaded
-              const images = clonedDoc.querySelectorAll('img');
-              images.forEach(img => {
-                img.style.maxWidth = 'none';
-                img.style.maxHeight = 'none';
+              const images = clonedDoc.querySelectorAll("img");
+              images.forEach((img) => {
+                img.style.maxWidth = "none";
+                img.style.maxHeight = "none";
               });
-            }
+            },
           });
 
           if (!(canvas instanceof HTMLCanvasElement)) {
@@ -117,21 +122,21 @@ function CardEditor({frameImage}) {
 
           // Jika ukuran canvas belum sesuai frame, resize manual
           if (canvas.width !== frameWidth || canvas.height !== frameHeight) {
-            const finalCanvas = document.createElement('canvas');
+            const finalCanvas = document.createElement("canvas");
             finalCanvas.width = frameWidth;
             finalCanvas.height = frameHeight;
-            const ctx = finalCanvas.getContext('2d');
-            
+            const ctx = finalCanvas.getContext("2d");
+
             // Gambar hasil capture ke canvas final dengan ukuran frame
             ctx.drawImage(canvas, 0, 0, frameWidth, frameHeight);
-            
+
             const dataUrl = finalCanvas.toDataURL("image/png", 1.0);
-            
+
             const link = document.createElement("a");
             link.download = "twibbon.png";
             link.href = dataUrl;
             link.click();
-            
+
             resolve(dataUrl);
           } else {
             const dataUrl = canvas.toDataURL("image/png", 1.0);
@@ -189,8 +194,8 @@ function CardEditor({frameImage}) {
             style={{
               aspectRatio: frameAspectRatio,
               // Tambahkan style untuk memastikan dimensi tetap
-              minWidth: '320px',
-              minHeight: '320px'
+              minWidth: "320px",
+              minHeight: "320px",
             }}
           >
             {image && (
@@ -213,8 +218,8 @@ function CardEditor({frameImage}) {
                     crossOrigin="anonymous"
                     style={{
                       // Pastikan gambar tidak terpotong saat di-capture
-                      maxWidth: 'none',
-                      maxHeight: 'none'
+                      maxWidth: "none",
+                      maxHeight: "none",
                     }}
                   />
                 </TransformComponent>
@@ -227,17 +232,14 @@ function CardEditor({frameImage}) {
               crossOrigin="anonymous"
               style={{
                 // Pastikan frame tidak terpotong saat di-capture
-                maxWidth: 'none',
-                maxHeight: 'none'
+                maxWidth: "none",
+                maxHeight: "none",
               }}
             />
           </div>
-          
+
           {/* Menggunakan ControlPanel component */}
-          <ControlPanel 
-            onDownload={handleDownload}
-            hasImage={!!image}
-          />
+          <ControlPanel onDownload={handleDownload} hasImage={!!image} />
         </div>
       </div>
 
