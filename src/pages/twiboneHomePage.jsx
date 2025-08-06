@@ -1,5 +1,15 @@
 import React, { use, useState } from "react";
-import { Sparkles, Filter, Grid, List, Plus } from "lucide-react";
+import {
+  Sparkles,
+  Filter,
+  Grid,
+  List,
+  Plus,
+  ImageOff,
+  Search,
+  Palette,
+  Heart,
+} from "lucide-react";
 import Navbar from "../components/layoutpage/Navbar";
 import Footer from "../components/layoutpage/Footer";
 import CardHome from "../components/cards/CardHome";
@@ -14,8 +24,66 @@ function TwiboneHomepage() {
 
   const twibbonData = data?.data || [];
 
-  const filteredTwibbons = twibbonData.filter(() => true); // semua dimunculkan
+  const filteredTwibbons = twibbonData.filter(() => true);
   console.log("twibbonData:", twibbonData);
+
+  const renderEmptyState = () => {
+    return (
+      <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
+        <div className="max-w-md space-y-6 text-center">
+          {/* Animated Icons */}
+          <div className="relative">
+            <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-purple-100 to-pink-100">
+              <ImageOff className="w-16 h-16 text-purple-400" />
+            </div>
+            {/* Floating icons animation */}
+            <div className="absolute flex items-center justify-center w-10 h-10 bg-yellow-100 rounded-full -top-2 -right-2 animate-bounce">
+              <Palette className="w-5 h-5 text-yellow-600" />
+            </div>
+            <div className="absolute flex items-center justify-center w-10 h-10 bg-pink-100 rounded-full -bottom-2 -left-2 animate-pulse">
+              <Heart className="w-5 h-5 text-pink-600" />
+            </div>
+            <div className="absolute flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full top-4 -left-4 animate-ping">
+              <Search className="w-4 h-4 text-blue-600" />
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="space-y-3">
+            <h3 className="text-2xl font-bold text-gray-800">
+              Belum Ada Twibone Tersedia
+            </h3>
+            <p className="leading-relaxed text-gray-600">
+              Sepertinya belum ada kreasi twibone yang tersedia saat ini.
+              Jadilah yang pertama untuk membuat dan membagikan karya kreatif
+              Anda!
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col items-center justify-center gap-3 pt-4 sm:flex-row">
+            <button className="bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300 flex items-center gap-2 group">
+              <Plus className="w-5 h-5 transition-transform duration-300 group-hover:rotate-90" />
+              Buat Twibone Pertama
+            </button>
+            <button className="flex items-center gap-2 px-6 py-3 font-semibold text-purple-700 transition-all duration-300 border-2 border-purple-200 rounded-full hover:bg-purple-50">
+              <Search className="w-4 h-4" />
+              Cari Inspirasi
+            </button>
+          </div>
+
+          {/* Decorative Elements */}
+          <div className="flex items-center justify-center pt-6 space-x-4">
+            <div className="flex space-x-2">
+              <div className="w-3 h-3 bg-purple-300 rounded-full animate-pulse"></div>
+              <div className="w-3 h-3 delay-100 bg-pink-300 rounded-full animate-pulse"></div>
+              <div className="w-3 h-3 delay-200 bg-yellow-300 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -103,35 +171,34 @@ function TwiboneHomepage() {
               : "space-y-4"
           }`}
         >
-          {filteredTwibbons.length === 0 ? (
-            <div className="py-12 text-lg text-center text-gray-500 col-span-full">
-                Belum ada twibbon tersedia.
-            </div>
-          ) : (
-            filteredTwibbons.map((twibon) => (
-              <CardHome
-                key={twibon.id}
-                twibon={{
-                  id: twibon.id,
-                  title: twibon.title || "Tanpa Judul",
-                  author: "Gypem",
-                  User: 0,
-                  slug: twibon.slug_event_twibbon,
-                  image: twibon.template_twibbon,
-                  isNew: false,
-                  isTrending: false,
-                }}
-                isGrid={viewMode === "grid"}
-              />
-            ))
-          )}
+          {filteredTwibbons.length === 0
+            ? renderEmptyState()
+            : filteredTwibbons.map((twibon) => (
+                <CardHome
+                  key={twibon.id}
+                  twibon={{
+                    id: twibon.id,
+                    title: twibon.title || "Tanpa Judul",
+                    author: "Gypem",
+                    User: 0,
+                    slug: twibon.slug_event_twibbon,
+                    image: twibon.template_twibbon,
+                    isNew: false,
+                    isTrending: false,
+                  }}
+                  isGrid={viewMode === "grid"}
+                />
+              ))}
         </div>
 
-        <div className="mt-12 text-center">
-          <button className="bg-[#4C0D68] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#6B1E7A] transition-colors">
-            Muat Lebih Banyak
-          </button>
-        </div>
+        {/* Show load more button only when there are twibbons */}
+        {filteredTwibbons.length > 0 && (
+          <div className="mt-12 text-center">
+            <button className="bg-[#4C0D68] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#6B1E7A] transition-colors">
+              Muat Lebih Banyak
+            </button>
+          </div>
+        )}
       </main>
 
       <Footer />

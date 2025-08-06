@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/layoutpage/Navbar";
-import { User, Share2, Bell } from "lucide-react";
+import { User, Share2, Bell, ImageOff, Users } from "lucide-react";
 import CardEditor from "../components/cards/CardEditor";
 import CardResult from "../components/cards/CardResult";
 import Bg1 from "../assets/images/background_hero.png";
@@ -91,6 +91,42 @@ function MainTwibone() {
     return slots;
   };
 
+  const renderEmptyState = () => {
+    return (
+      <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8">
+        <div className="flex flex-col items-center space-y-4 text-center">
+          {/* Icon */}
+          <div className="relative">
+            <div className="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full">
+              <ImageOff className="w-10 h-10 text-gray-400" />
+            </div>
+            <div className="absolute flex items-center justify-center w-8 h-8 rounded-full -bottom-1 -right-1 bg-cyan-100">
+              <Users className="w-4 h-4 text-cyan-500" />
+            </div>
+          </div>
+          
+          {/* Text Content */}
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-gray-700">
+              Belum Ada Yang Di Post
+            </h3>
+            <p className="max-w-sm text-sm text-gray-500">
+              Jadilah yang pertama untuk membuat dan membagikan twibbon Anda! 
+              Upload foto dan buat karya yang menarik.
+            </p>
+          </div>
+          
+          {/* Decorative Elements */}
+          <div className="flex mt-6 space-x-2">
+            <div className="w-2 h-2 rounded-full bg-cyan-200 animate-pulse"></div>
+            <div className="w-2 h-2 delay-100 rounded-full bg-cyan-300 animate-pulse"></div>
+            <div className="w-2 h-2 delay-200 rounded-full bg-cyan-400 animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       <Navbar />
@@ -134,8 +170,12 @@ function MainTwibone() {
           <CardEditor frameImage={frameImage} />
         </div>
 
-        <div className="justify-center h-full p-4 overflow-y-auto bg-white ">
-          <div className="grid grid-cols-3 gap-4 h-fit">{renderCards()}</div>
+        <div className="justify-center h-full p-4 overflow-y-auto bg-white">
+          {cards.length > 0 ? (
+            <div className="grid grid-cols-3 gap-4 h-fit">{renderCards()}</div>
+          ) : (
+            renderEmptyState()
+          )}
         </div>
       </div>
 
