@@ -4,6 +4,7 @@ import useImageStore from "../helper/store/imagestore";
 import { useNavigate } from "react-router-dom";
 import NavbarEditor from "../components/layoutpage/NavbarEditor";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import useTwibbonStore from "../helper/store/TwiboneUser";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -19,10 +20,10 @@ const queryClient = new QueryClient({
 });
 
 function EditorPage() {
+  
   const { image, frameImage } = useImageStore();
   const navigate = useNavigate();
-
-  // Jika belum ada gambar, redirect user ke halaman upload
+  const { twibbonData } = useTwibbonStore();
   useEffect(() => {
     if (!image) {
       navigate("/");
@@ -32,7 +33,8 @@ function EditorPage() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-gray-50">
-        <NavbarEditor />
+        <NavbarEditor 
+        title={twibbonData?.title}/>
 
         <div className="md:hidden h-[calc(100vh-64px)] flex flex-col">
           <CardEditor frameImage={frameImage} />

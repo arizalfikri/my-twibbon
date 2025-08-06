@@ -10,6 +10,8 @@ import InputWithLabel from "../components/FormControl/InputWithLabel";
 import { useForm } from "react-hook-form";
 import { InputType } from "../components/FormControl";
 import InputPassword from "../components/FormControl/InputPassword";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { signInSchema } from "../helper/yup/index";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,19 +22,20 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   // Setup API hooks untuk kedua endpoint
-  const coordinatorLogin = usePOST("/auth/login");
+  const contributorLogin = usePOST("/auth/login");
   const participantLogin = usePOST("/auth/login-participant");
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: yupResolver(signInSchema) });
 
   const onSubmit = async (data) => {
     try {
-       if (selectedRole === "coordinator") {
-        response = await coordinatorLogin.mutateAsync({
+      let response;
+
+      if (selectedRole === "contributor") {
+        response = await contributorLogin.mutateAsync({
           url: "/auth/login",
           data: { email: data.email, password: data.password },
         });
@@ -54,13 +57,14 @@ const SignIn = () => {
       const status = error.response?.status;
       if (status === 401) {
         openToast("toast", true, " Invalid email or password");
-      } else {
+      }
+      if (status === 500) {
         openToast("toast", true, "Kesalahan Server");
       }
     }
   };
 
-  const isPending = coordinatorLogin.isPending || participantLogin.isPending;
+  const isPending = contributorLogin.isPending || participantLogin.isPending;
 
   // Jika belum memilih role, tampilkan pilihan role
   if (!selectedRole) {
@@ -149,6 +153,7 @@ const SignIn = () => {
                 style="rounded-xl"
                 control={control}
                 autoComplete="email"
+                error={errors}
               />
 
               <div className="relative">

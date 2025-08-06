@@ -8,13 +8,13 @@ function DetailResult({ isOpen, onClose, cardData }) {
   const [komentars, setKomentars] = useState([
     {
       id: 1,
-      user: "Gibran",
+      user: "Arbisan",
       comment: "Keren banget designnya!",
       time: "2 jam yang lalu",
     },
     {
       id: 2,
-      user: "Jokowi Dodo",
+      user: "Kenzosan",
       comment: "Bagus sekali, semangat terus!",
       time: "5 jam yang lalu",
     },
@@ -26,7 +26,7 @@ function DetailResult({ isOpen, onClose, cardData }) {
     },
     {
       id: 4,
-      user: "Prabowo",
+      user: "Arbisan",
       comment: "Inspiratif sekali karyanya, sukses terus ya!",
       time: "2 hari yang lalu",
     },

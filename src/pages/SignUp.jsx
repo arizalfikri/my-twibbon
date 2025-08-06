@@ -10,6 +10,8 @@ import { InputType } from "../components/FormControl";
 import { usePOST } from "../services/api";
 import { useModalStore } from "../helper/store/modal.store";
 import { useNavigate } from "react-router-dom";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { signUpSchema } from "../helper/yup";
 
 function SignUp() {
   const [provinces, setProvinces] = useState([]);
@@ -26,7 +28,7 @@ function SignUp() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: yupResolver(signUpSchema) });
   const forms = [
     {
       id: "fullname",
@@ -47,7 +49,7 @@ function SignUp() {
       placeholder: "*******",
     },
     {
-      id: "confirm-password",
+      id: "confirm_password",
       label: "Konfirmasi Password",
       type: InputType.PASSWORD,
       placeholder: "*******",

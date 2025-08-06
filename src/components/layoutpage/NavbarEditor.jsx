@@ -22,8 +22,8 @@ function NavbarEditor({title}) {
             </div>
 
             {/* Mobile: Logo di tengah */}
-            <div className="flex justify-center flex-1 md:hidden">
-              <h1 className="text-sm font-semibold text-white ">
+            <div className="flex flex-1 md:hidden">
+              <h1 className="text-base font-semibold text-white ">
                 {title}
               </h1>
             </div>

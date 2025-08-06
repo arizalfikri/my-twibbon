@@ -103,22 +103,28 @@ function TwiboneHomepage() {
               : "space-y-4"
           }`}
         >
-          {filteredTwibbons.map((twibon) => (
-            <CardHome
-              key={twibon.id}
-              twibon={{
-                id: twibon.id,
-                title: twibon.title || "Tanpa Judul",
-                author: "Gypem",
-                User: 0,
-                slug: twibon.slug_event_twibbon,
-                image: twibon.template_twibbon,
-                isNew: false,
-                isTrending: false,
-              }}
-              isGrid={viewMode === "grid"}
-            />
-          ))}
+          {filteredTwibbons.length === 0 ? (
+            <div className="py-12 text-lg text-center text-gray-500 col-span-full">
+                Belum ada twibbon tersedia.
+            </div>
+          ) : (
+            filteredTwibbons.map((twibon) => (
+              <CardHome
+                key={twibon.id}
+                twibon={{
+                  id: twibon.id,
+                  title: twibon.title || "Tanpa Judul",
+                  author: "Gypem",
+                  User: 0,
+                  slug: twibon.slug_event_twibbon,
+                  image: twibon.template_twibbon,
+                  isNew: false,
+                  isTrending: false,
+                }}
+                isGrid={viewMode === "grid"}
+              />
+            ))
+          )}
         </div>
 
         <div className="mt-12 text-center">

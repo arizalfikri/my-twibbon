@@ -8,6 +8,7 @@ export const InputType = {
     PASSWORD: "password",
     NUMBER: "number",
     CHECKBOX: "checkbox",
+    TEXTAREA:"textarea"
 };
 
 export const InputTheme = {
@@ -48,19 +49,30 @@ const Input = (props) => {
             name={name}
             render={({ field: { value = "", onChange, ref } }) => (
                 <>
-                    <input
-                        ref={ref}
-                        type={type}
-                        onClick={onClick}
-                        disabled={disabled}
-                        className={classProps}
-                        placeholder={placeholder}
-                        name={name}
-                        value={value}
-                        onChange={onChange}
-                    >
-                        {children}
-                    </input>
+                      {type === InputType.TEXTAREA ? (
+                        <textarea
+                            ref={ref}
+                            onClick={onClick}
+                            disabled={disabled}
+                            className={classProps}
+                            placeholder={placeholder}
+                            name={name}
+                            value={value}
+                            onChange={onChange}
+                        />
+                    ) : (
+                        <input
+                            ref={ref}
+                            type={type}
+                            onClick={onClick}
+                            disabled={disabled}
+                            className={classProps}
+                            placeholder={placeholder}
+                            name={name}
+                            value={value}
+                            onChange={onChange}
+                        />
+                    )}
                     <p className="mt-1 text-xs text-red-500">
                         {error?.[name]?.message}
                     </p>

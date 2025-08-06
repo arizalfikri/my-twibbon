@@ -1,26 +1,31 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/layoutpage/Navbar";
 import NavbarEditor from "../components/layoutpage/NavbarEditor";
 import CardEditor from "../components/cards/CardEditor";
 import useImageStore from "../helper/store/imagestore";
 import { Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ModalLogin from "../components/modal/modalLogin";
+import useTwibbonStore from "../helper/store/TwiboneUser";
+import InputWithLabel from "../components/FormControl/InputWithLabel";
+import { useForm } from "react-hook-form";
+import { usePOST } from "../services/api";
 
 function Result() {
   const navigate = useNavigate();
   const { resultImage, image } = useImageStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true); // State untuk status login
-  const [caption, setCaption] = useState('');
+  const [caption, setCaption] = useState("");
+  const { twibbonData } = useTwibbonStore();
+  const { mutateAsync, isPending } = usePOST("/event-user-twibbon");
 
-  const handleRestart = () => {
-    navigate("/");
-  };
+    const handleRestart = () => {
+      window.location.href = `/${twibbonData.slug_event_twibbon}`;
+    };
+  
 
-  // Check login status - bisa dari localStorage, context, atau API
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
 
@@ -34,22 +39,48 @@ function Result() {
     if (!isLoggedIn) {
       setShowLoginModal(true);
     } else {
-      handlePost();
+      handleSubmit(onSubmit)();
     }
   };
 
-  const handlePost = async () => {
-    try {
-      console.log('Posting to Gypem:', {
-        image: resultImage,
-        caption: caption
-      });
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-      alert('Berhasil diposting ke Gypem!');
-      setCaption(''); // Reset caption
+  const convertBlobUrlToFile = async (blobUrl, fileName) => {
+    const response = await fetch(blobUrl);
+    const blob = await response.blob();
+    return new File([blob], fileName, { type: blob.type });
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      const file = await convertBlobUrlToFile(image, "twibbon-result.png");
+
+      const response = await mutateAsync({
+        url: "/event-user-twibbon",
+        data: {
+          event_twibbon_id: twibbonData.id,
+          caption: data.caption,
+          image: file,
+        },
+      });
+      if (response.status === 201) {
+      }
     } catch (error) {
-      console.error('Post error:', error);
-      alert('Gagal memposting. Coba lagi.');
+      switch (error?.response.status) {
+        case 401:
+          openToast("toast", true, "kurang data");
+          break;
+        case 403:
+          openToast("toast", true, "Anda Harus Menjadi Kontributor.", "info");
+          break;
+        default:
+          openToast("toast", true, "Kesalahan Server");
+          break;
+      }
     }
   };
 
@@ -63,12 +94,12 @@ function Result() {
   const handleSwitchToRegister = () => {
     setShowLoginModal(false);
     // Logic untuk buka modal register atau navigate ke halaman register
-    console.log('Switch to register modal');
+    console.log("Switch to register modal");
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <NavbarEditor />
+      <NavbarEditor title={twibbonData?.title} />
       <div className="items-center justify-center gap-6 p-6 mx-auto md:grid md:grid-cols-2 max-w-7xl">
         {/* Result photo section */}
         <div className="md:col-span-1">
@@ -102,58 +133,70 @@ function Result() {
           <h2 className="mb-4 text-xl font-semibold text-center text-gray-800">
             Posting Foto ini Ke Gypem
           </h2>
-          <div className="space-y-4">
-            <textarea
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              rows="6"
-              className="w-full p-3 border border-gray-400 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-              placeholder="Tulis caption untuk foto Anda..."
-            ></textarea>
-            <button 
-              onClick={handlePostClick}
-              className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700"
-            >
-              {isLoggedIn ? 'Post ke Gypem' : 'Masuk & Post ke Gypem'}
-            </button>
-            <button
-              onClick={handleRestart}
-              className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
-            >
-              Buat Lagi
-            </button>
-          </div>
+          <form action="" onSubmit={handleSubmit(onSubmit)}>
+            <div className="space-y-4">
+              <InputWithLabel
+                control={control}
+                name="caption"
+                htmlFor="caption"
+                label="caption "
+                type="textarea"
+                placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
+                error={errors}
+              ></InputWithLabel>
+              <button
+                type="button"
+                onClick={handlePostClick}
+                className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700"
+              >
+                {isLoggedIn ? "Post ke Gypem" : "Masuk & Post ke Gypem"}
+              </button>
+              <button
+                onClick={handleRestart}
+                className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
+              >
+                Buat Lagi
+              </button>
+            </div>
+          </form>
         </div>
 
         {/* Mobile Control Panel - Positioned naturally at bottom */}
         <div className="p-4 mt-6 bg-white border border-gray-200 rounded-lg shadow-sm md:hidden">
-          <div className="mb-4">
-            <h3 className="mb-2 text-lg font-semibold text-center text-gray-800">
-              Posting Foto ini Ke Gypem
-            </h3>
-            <textarea
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              rows="3"
-              className="w-full p-3 mb-3 border border-gray-400 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-              placeholder="Tulis caption..."
-            ></textarea>
-          </div>
+          <form action="" onSubmit={handleSubmit(onSubmit)}>
+            <div className="mb-4">
+              <h3 className="mb-2 text-lg font-semibold text-center text-gray-800">
+                Posting Foto ini Ke Gypem
+              </h3>
 
-          <div className="grid w-full grid-cols-4 gap-3">
-            <button
-              onClick={handleRestart}
-              className="flex items-center justify-center col-span-2 px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
-            >
-              Buat Lagi
-            </button>
-            <button 
-              onClick={handlePostClick}
-              className="flex items-center justify-center col-span-2 gap-2 px-4 py-3 font-medium text-center text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700"
-            >
-              {isLoggedIn ? 'Post' : 'Masuk & Post'}
-            </button>
-          </div>
+              <InputWithLabel
+                className="h-96"
+                control={control}
+                name="caption"
+                htmlFor="caption"
+                label="caption "
+                type="textarea"
+                placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
+                error={errors}
+              ></InputWithLabel>
+            </div>
+
+            <div className="grid w-full grid-cols-4 gap-3">
+              <button
+                onClick={handleRestart}
+                className="flex items-center justify-center col-span-2 px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
+              >
+                Buat Lagi
+              </button>
+              <button
+                type="button"
+                onClick={handlePostClick}
+                className="flex items-center justify-center col-span-2 gap-2 px-4 py-3 font-medium text-center text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700"
+              >
+                {isLoggedIn ? "Post" : "Masuk & Post"}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
 

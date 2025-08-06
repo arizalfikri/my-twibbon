@@ -8,6 +8,8 @@ import { useForm } from "react-hook-form";
 import { usePOST } from "../services/api";
 import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { createTwiboneSchema } from "../helper/yup";
 
 function TwiboneCreatePage() {
     const [currentStep, setCurrentStep] = useState(0);
@@ -33,14 +35,7 @@ function TwiboneCreatePage() {
         formState: { errors },
         watch,
         setValue,
-    } = useForm({
-        defaultValues: {
-            title: "",
-            caption: "",
-            link: "",
-            image: null,
-        },
-        mode: "onChange",
+    } = useForm({resolver:yupResolver(createTwiboneSchema)
     });
 
     const descValue = watch("caption") || "";
@@ -115,7 +110,7 @@ function TwiboneCreatePage() {
                         <ImageUploadArea
                             name="image"
                             setValue={setValue}
-                            error={errors.image}
+                            error={errors}
                         />
                     </div>
                 );
@@ -134,7 +129,7 @@ function TwiboneCreatePage() {
                                 </>
                             }
                             placeholder="Dapat berupa angka, alfabet atau karakter spesial"
-                            error={errors?.title?.message}
+                            error={errors}
                         />
 
                         <InputWithLabel
@@ -144,13 +139,7 @@ function TwiboneCreatePage() {
                             label="caption "
                             type="textarea"
                             placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
-                            maxLength={250}
-                            extraInfo={
-                                <div className="text-xs text-right text-gray-500">
-                                    {descValue.length}/250
-                                </div>
-                            }
-                            error={errors?.description?.message}
+                            error={errors}
                         />
 
                         <InputWithLabel
@@ -160,7 +149,7 @@ function TwiboneCreatePage() {
                             label="Link Kampanye"
                             prefix="twibbo.nz/"
                             placeholder="link-kampanye"
-                            error={errors?.linkKampanye?.message}
+                            error={errors}
                         />
                     </div>
                 );

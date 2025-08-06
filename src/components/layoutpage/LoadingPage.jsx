@@ -1,11 +1,15 @@
 import React from "react";
+import { SyncLoader } from "react-spinners";
 import HashLoader from "react-spinners/HashLoader";
 
 const LoadingPage = () => {
   return (
     <div style={styles.loaderContainer}>
-      <HashLoader color="#2C6399" size={90} />
-    </div>
+<SyncLoader
+  color="#d433c0"
+  margin={3}
+  size={15}
+/>    </div>
   );
 };
 

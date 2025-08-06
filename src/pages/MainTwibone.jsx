@@ -12,6 +12,7 @@ import useImageStore from "../helper/store/imagestore";
 import DetailResult from "../components/modal/DetailResult";
 import { useGET } from "../services/api";
 import LoadingPage from "../components/layoutpage/LoadingPage";
+import useTwibbonStore from "../helper/store/TwiboneUser";
 
 // Dummy data untuk kartu hasil
 const dummyCards = [
@@ -58,20 +59,35 @@ function MainTwibone() {
   const { image, setImage, setFrameImage, frameImage } = useImageStore();
 
   const navigate = useNavigate();
-  const currentURL = window.location.href;  
-  const { slug } = useParams(); 
+  const currentURL = window.location.href;
+  const { slug } = useParams();
   const {
     data: twibbon,
     isLoading,
     isError,
     error,
+    refetch,
   } = useGET(`twibbon/${slug}`);
-  
-  const detail = twibbon ;
+
+
+  useEffect(() => {
+    refetch();
+  }, []);
+
+  const detail = twibbon;
+  const setTwibbonData = useTwibbonStore((state) => state.setTwibbonData);
+
+  useEffect(() => {
+    if (twibbon?.data) {
+      setTwibbonData(twibbon.data); // simpan ke store global Zustand
+    }
+  }, [twibbon, setTwibbonData]);
+
   // State untuk kartu
   const [cards, setCards] = useState(dummyCards);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+
   useEffect(() => {
     if (detail?.data?.template_twibbon) {
       const imageURL = `https://api-twibbon-dev.digiduindo.com${detail?.data?.template_twibbon}`;
@@ -162,13 +178,11 @@ function MainTwibone() {
               <button
                 className="flex gap-5 p-2 transition-colors border border-gray-500 rounded-full hover:bg-gray-100"
                 onClick={() =>
-                  navigator.clipboard.writeText(
-                    detail?.data?.link 
-                  )
+                  navigator.clipboard.writeText(detail?.data?.link)
                 }
               >
                 <div className="text-sm text-gray-400 truncate max-w-[180px]">
-                  {detail?.data?.link }
+                  {detail?.data?.link}
                 </div>
                 <Share2 className="w-5 h-5 text-cyan-400" />
               </button>
