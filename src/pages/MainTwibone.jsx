@@ -151,7 +151,7 @@ function MainTwibone() {
             {/* Link (clickable only on input area) */}
             <div className="flex overflow-hidden bg-gray-100 border border-gray-300 rounded-lg">
               <span className="px-3 py-2 text-sm text-gray-500 bg-gray-200 select-none">
-                twibbongypem.com/
+                twibbo.nz/
               </span>
               <input
                 type="text"
