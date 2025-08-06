@@ -54,18 +54,8 @@ function DetailResult({ isOpen, onClose, cardData }) {
     }
   };
 
-  const defaultCardData = {
-    id: 1,
-    image: "/api/placeholder/400/500",
-    title: "MAULA DAFFA AMRIZAL (MAULA DAFFA 11B)",
-    description:
-      "IMPACT 2025 ON DUTY Hello Saya (Maula Daffa Amrizal) dari (SMA AL IZZAH BATU) sangat senang bisa berpartisipasi dalam acara IMPACT FIKKIA Olympiade and Research Competition 2025. Ini adalah pengalaman yang luar biasa bagi saya untuk dapat berkompetisi dengan peserta-peserta terbaik dari seluruh Indonesia. Semoga event ini dapat memberikan manfaat yang besar bagi perkembangan ilmu pengetahuan dan teknologi di Indonesia. Mari kita dukung bersama-sama kegiatan positif seperti ini!",
-    status: "Selengkapnya",
-    creator: "impactfikkiajamaur2025",
-    eventTitle: "IMPACT FIKKIA Olympiade and Research Competition 2025",
-  };
 
-  const data = cardData || defaultCardData;
+  const data = cardData ;
 
   // Mobile full screen version
   const MobileVersion = () => (
@@ -103,7 +93,7 @@ function DetailResult({ isOpen, onClose, cardData }) {
             <div className="text-sm text-gray-600">
               {showFullDescription
                 ? data.description
-                : data.description.slice(0, 150) + "..."}
+                : data.description.slice(0, 150) + ""}
             </div>
             {data.description.length > 150 && (
               <button

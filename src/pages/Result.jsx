@@ -9,6 +9,9 @@ import useTwibbonStore from "../helper/store/TwiboneUser";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
 import { useForm } from "react-hook-form";
 import { usePOST } from "../services/api";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { setCaptionSchema } from "../helper/yup";
+import { useModalStore } from "../helper/store/modal.store";
 
 function Result() {
   const navigate = useNavigate();
@@ -18,16 +21,19 @@ function Result() {
   const [caption, setCaption] = useState("");
   const { twibbonData } = useTwibbonStore();
   const { mutateAsync, isPending } = usePOST("/event-user-twibbon");
+  const { openToast } = useModalStore();
 
-    const handleRestart = () => {
-      window.location.href = `/${twibbonData.slug_event_twibbon}`;
-    };
-  
+  const handleRestart = () => {
+    window.location.href = `/${twibbonData.slug_event_twibbon}`;
+  };
 
   useEffect(() => {
+  if (!showLoginModal) {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
-  }, []);
+  }
+}, [showLoginModal]);
+
 
   useEffect(() => {
     if (!image) {
@@ -47,7 +53,13 @@ function Result() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+    setValue,
+  } = useForm({
+    defaultValues: {
+      caption: twibbonData?.caption || "",
+    },
+    resolver: yupResolver(setCaptionSchema),
+  });
 
   const convertBlobUrlToFile = async (blobUrl, fileName) => {
     const response = await fetch(blobUrl);
@@ -68,6 +80,7 @@ function Result() {
         },
       });
       if (response.status === 201) {
+        navigate("/");
       }
     } catch (error) {
       switch (error?.response.status) {
@@ -75,7 +88,7 @@ function Result() {
           openToast("toast", true, "kurang data");
           break;
         case 403:
-          openToast("toast", true, "Anda Harus Menjadi Kontributor.", "info");
+          openToast("toast", true, "Anda Harus Menjadi Peserta.", "info");
           break;
         default:
           openToast("toast", true, "Kesalahan Server");
@@ -87,7 +100,6 @@ function Result() {
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
     setShowLoginModal(false);
-    // Langsung post setelah login sukses
     handlePost();
   };
 

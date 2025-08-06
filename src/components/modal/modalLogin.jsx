@@ -19,7 +19,6 @@ export default function ModalLogin({ isOpen, onClose }) {
   const { setToken, setEmail } = useGlobalStore();
   const navigate = useNavigate();
 
-  const coordinatorLogin = usePOST("/auth/login");
   const participantLogin = usePOST("/auth/login-participant");
 
   const {
@@ -29,35 +28,28 @@ export default function ModalLogin({ isOpen, onClose }) {
   } = useForm();
 
   const onSubmit = async (data) => {
-    if (!selectedRole) {
-      openToast("toast", true, "Silakan pilih peran terlebih dahulu");
-      return;
-    }
-
     setIsLoading(true);
 
     try {
       let response;
 
-      if (selectedRole === "coordinator") {
-        response = await coordinatorLogin.mutateAsync({
-          url: "/auth/login",
-          data: { email: data.email, password: data.password },
-        });
-      } else if (selectedRole === "participant") {
         response = await participantLogin.mutateAsync({
           url: "/auth/login-participant",
           data: { email: data.email, password: data.password },
         });
-      }
+      
 
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("email", response.data.email);
         setToken(response.data.token);
         setEmail(response.data.email);
+        openToast("success", true, "Login Behasil",);
+
         onClose();
       }
+      console.log("Login response:", response);
+
     } catch (error) {
       const status = error.response?.status;
       if (status === 401) {
@@ -74,96 +66,156 @@ export default function ModalLogin({ isOpen, onClose }) {
 
   return (
     <ModalAlert onClose={onClose}>
-      <div className="relative w-full max-w-md p-6 mx-auto">
-        {/* Close Button */}
+      <div className="relative w-full max-w-md mx-auto overflow-hidden bg-white rounded-md shadow-2xl md:w-96">
+        {/* Header with purple gradient */}
+        <div className="relative px-8 py-6 bg-gradient-to-r from-purple-600 to-purple-700">
         <button
           onClick={onClose}
-          className="absolute p-1 text-gray-500 transition-colors top-4 right-4 hover:text-gray-700"
+            className="absolute p-1 text-white transition-colors rounded-full top-4 right-4 hover:text-purple-200 hover:bg-white/10"
         >
           <X size={20} />
         </button>
 
-        <h2 className="mb-6 text-2xl font-bold text-center text-gray-800">
-          Masuk ke Gypem
-        </h2>
-
-        {/* Role Selection */}
-        <div className="flex justify-center gap-4 mb-6">
-          <button
-            type="button"
-            onClick={() => setSelectedRole("coordinator")}
-            className={`flex items-center px-4 py-2 border rounded-lg transition ${
-              selectedRole === "coordinator"
-                ? "bg-purple-50 border-purple-600 text-purple-700"
-                : "border-gray-300 text-gray-600 hover:border-purple-400"
-            }`}
-          >
-            <UserCheck size={20} className="mr-2" />
-            Koordinator
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedRole("participant")}
-            className={`flex items-center px-4 py-2 border rounded-lg transition ${
-              selectedRole === "participant"
-                ? "bg-purple-50 border-purple-600 text-purple-700"
-                : "border-gray-300 text-gray-600 hover:border-purple-400"
-            }`}
-          >
-            <Users size={20} className="mr-2" />
-            Peserta
-          </button>
+          <div className="text-center text-white">
+            <h2 className="mb-1 text-2xl font-bold">Welcome Back!</h2>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Form Content */}
+        <div className="px-8 py-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Email Input */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Email address
+              </label>
+              <div className="relative">
           <InputWithLabel
             htmlFor="email"
-            label={<span className="capitalize">Email</span>}
             type={InputType.TEXT}
-            placeholder="Masukkan email"
+                  placeholder="name@example.com"
             name="email"
             id="email"
-            style="rounded-xl"
+                  style="rounded-lg"
             control={control}
             autoComplete="email"
-            disabled={!selectedRole}
+                />
+                <Mail
+                  size={18}
+                  className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
           />
+              </div>
+            </div>
 
           {/* Password Input */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
           <div className="relative">
             <InputPassword
               htmlFor="password"
-              label="password"
               type={InputType.PASSWORD}
-              placeholder="******"
+                  placeholder="Enter your password"
               name="password"
               id="password"
               control={control}
               error={errors}
-              disabled={!selectedRole}
             />
           </div>
+            </div>
 
-          {/* Submit Button */}
+            {/* Remember me and Forgot password */}
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                />
+                <span className="text-gray-600">Remember me</span>
+              </label>
+              <button
+                type="button"
+                className="font-medium text-purple-600 hover:text-purple-700"
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            {/* Sign In Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 rounded-lg text-white font-medium transition ${
+              className={`w-full py-3 rounded-lg text-white font-semibold transition-all duration-200 ${
               isLoading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-purple-600 hover:bg-purple-700"
+                  : "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             }`}
           >
-            {isLoading
-              ? "Loading..."
-              : selectedRole
-              ? `Masuk sebagai ${
-                  selectedRole === "coordinator" ? "Koordinator" : "Peserta"
-                }`
-              : "Masuk"}
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-5 h-5 mr-3 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
+                  Signing in...
+                </div>
+              ) : (
+                "Sign In"
+              )}
           </button>
         </form>
+
+          {/* Social Login Divider */}
+          <div className="mt-6 mb-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 text-gray-500 bg-white">
+                  or continue with
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Login Buttons */}
+          <div className="grid gap-3 mb-6">
+            <button
+              type="button"
+              className="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              Google
+            </button>
+          </div>
+
+          {/* Register Link */}
+          <div className="text-sm text-center text-gray-600">
+            Don't have an account?{" "}
+            <button
+              type="button"
+              className="font-medium text-purple-600 hover:text-purple-700"
+            >
+              Register now
+            </button>
+          </div>
+        </div>
       </div>
     </ModalAlert>
   );

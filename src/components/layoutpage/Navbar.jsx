@@ -13,13 +13,23 @@ import LogoGypem from "../../assets/images/gypem_logo.png";
 import { useNavigate, Link } from "react-router-dom";
 import { Menu as HeadlessMenu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import { useGlobalStore } from "../../helper/store/global.store";
+import ModalLogout from "../modal/ModalLogout";
 
 function Navbar() {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // Add logout modal state
   const [searchQuery, setSearchQuery] = useState("");
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const { email, token, setEmail, setToken } = useGlobalStore();
+
+  // Handle logout button click - show modal instead of direct logout
+  const handleLogoutClick = () => {
+    setIsLogoutModalOpen(true);
+    setIsMobileMenuOpen(false); // Close mobile menu if open
+    setIsSidebarOpen(false); // Close sidebar if open
+  };
 
   return (
     <>
@@ -127,17 +137,12 @@ function Navbar() {
                         <p className="text-sm font-semibold text-[#4C0D68]">
                           User
                         </p>
-                        <p className="text-xs text-gray-600">arbi.avicena2020@email.com</p>
+                        <p className="text-xs text-gray-600">{email}</p>
                       </div>
                     </div>
 
                     <button
-                      onClick={() => {
-                        localStorage.removeItem("token");
-                        setToken(null);
-                        setIsMobileMenuOpen(false);
-                        navigate("/");
-                      }}
+                      onClick={handleLogoutClick} // Use handleLogoutClick instead of direct logout
                       className="w-full px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
                     >
                       Logout
@@ -199,7 +204,7 @@ function Navbar() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[#4C0D68]">User</p>
-                  <p className="text-xs text-gray-600">user@email.com</p>
+                  <p className="text-xs text-gray-600">{email}</p>
                 </div>
               </div>
             )}
@@ -238,12 +243,7 @@ function Navbar() {
           {/* Logout Button in Sidebar Footer */}
           {token && (
             <button
-              onClick={() => {
-                localStorage.removeItem("token");
-                setToken(null);
-                setIsSidebarOpen(false);
-                navigate("/");
-              }}
+              onClick={handleLogoutClick} // Use handleLogoutClick instead of direct logout
               className="w-full px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
             >
               Logout
@@ -251,6 +251,12 @@ function Navbar() {
           )}
         </div>
       </div>
+
+      {/* ModalLogout Component */}
+      <ModalLogout
+        isOpen={isLogoutModalOpen} 
+        onClose={() => setIsLogoutModalOpen(false)} 
+      />
     </>
   );
 }

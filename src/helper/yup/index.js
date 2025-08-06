@@ -32,6 +32,11 @@ export const createTwiboneSchema = yup.object({
         .required("Link harus diisi"),
 });
 
+export const setCaptionSchema = yup.object({
+    caption: yup.string().required("caption harus diisi"),
+  
+});
+
 export const setPasswordSchema = yup.object({
     password: yup.string().required("password harus diisi"),
     password_confirmation: yup

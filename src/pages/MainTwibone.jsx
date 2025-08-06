@@ -1,10 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/layoutpage/Navbar";
 import { User, Share2, Bell } from "lucide-react";
 import CardEditor from "../components/cards/CardEditor";
 import CardResult from "../components/cards/CardResult";
-import frameImage1 from "../assets/images/frame2.png";
-
 import Bg1 from "../assets/images/background_hero.png";
 import Footer from "../components/layoutpage/Footer";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,87 +12,44 @@ import { useGET } from "../services/api";
 import LoadingPage from "../components/layoutpage/LoadingPage";
 import useTwibbonStore from "../helper/store/TwiboneUser";
 
-// Dummy data untuk kartu hasil
-const dummyCards = [
-  {
-    id: 1,
-    image: frameImage1,
-    description:
-      "Twibbon IMPACT FIKKIA - Design 1 yang sangat menarik jadi jangan lupa melakukan like subscribe dalll jadi aku juga #gypemjuara #gypemjay #mantap #gg #wibu #saya jadai saya sangat suka makan bakso sapi ayam sangat enak gaji we wok de tok sapi sigma skibidi sjadshkajhsaj xjhchkahkcdjsnq saaaskdjkladlkajdlskahjkxcnjhkjnghaskjdjasdghkjasdvbds msdkjshadjkhasdkjasdnmnbs dsakajhsdakjasdkcasamnasdkjhsdakjhsdakjkn",
-    creator: "John Doe",
-    createdAt: "2024-07-20",
-  },
-  {
-    id: 2,
-    image: frameImage1,
-    description:
-      "Twibbon IMPACT FIKKIA - Design 1 yang sangat menarik jadi jangan lupa melakukan like subscribe dalll jadi aku juga #gypemjuara #gypemjay #mantap #gg #wibu #saya jadai saya sangat suka makan bakso sapi ayam sangat enak gaji we wok de tok sapi sigma skibidi sjadshkajhsaj xjhchkahkcdjsnq saaaskdjkladlkajdlskahjkxcnjhkjnghaskjdjasdghkjasdvbds msdkjshadjkhasdkjasdnmnbs dsakajhsdakjasdkcasamnasdkjhsdakjhsdakjkn",
-    creator: "Jane Smith",
-    createdAt: "2024-07-21",
-  },
-  {
-    id: 3,
-    image: frameImage1,
-    description: "Twibbon IMPACT FIKKIA - Design 3",
-    creator: "Bob Johnson",
-    createdAt: "2024-07-22",
-  },
-  {
-    id: 4,
-    image: frameImage1,
-    description: "Twibbon IMPACT FIKKIA - Design 4",
-    creator: "Alice Wilson",
-    createdAt: "2024-07-23",
-  },
-  {
-    id: 5,
-    image: frameImage1,
-    description: "Twibbon IMPACT FIKKIA - Design 5",
-    creator: "Charlie Brown",
-    createdAt: "2024-07-24",
-  },
-];
-
 function MainTwibone() {
   const { image, setImage, setFrameImage, frameImage } = useImageStore();
-
   const navigate = useNavigate();
-  const currentURL = window.location.href;
   const { slug } = useParams();
-  const {
-    data: twibbon,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useGET(`twibbon/${slug}`);
+  const { data: twibbon, isLoading, refetch } = useGET(`twibbon/${slug}`);
 
-
-  useEffect(() => {
-    refetch();
-  }, []);
-
-  const detail = twibbon;
-  const setTwibbonData = useTwibbonStore((state) => state.setTwibbonData);
-
-  useEffect(() => {
-    if (twibbon?.data) {
-      setTwibbonData(twibbon.data); // simpan ke store global Zustand
-    }
-  }, [twibbon, setTwibbonData]);
-
-  // State untuk kartu
-  const [cards, setCards] = useState(dummyCards);
+  const [cards, setCards] = useState([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
 
   useEffect(() => {
-    if (detail?.data?.template_twibbon) {
-      const imageURL = `https://api-twibbon-dev.digiduindo.com${detail?.data?.template_twibbon}`;
-      console.log("Full imageURL:", imageURL);
+    refetch();
+  }, [slug]);
+
+  useEffect(() => {
+    if (twibbon?.data) {
+      useTwibbonStore.getState().setTwibbonData(twibbon.data);
+      // populate cards
+      const baseURL = "https://api-twibbon-dev.digiduindo.com";
+      const userCards = twibbon.data.user_twibbons.map((utw) => ({
+        id: utw.id,
+        image: `${baseURL}${utw.image_url}`,
+        description: utw.caption || "",
+        title: twibbon.data.title,
+        status: "",
+        eventTitle: twibbon.data.title,
+        creator: utw.user_id,
+      }));
+      setCards(userCards);
+    }
+  }, [twibbon]);
+
+  useEffect(() => {
+    if (twibbon?.data?.template_twibbon) {
+      const imageURL = `https://api-twibbon-dev.digiduindo.com${twibbon.data.template_twibbon}`;
       setFrameImage(imageURL);
     }
-  }, [detail, setFrameImage]);
+  }, [twibbon]);
 
   useState(() => {
     if (image) {
@@ -102,7 +57,6 @@ function MainTwibone() {
     }
   }, [image, navigate]);
 
-  // Handle card click
   const handleCardClick = (cardId) => {
     const card = cards.find((c) => c.id === cardId);
     if (card) {
@@ -110,117 +64,87 @@ function MainTwibone() {
       setShowDetailModal(true);
     }
   };
-  if (isLoading) {
-    return <LoadingPage />;
-  }
-  // Render 9 cards total (data + placeholder abu-abu)
+
+  if (isLoading) return <LoadingPage />;
+
   const renderCards = () => {
-    const allCards = [];
-
-    // Ambil maksimal 9 data teratas
+    const slots = [];
     const displayCards = cards.slice(0, 9);
-
-    // Render kartu dengan data
     displayCards.forEach((card) => {
-      allCards.push(
+      slots.push(
         <div key={card.id} className="w-full aspect-square">
           <CardResult
             src={card.image}
-            description={card.description}
-            creator={card.creator}
-            createdAt={card.createdAt}
             onClick={() => handleCardClick(card.id)}
           />
         </div>
       );
     });
-
-    // Jika data kurang dari 9, isi sisanya dengan kotak abu-abu
-    const remainingSlots = 9 - displayCards.length;
-    for (let i = 0; i < remainingSlots; i++) {
-      allCards.push(
+    for (let i = displayCards.length; i < 9; i++) {
+      slots.push(
         <div
           key={`empty-${i}`}
-          className="w-full bg-gray-200 rounded-lg shadow-md aspect-square"
+          className="w-full bg-gray-200 rounded-lg aspect-square"
         />
       );
     }
-
-    return allCards;
+    return slots;
   };
 
   return (
     <div>
       <Navbar />
-      <header className="px-4 py-3 m-5 text-black bg-white">
+      <header className="px-4 py-3 m-5 bg-white">
         <div className="grid items-center grid-cols-1 lg:grid-cols-3">
-          {/* Left Side - Title */}
           <div className="flex flex-col min-w-0">
             <h1 className="text-lg font-medium capitalize truncate">
-              {detail?.data?.title ?? "Belum Ada Title"}
+              {twibbon?.data?.title || "Belum Ada Title"}
             </h1>
-
-            <p className="text-sm text-gray-400">Impact Fikkia</p>
+            <p className="text-sm text-gray-400">{twibbon?.data?.contributor?.fullname}</p>
           </div>
-
-          {/* Center - User Info */}
-          <div className="flex items-center justify-start mt-2 space-x-2 lg:justify-center lg:mt-0">
+          <div className="flex items-center justify-start mt-2 space-x-2 lg:justify-center">
             <User className="w-5 h-5" />
             <div>
               <span className="text-sm">Pendukung</span>
-              <div className="text-xs text-gray-400">113</div>
+              <div className="text-xs text-gray-400">{cards.length}</div>
             </div>
           </div>
-
-          {/* Right Side - URL and Actions */}
           <div className="items-center justify-end hidden space-x-4 lg:flex">
-            <div className="flex items-center space-x-2">
-              <button
-                className="flex gap-5 p-2 transition-colors border border-gray-500 rounded-full hover:bg-gray-100"
-                onClick={() =>
-                  navigator.clipboard.writeText(detail?.data?.link)
-                }
-              >
-                <div className="text-sm text-gray-400 truncate max-w-[180px]">
-                  {detail?.data?.link}
-                </div>
-                <Share2 className="w-5 h-5 text-cyan-400" />
-              </button>
-
-              <button className="p-2 transition-colors rounded-full hover:bg-gray-800">
-                <Bell className="w-5 h-5 text-gray-400" />
-              </button>
-            </div>
+            <button
+              className="flex items-center gap-2 p-2 border rounded-full"
+              onClick={() => navigator.clipboard.writeText(twibbon.data.link)}
+            >
+              <span className="text-sm truncate max-w-[180px] text-gray-400">
+                {twibbon.data.link}
+              </span>
+              <Share2 className="w-5 h-5 text-cyan-400" />
+            </button>
+            <button className="p-2 rounded-full hover:bg-gray-100">
+              <Bell className="w-5 h-5 text-gray-400" />
+            </button>
           </div>
         </div>
       </header>
 
-      <div className="grid h-screen grid-cols-1 lg:grid-cols-2">
-        {/* Kiri: Twibbon Editor */}
+      <div className="grid h-full grid-cols-1 lg:grid-cols-2">
         <div
-          className="flex items-center justify-center p-4 "
+          className="flex items-center justify-center p-4"
           style={{ backgroundImage: `url(${Bg1})` }}
         >
           <CardEditor frameImage={frameImage} />
         </div>
 
-        {/* Kanan: Daftar hasil */}
-        <div className="h-full p-4 overflow-y-auto bg-white border-gray-300">
-          {/* Info jumlah hasil */}{" "}
-          <div className="grid h-full grid-cols-3 gap-4">{renderCards()}</div>
+        <div className="justify-center h-full p-4 overflow-y-auto bg-white ">
+          <div className="grid grid-cols-3 gap-4 h-fit">{renderCards()}</div>
         </div>
       </div>
 
-      {/* Detail Modal */}
       <DetailResult
         isOpen={showDetailModal}
         onClose={() => setShowDetailModal(false)}
         cardData={selectedCard}
       />
 
-      <div className="flex px-3 py-4">
-        <h1 className="my-4 text-xl font-medium sm:text-lg "></h1>
-      </div>
       <Footer />
     </div>
   );
