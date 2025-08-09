@@ -12,11 +12,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { createTwiboneSchema } from "../helper/yup";
 
 function TwiboneCreatePage() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isDesktop, setIsDesktop] = useState(false);
-  const { mutateAsync, isPending } = usePOST("/event-twibbon");
-  const { openToast } = useModalStore();
-  const { token } = useGlobalStore();
+    const [currentStep, setCurrentStep] = useState(0);
+    const [isDesktop, setIsDesktop] = useState(false);
+    const { mutateAsync, isPending } = usePOST("/event-twibbon");
+    const { openToast } = useModalStore();
+    const { token } = useGlobalStore();
 
   // Media Query: Deteksi desktop
   useEffect(() => {
@@ -66,33 +66,40 @@ function TwiboneCreatePage() {
     if (currentStep > 0) setCurrentStep((s) => s - 1);
   };
 
-  const onSubmit = async (data) => {
-    try {
-      let response;
-      response = await mutateAsync({
-        url: "/event-twibbon",
-        data: data,
-      });
-      if (response.status === 201) {
-        navigate("/");
-      }
-    } catch (error) {
-      switch (error?.response.status) {
-        case 401:
-          openToast("toast", true, "kurang data");
-          break;
-        case 403:
-          openToast("toast", true, "Anda Harus Menjadi Kontributor.", "info");
-          break;
-        default:
-          openToast("toast", true, "Kesalahan Server");
-          break;
-      }
-    }
-  };
-  const renderStepContent = () => {
-    const adjustedStep = isDesktop ? currentStep + 1 : currentStep;
-    const key = isDesktop ? "desktop" : "mobile";
+    const onSubmit = async (data) => {
+        try {
+            const response = await mutateAsync({
+                url: "/event-twibbon",
+                data: data,
+            });
+            if (response.status === 201) {
+                navigate("/");
+            }
+        } catch (error) {
+            switch (error?.response.status) {
+                case 401:
+                    openToast("toast", true, "kurang data");
+                    break;
+                case 400:
+                    openToast("toast", true, error?.response.message);
+                    break;
+                case 403:
+                    openToast(
+                        "toast",
+                        true,
+                        "Anda Harus Menjadi Kontributor.",
+                        "info"
+                    );
+                    break;
+                default:
+                    openToast("toast", true, "Kesalahan Server");
+                    break;
+            }
+        }
+    };
+    const renderStepContent = () => {
+        const adjustedStep = isDesktop ? currentStep + 1 : currentStep;
+        const key = isDesktop ? "desktop" : "mobile";
 
     switch (adjustedStep) {
       case 0: // mobile only
