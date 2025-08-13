@@ -47,8 +47,7 @@ InputWithLabel.propTypes = {
   id: PropTypes.string,
   control: PropTypes.object,
   error: PropTypes.object,
-    disabled: PropTypes.object,
-
+  disabled: PropTypes.object,
 };
 
 export default InputWithLabel;

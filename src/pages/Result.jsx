@@ -28,12 +28,11 @@ function Result() {
   };
 
   useEffect(() => {
-  if (!showLoginModal) {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  }
-}, [showLoginModal]);
-
+    if (!showLoginModal) {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    }
+  }, [showLoginModal]);
 
   useEffect(() => {
     if (!image) {
@@ -89,6 +88,7 @@ function Result() {
           break;
         case 403:
           openToast("toast", true, "Anda Harus Menjadi Peserta.", "info");
+          setShowLoginModal(true);
           break;
         default:
           openToast("toast", true, "Kesalahan Server");
@@ -190,6 +190,7 @@ function Result() {
                 type="textarea"
                 placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
                 error={errors}
+                maxLength={500}
               ></InputWithLabel>
             </div>
 

@@ -20,7 +20,10 @@ export const forgotPasswordSchema = yup.object({
 });
 export const createTwiboneSchema = yup.object({
     title: yup.string().required("Judul harus diisi"),
-    caption: yup.string().required("Caption harus diisi"),
+    caption: yup
+        .string()
+        .required("Caption harus diisi")
+        .max(500, "Caption maksimal 500 karakter"),
     image: yup
         .mixed()
         .required("Gambar harus diunggah")
@@ -33,8 +36,9 @@ export const createTwiboneSchema = yup.object({
 });
 
 export const setCaptionSchema = yup.object({
-    caption: yup.string().required("caption harus diisi"),
-  
+    caption: yup.string().required("caption harus diisi")
+        .max(500, "Caption maksimal 500 karakter"),
+
 });
 
 export const setPasswordSchema = yup.object({

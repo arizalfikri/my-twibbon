@@ -10,14 +10,18 @@ import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createTwiboneSchema } from "../helper/yup";
+import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 function TwiboneCreatePage() {
-    const [currentStep, setCurrentStep] = useState(0);
-    const [isDesktop, setIsDesktop] = useState(false);
-    const { mutateAsync, isPending } = usePOST("/event-twibbon");
-    const { openToast } = useModalStore();
-    const { token } = useGlobalStore();
+  const queryClient = useQueryClient();
 
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const { mutateAsync, isPending } = usePOST("/event-twibbon");
+  const { openToast } = useModalStore();
+  const { token } = useGlobalStore();
+  const navigate = useNavigate();
   // Media Query: Deteksi desktop
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
@@ -66,40 +70,42 @@ function TwiboneCreatePage() {
     if (currentStep > 0) setCurrentStep((s) => s - 1);
   };
 
-    const onSubmit = async (data) => {
-        try {
-            const response = await mutateAsync({
-                url: "/event-twibbon",
-                data: data,
-            });
-            if (response.status === 201) {
-                navigate("/");
-            }
-        } catch (error) {
-            switch (error?.response.status) {
-                case 401:
-                    openToast("toast", true, "kurang data");
-                    break;
-                case 400:
-                    openToast("toast", true, error?.response.message);
-                    break;
-                case 403:
-                    openToast(
-                        "toast",
-                        true,
-                        "Anda Harus Menjadi Kontributor.",
-                        "info"
-                    );
-                    break;
-                default:
-                    openToast("toast", true, "Kesalahan Server");
-                    break;
-            }
-        }
-    };
-    const renderStepContent = () => {
-        const adjustedStep = isDesktop ? currentStep + 1 : currentStep;
-        const key = isDesktop ? "desktop" : "mobile";
+  const onSubmit = async (data) => {
+    try {
+      const response = await mutateAsync({
+        url: "/event-twibbon",
+        data: data,
+      });
+      if (response.status === 201) {
+        queryClient.setQueryData(["twibbons"], (oldData) => {
+          if (!oldData) return { data: [response.data] };
+          return {
+            ...oldData,
+            data: [response.data, ...(oldData.data || [])],
+          };
+        });
+        navigate("/");
+      }
+    } catch (error) {
+      switch (error?.response.status) {
+        case 401:
+          openToast("toast", true, "kurang data");
+          break;
+        case 400:
+          openToast("toast", true, error?.response.message);
+          break;
+        case 403:
+          openToast("toast", true, "Anda Harus Menjadi Kontributor.", "info");
+          break;
+        default:
+          openToast("toast", true, "Kesalahan Server");
+          break;
+      }
+    }
+  };
+  const renderStepContent = () => {
+    const adjustedStep = isDesktop ? currentStep + 1 : currentStep;
+    const key = isDesktop ? "desktop" : "mobile";
 
     switch (adjustedStep) {
       case 0: // mobile only
@@ -136,8 +142,8 @@ function TwiboneCreatePage() {
               type="textarea"
               placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
               error={errors}
-                className="h-50"
-
+              className="h-50"
+              maxLength={500}
             />
 
             <InputWithLabel
