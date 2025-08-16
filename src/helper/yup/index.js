@@ -32,7 +32,9 @@ export const createTwiboneSchema = yup.object({
         }),
     link: yup
         .string()
-        .required("Link harus diisi"),
+        .required("Link harus diisi")
+        .matches(/^\S*$/, "Link tidak boleh mengandung spasi"),
+
 });
 
 export const setCaptionSchema = yup.object({

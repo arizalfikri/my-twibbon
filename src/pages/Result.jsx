@@ -115,12 +115,12 @@ function Result() {
       <div className="items-center justify-center gap-6 p-6 mx-auto md:grid md:grid-cols-2 max-w-7xl">
         {/* Result photo section */}
         <div className="md:col-span-1">
-          <div className="relative w-full max-w-xl mx-auto">
-            <div className="relative w-full">
+          <div className="relative max-w-xl mx-auto w-fit">
+            <div className="relative w-fit">
               <img
                 src={resultImage}
                 alt="Hasil Twibbon"
-                className="object-contain w-full h-auto rounded-lg shadow"
+                className="object-contain h-auto rounded-lg shadow w-fit"
               />
             </div>
           </div>

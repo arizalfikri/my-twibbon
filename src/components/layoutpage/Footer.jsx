@@ -21,10 +21,9 @@ function Footer() {
                     <div>
                         <h5 className="mb-3 font-semibold">Navigasi</h5>
                         <ul className="space-y-2">
-                            <li><a href="#" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Beranda</a></li>
-                            <li><a href="#" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Tentang</a></li>
-                            <li><a href="#" className="text-xs font-normal transition-all duration-200 hover:font-semibold">FAQ</a></li>
-                            <li><a href="#" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Kontak</a></li>
+                            <li><a href="/" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Beranda</a></li>
+                            <li><a href="/create" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Create Twibone</a></li>
+                          
                         </ul>
                     </div>
 
@@ -32,10 +31,9 @@ function Footer() {
                     <div>
                         <h5 className="mb-3 font-semibold">Lainnya</h5>
                         <ul className="space-y-2">
-                            <li><a href="#" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Event</a></li>
-                            <li><a href="#" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Syarat & Ketentuan</a></li>
-                            <li><a href="#" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Kebijakan Privasi</a></li>
-                            <li><a href="#" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Bantuan</a></li>
+                            <li><a href="/SignIn" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Login</a></li>
+                            <li><a href="/SignUp" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Daftar</a></li>
+                          
                         </ul>
                     </div>
                     
