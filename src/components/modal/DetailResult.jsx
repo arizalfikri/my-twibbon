@@ -3,10 +3,25 @@ import ModalAlert from "../../layout/ModalAlert";
 import { X, MessageCircle, Send, ArrowLeft } from "lucide-react";
 import { useGET, usePOST } from "../../services/api";
 import { useForm } from "react-hook-form";
+import ModalLogin from "./modalLogin";
 
 function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [komentars, setKomentars] = useState([]);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 1024 : true
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // API calls - only make requests when we have id_user_twibbons
   const {
@@ -19,16 +34,24 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     `twibbon/user/${id_user_twibbons}/comments`
   );
 
-  // Helper function to format time
+  // Helper function to format time - Fixed negative time issue
   const formatTime = (dateString) => {
     const now = new Date();
     const commentDate = new Date(dateString);
     const diffInMs = now - commentDate;
+
+    // Handle negative differences (future dates or invalid dates)
+    if (diffInMs < 0) {
+      return "baru saja";
+    }
+
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-    if (diffInMinutes < 60) {
+    if (diffInMinutes === 0) {
+      return "baru saja";
+    } else if (diffInMinutes < 60) {
       return `${diffInMinutes} menit yang lalu`;
     } else if (diffInHours < 24) {
       return `${diffInHours} jam yang lalu`;
@@ -59,7 +82,6 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
       }));
       setKomentars(transformedComments);
     } else {
-      // If no data or no API endpoint, show empty state
       setKomentars([]);
     }
   }, [KomentarData, id_user_twibbons]);
@@ -73,15 +95,24 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
 
   if (!isOpen || !cardData) return null;
 
+  // Check if user is authenticated
+  const isAuthenticated = () => {
+    const token = localStorage.getItem("token");
+
+    return !!token;
+  };
+
+  // Fixed modal login handling with pre-validation
   const onSubmit = async (data) => {
-    console.log("Form submitted:", data); // Debug log
-    if (!data.comment?.trim()) {
-      console.log("Empty comment, returning"); // Debug log
+    if (!data.comment?.trim()) return;
+
+    // Check authentication before sending request
+    if (!isAuthenticated()) {
+      setShowLoginModal(true);
       return;
     }
 
     try {
-      console.log("Sending comment:", data.comment); // Debug log
       const response = await mutateAsync({
         url: `twibbon/user/${id_user_twibbons}/comments`,
         data: {
@@ -90,12 +121,33 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
       });
 
       if (response.status === 201) {
-        console.log("Comment sent successfully"); // Debug log
         reset();
         refetch();
       }
     } catch (error) {
-      console.error("Error submit komentar:", error);
+      switch (error?.response?.status) {
+        case 401:
+          setShowLoginModal(true);
+          break;
+        default:
+          // Handle other errors if needed
+          console.error("Server error:", error);
+          break;
+      }
+    }
+  };
+
+  // Handle login modal functions
+  const handleSwitchToRegister = () => {
+    // Add your register modal logic here
+    setShowLoginModal(false);
+  };
+
+  const handleLoginSuccess = () => {
+    setShowLoginModal(false);
+    // Optionally refetch data after successful login
+    if (id_user_twibbons) {
+      refetch();
     }
   };
 
@@ -104,156 +156,156 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   // Mobile full screen version
   const MobileVersion = () => (
     <ModalAlert onClose={onClose}>
-    <div className="fixed inset-0 z-50 flex flex-col bg-white">
-      {/* App Bar */}
-      <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 shadow-sm">
-        <button
-          onClick={onClose}
-          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100"
-        >
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
-        </button>
-        <h1 className="text-lg font-semibold text-gray-800">Detail</h1>
-        <div className="w-10"></div> {/* Spacer for centering */}
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 px-2 overflow-y-auto">
-        {/* Image */}
-        <div className="px-10 w-fit h-fit">
-          <img src={data.image} alt={data.title} className="w-full h-fit " />
+      <div className="fixed inset-0 z-50 flex flex-col bg-white">
+        {/* App Bar */}
+        <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 shadow-sm">
+          <button
+            onClick={onClose}
+            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100"
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          </button>
+          <h1 className="text-lg font-semibold text-gray-800">Detail</h1>
+          <div className="w-10" />
         </div>
 
-        {/* Info Section */}
-        <div className="p-4">
+        {/* Content */}
+        <div className="flex-1 px-2 overflow-y-auto">
+          {/* Image */}
+          <div className="px-10 w-fit h-fit">
+            <img src={data.image} alt={data.title} className="w-full h-fit " />
+          </div>
+
+          {/* Info Section */}
+          <div className="p-4">
             <h2 className="mb-3 text-xl font-bold text-gray-800">
               {data.title}
             </h2>
 
-          <div className="mb-4">
-            <div className="text-sm text-gray-600">
-              {showFullDescription
-                ? data.description
-                : data.description.slice(0, 150) + ""}
+            <div className="mb-4">
+              <div className="text-sm text-gray-600">
+                {showFullDescription
+                  ? data.description
+                  : data.description?.slice(0, 150) ?? ""}
+              </div>
+              {data.description?.length > 150 && (
+                <button
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-800 focus:outline-none"
+                >
+                  {showFullDescription ? "Sembunyikan" : "Selengkapnya"}
+                </button>
+              )}
             </div>
-            {data.description.length > 150 && (
-              <button
-                onClick={() => setShowFullDescription(!showFullDescription)}
-                className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-800 focus:outline-none"
-              >
-                {showFullDescription ? "Sembunyikan" : "Selengkapnya"}
-              </button>
-            )}
-          </div>
 
-          <div className="mb-4 text-sm text-blue-600">{data.status}</div>
+            <div className="mb-4 text-sm text-blue-600">{data.status}</div>
 
-          <div className="flex items-center mb-6 space-x-3 text-sm text-gray-500">
-            <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-full">
-              <span className="text-sm font-bold text-white">IF</span>
-            </div>
-            <div>
+            <div className="flex items-center mb-6 space-x-3 text-sm text-gray-500">
+              <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-full">
+                <span className="text-sm font-bold text-white">IF</span>
+              </div>
+              <div>
                 <div className="font-medium text-gray-700">
                   {data.eventTitle}
                 </div>
-              <div className="text-sm">@{data.creator}</div>
+                <div className="text-sm">@{data.creator}</div>
+              </div>
             </div>
-          </div>
 
-          {/* Komentar Section */}
-          <div className="border-t border-gray-200">
-            <div className="py-4">
-              <h3 className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-800">
-                <MessageCircle className="w-5 h-5" /> Komentar
-              </h3>
+            {/* Komentar Section */}
+            <div className="border-t border-gray-200">
+              <div className="py-4">
+                <h3 className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-800">
+                  <MessageCircle className="w-5 h-5" /> Komentar
+                </h3>
 
-              {/* Form input komentar */}
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="flex mb-4 space-x-3"
-              >
-                <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full">
-                  <span className="text-xs font-medium text-white">U</span>
-                </div>
+                {/* Form input komentar */}
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="flex mb-4 space-x-3"
+                >
 
-                <div className="flex flex-1 space-x-2">
-                  <input
-                    {...register("comment", { required: true })}
-                    type="text"
-                    placeholder="Bagikan pesan kamu..."
-                    className="flex-1 px-4 py-3 text-sm border border-gray-300 rounded-full focus:outline-none focus:border-blue-500"
-                    disabled={isPending || !id_user_twibbons}
-                  />
+                  <div className="flex flex-1 space-x-2">
+                    <input
+                      {...register("comment", { required: true })}
+                      type="text"
+                      placeholder="Bagikan pesan kamu..."
+                      className="flex-1 px-4 py-3 text-sm border border-gray-300 rounded-full focus:outline-none focus:border-blue-500"
+                      disabled={isPending || !id_user_twibbons}
+                      onFocus={() => {
+                        if (!isAuthenticated()) {
+                          setShowLoginModal(true);
+                        }
+                      }}
+                    />
 
-                  <button
-                    type="submit"
-                    disabled={isPending || !id_user_twibbons}
-                    className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed min-w-[60px]"
-                  >
-                    {isPending ? (
-                      <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
-                    ) : (
-                      <Send className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </form>
-
-              {/* Loading state for comments */}
-              {isLoading && (
-                <div className="py-4 text-center">
-                  <p className="text-gray-500">Memuat komentar...</p>
-                </div>
-              )}
-
-              {/* Daftar komentar */}
-              <div className="space-y-4">
-                {!isLoading && komentars.length === 0 ? (
-                  <div className="py-8 text-center">
-                    <p className="text-gray-500">Belum ada komentar</p>
-                    <p className="text-sm text-gray-400">Mulai percakapan</p>
+                    <button
+                      type="submit"
+                      disabled={isPending || !id_user_twibbons}
+                      className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed min-w-[60px]"
+                    >
+                      {isPending ? (
+                        <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin" />
+                      ) : (
+                        <Send className="w-4 h-4" />
+                      )}
+                    </button>
                   </div>
-                ) : (
-                  komentars.map((c) => (
-                    <div key={c.id} className="flex space-x-3">
-                      <div className="flex items-center justify-center w-8 h-8 bg-gray-300 rounded-full">
-                        <span className="text-xs font-medium text-gray-600">
-                          {c.user.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="px-3 py-2 bg-gray-100 rounded-lg">
-                          <div className="text-sm font-medium text-gray-800">
-                            {c.user}
-                          </div>
-                          <div className="text-sm text-gray-700">
-                            {c.comment}
-                          </div>
-                        </div>
-                        <div className="mt-1 ml-3 text-xs text-gray-500">
-                          {c.time}
-                        </div>
-                      </div>
-                    </div>
-                  ))
+                </form>
+
+                {/* Loading state for comments */}
+                {isLoading && (
+                  <div className="py-4 text-center">
+                    <p className="text-gray-500">Memuat komentar...</p>
+                  </div>
                 )}
+
+                {/* Daftar komentar */}
+                <div className="space-y-4">
+                  {!isLoading && komentars.length === 0 ? (
+                    <div className="py-8 text-center">
+                      <p className="text-gray-500">Belum ada komentar</p>
+                      <p className="text-sm text-gray-400">Mulai percakapan</p>
+                    </div>
+                  ) : (
+                    komentars.map((c) => (
+                      <div key={c.id} className="flex space-x-3">
+                        <div className="flex items-center justify-center w-8 h-8 bg-gray-300 rounded-full">
+                          <span className="text-xs font-medium text-gray-600">
+                            {c.user.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="px-3 py-2 bg-gray-100 rounded-lg">
+                            <div className="text-sm font-medium text-gray-800">
+                              {c.user}
+                            </div>
+                            <div className="text-sm text-gray-700">
+                              {c.comment}
+                            </div>
+                          </div>
+                          <div className="mt-1 ml-3 text-xs text-gray-500">
+                            {c.time}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </ModalAlert>
   );
 
-  // Desktop modal version
   const DesktopVersion = () => (
     <ModalAlert onClose={onClose}>
       <div
         className="relative w-full max-w-4xl mx-auto bg-white rounded-lg shadow-xl"
         style={{ height: "80vh" }}
       >
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute z-10 p-2 transition-colors bg-white rounded-full shadow-md top-4 right-4 hover:bg-gray-100"
@@ -285,9 +337,9 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 <div className="overflow-hidden overflow-y-auto text-sm text-gray-600 max-h-20">
                   {showFullDescription
                     ? data.description
-                    : data.description.slice(0, 100) + "..."}
+                    : data.description?.slice(0, 100) ?? ""}
                 </div>
-                {data.description.length > 100 && (
+                {data.description?.length > 100 && (
                   <button
                     onClick={() => setShowFullDescription(!showFullDescription)}
                     className="mt-1 text-xs text-blue-600 hover:text-blue-800 focus:outline-none"
@@ -325,10 +377,6 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                   onSubmit={handleSubmit(onSubmit)}
                   className="flex space-x-3"
                 >
-                  <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full">
-                    <span className="text-xs font-medium text-white">U</span>
-                  </div>
-
                   <div className="flex flex-1 space-x-2">
                     <input
                       {...register("comment", { required: true })}
@@ -336,15 +384,20 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                       placeholder="Bagikan pesan kamu..."
                       className="flex-1 px-4 py-3 text-sm border border-gray-300 rounded-full focus:outline-none focus:border-blue-500"
                       disabled={isPending || !id_user_twibbons}
+                      onFocus={() => {
+                        if (!isAuthenticated()) {
+                          setShowLoginModal(true);
+                        }
+                      }}
                     />
 
                     <button
-                      type="submit" 
+                      type="submit"
                       disabled={isPending || !id_user_twibbons}
                       className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed min-w-[60px]"
                     >
                       {isPending ? (
-                        <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
+                        <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin" />
                       ) : (
                         <Send className="w-4 h-4" />
                       )}
@@ -360,7 +413,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 </div>
               )}
 
-              {/* Daftar komentar dengan scroll saat overflow */}
+              {/* Daftar komentar */}
               {!isLoading && (
                 <div className="flex-1 min-h-0 px-6 py-4 space-y-4 overflow-y-auto">
                   {komentars.length === 0 ? (
@@ -398,20 +451,31 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
           </div>
         </div>
       </div>
+
+      {/* Login Modal */}
+      <ModalLogin
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSwitchToRegister={handleSwitchToRegister}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </ModalAlert>
   );
 
+  // Render based on isMobile state
   return (
     <>
-      {/* Mobile version */}
-      <div className="block lg:hidden">
-        <MobileVersion />
-      </div>
+      {isMobile ? <MobileVersion /> : <DesktopVersion />}
 
-      {/* Desktop version */}
-      <div className="hidden lg:block">
-        <DesktopVersion />
-      </div>
+      {/* Login Modal for Mobile */}
+      {isMobile && (
+        <ModalLogin
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onSwitchToRegister={handleSwitchToRegister}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
     </>
   );
 }

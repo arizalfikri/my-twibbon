@@ -44,7 +44,7 @@ export default function ModalLogin({ isOpen, onClose }) {
         localStorage.setItem("email", response.data.email);
         setToken(response.data.token);
         setEmail(response.data.email);
-        openToast("success", true, "Login Behasil",);
+        openToast("success", true, "Login Berhasil",);
 
         onClose();
       }
@@ -77,7 +77,7 @@ export default function ModalLogin({ isOpen, onClose }) {
         </button>
 
           <div className="text-center text-white">
-            <h2 className="mb-1 text-2xl font-bold">Welcome Back!</h2>
+            <h2 className="mb-1 text-2xl font-bold">Selamat Datang Kembali!</h2>
           </div>
         </div>
 
@@ -87,13 +87,13 @@ export default function ModalLogin({ isOpen, onClose }) {
           {/* Email Input */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Email address
+                Alamat Email
               </label>
               <div className="relative">
           <InputWithLabel
             htmlFor="email"
             type={InputType.TEXT}
-                  placeholder="name@example.com"
+                  placeholder="nama@example.com"
             name="email"
             id="email"
                   style="rounded-lg"
@@ -110,13 +110,13 @@ export default function ModalLogin({ isOpen, onClose }) {
           {/* Password Input */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Password
+                Kata Sandi
               </label>
           <div className="relative">
             <InputPassword
               htmlFor="password"
               type={InputType.PASSWORD}
-                  placeholder="Enter your password"
+                  placeholder="Masukkan kata sandi Anda"
               name="password"
               id="password"
               control={control}
@@ -132,13 +132,13 @@ export default function ModalLogin({ isOpen, onClose }) {
                   type="checkbox"
                   className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                 />
-                <span className="text-gray-600">Remember me</span>
+                <span className="text-gray-600">Ingat saya</span>
               </label>
               <button
                 type="button"
                 className="font-medium text-purple-600 hover:text-purple-700"
               >
-                Forgot password?
+                Lupa kata sandi?
               </button>
             </div>
 
@@ -155,10 +155,10 @@ export default function ModalLogin({ isOpen, onClose }) {
               {isLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="w-5 h-5 mr-3 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
-                  Signing in...
+                  Masuk...
                 </div>
               ) : (
-                "Sign In"
+                "Masuk"
               )}
           </button>
         </form>
@@ -171,7 +171,7 @@ export default function ModalLogin({ isOpen, onClose }) {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 text-gray-500 bg-white">
-                  or continue with
+                  atau lanjutkan dengan
                 </span>
               </div>
             </div>
@@ -207,12 +207,12 @@ export default function ModalLogin({ isOpen, onClose }) {
 
           {/* Register Link */}
           <div className="text-sm text-center text-gray-600">
-            Don't have an account?{" "}
+            Belum punya akun?{" "}
             <button
               type="button"
               className="font-medium text-purple-600 hover:text-purple-700"
             >
-              Register now
+              Daftar sekarang
             </button>
           </div>
         </div>

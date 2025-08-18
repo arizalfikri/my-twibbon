@@ -19,6 +19,7 @@ function Result() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true); // State untuk status login
   const [caption, setCaption] = useState("");
+  const [isPosted, setIsPosted] = useState(false); // State untuk status berhasil post
   const { twibbonData } = useTwibbonStore();
   const { mutateAsync, isPending } = usePOST("/event-user-twibbon");
   const { openToast } = useModalStore();
@@ -79,19 +80,20 @@ function Result() {
         },
       });
       if (response.status === 201) {
-        navigate("/");
+        setIsPosted(true); // Set status berhasil post
+        openToast("toast", true, "Berhasil membuat", "success");
       }
     } catch (error) {
       switch (error?.response.status) {
         case 401:
-          openToast("toast", true, "kurang data");
+          openToast("toast", true, "kurang data", "error");
           break;
         case 403:
           openToast("toast", true, "Anda Harus Menjadi Peserta.", "info");
           setShowLoginModal(true);
           break;
         default:
-          openToast("toast", true, "Kesalahan Server");
+          openToast("toast", true, "Kesalahan Server", "error");
           break;
       }
     }
@@ -142,74 +144,114 @@ function Result() {
 
         {/* Desktop Control Panel - positioned on the right */}
         <div className="hidden p-6 bg-white border border-gray-200 rounded-lg shadow-sm md:block">
-          <h2 className="mb-4 text-xl font-semibold text-center text-gray-800">
-            Posting Foto ini Ke Gypem
-          </h2>
-          <form action="" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-4">
-              <InputWithLabel
-                control={control}
-                name="caption"
-                htmlFor="caption"
-                label="caption "
-                type="textarea"
-                placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
-                error={errors}
-              ></InputWithLabel>
-              <button
-                type="button"
-                onClick={handlePostClick}
-                className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700"
-              >
-                {isLoggedIn ? "Post ke Gypem" : "Masuk & Post ke Gypem"}
-              </button>
+          {isPosted ? (
+            <div className="text-center">
+              <h2 className="mb-4 text-xl font-semibold text-green-600">
+                Berhasil Diposting!
+              </h2>
+              <p className="mb-6 text-gray-600">
+                Foto Anda telah berhasil diposting ke Gypem.
+              </p>
               <button
                 onClick={handleRestart}
                 className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
               >
-                Buat Lagi
+                Buat Twibbon Lagi
               </button>
             </div>
-          </form>
+          ) : (
+            <>
+              <h2 className="mb-4 text-xl font-semibold text-center text-gray-800">
+                Posting Foto ini Ke Gypem
+              </h2>
+              <form action="" onSubmit={handleSubmit(onSubmit)}>
+                <div className="space-y-4">
+                  <InputWithLabel
+                    control={control}
+                    name="caption"
+                    htmlFor="caption"
+                    label="caption "
+                    type="textarea"
+                    placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
+                    error={errors}
+                    disabled={isPending}
+                  ></InputWithLabel>
+                  <button
+                    type="button"
+                    onClick={handlePostClick}
+                    disabled={isPending}
+                    className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isPending ? "Sedang Posting..." : (isLoggedIn ? "Post ke Gypem" : "Masuk & Post ke Gypem")}
+                  </button>
+                  <button
+                    onClick={handleRestart}
+                    className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
+                  >
+                    Buat Lagi
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
         </div>
 
         {/* Mobile Control Panel - Positioned naturally at bottom */}
         <div className="p-4 mt-6 bg-white border border-gray-200 rounded-lg shadow-sm md:hidden">
-          <form action="" onSubmit={handleSubmit(onSubmit)}>
-            <div className="mb-4">
-              <h3 className="mb-2 text-lg font-semibold text-center text-gray-800">
-                Posting Foto ini Ke Gypem
+          {isPosted ? (
+            <div className="text-center">
+              <h3 className="mb-4 text-lg font-semibold text-green-600">
+                Berhasil Diposting!
               </h3>
-
-              <InputWithLabel
-                className="h-96"
-                control={control}
-                name="caption"
-                htmlFor="caption"
-                label="caption "
-                type="textarea"
-                placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
-                error={errors}
-                maxLength={500}
-              ></InputWithLabel>
-            </div>
-
-            <div className="grid w-full grid-cols-4 gap-3">
+              <p className="mb-6 text-gray-600">
+                Foto Anda telah berhasil diposting ke Gypem.
+              </p>
               <button
                 onClick={handleRestart}
-                className="flex items-center justify-center col-span-2 px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
+                className="flex items-center justify-center w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
               >
-                Buat Lagi
-              </button>
-              <button
-                type="button"
-                onClick={handlePostClick}
-                className="flex items-center justify-center col-span-2 gap-2 px-4 py-3 font-medium text-center text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700"
-              >
-                {isLoggedIn ? "Post" : "Masuk & Post"}
+                Buat Twibbon Lagi
               </button>
             </div>
-          </form>
+          ) : (
+            <form action="" onSubmit={handleSubmit(onSubmit)}>
+              <div className="mb-4">
+                <h3 className="mb-2 text-lg font-semibold text-center text-gray-800">
+                  Posting Foto ini Ke Gypem
+                </h3>
+
+                <InputWithLabel
+                  className="h-96"
+                  control={control}
+                  name="caption"
+                  htmlFor="caption"
+                  label="caption "
+                  type="textarea"
+                  placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
+                  error={errors}
+                  maxLength={500}
+                  disabled={isPending}
+                ></InputWithLabel>
+              </div>
+
+              <div className="grid w-full grid-cols-4 gap-3">
+                <button
+                  onClick={handleRestart}
+                  className="flex items-center justify-center col-span-2 px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
+                >
+                  Buat Lagi
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePostClick}
+                  disabled={isPending}
+                  className="flex items-center justify-center col-span-2 gap-2 px-4 py-3 font-medium text-center text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isPending ? "Posting..." : (isLoggedIn ? "Post" : "Masuk & Post")}
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
 

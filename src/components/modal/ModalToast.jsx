@@ -52,7 +52,7 @@ export function ModalToast() {
                                     <span className="sr-only">Error icon</span>
                                 </div>
                             ) : typeToast === "success" ? (
-                                <div className="inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg ">
+                                <div className="inline-flex items-center justify-center w-8 h-8 text-green-500 bg-green-100 rounded-lg shrink-0 ">
                                     <svg
                                         className="w-5 h-5"
                                         aria-hidden="true"
@@ -65,7 +65,7 @@ export function ModalToast() {
                                     <span className="sr-only">Check icon</span>
                                 </div>
                             ) : (
-                                <div className="inline-flex items-center justify-center shrink-0 w-8 h-8 text-orange-500 bg-orange-100 rounded-lg  ">
+                                <div className="inline-flex items-center justify-center w-8 h-8 text-orange-500 bg-orange-100 rounded-lg shrink-0 ">
                                     <svg
                                         className="w-5 h-5"
                                         aria-hidden="true"
