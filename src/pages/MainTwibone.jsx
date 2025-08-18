@@ -29,7 +29,6 @@ function MainTwibone() {
   useEffect(() => {
     if (twibbon?.data) {
       useTwibbonStore.getState().setTwibbonData(twibbon.data);
-      // populate cards
       const baseURL = "https://api-twibbon-dev.digiduindo.com";
       const userCards = twibbon.data.user_twibbons.map((utw) => ({
         id: utw.id,
@@ -39,6 +38,7 @@ function MainTwibone() {
         status: "",
         eventTitle: twibbon.data.title,
         creator: utw.user_id,
+        user_twibbon_id: utw.id, 
       }));
       setCards(userCards);
     }
@@ -196,6 +196,7 @@ function MainTwibone() {
         isOpen={showDetailModal}
         onClose={() => setShowDetailModal(false)}
         cardData={selectedCard}
+        id_user_twibbons={selectedCard?.user_twibbon_id}
       />
 
       <Footer />

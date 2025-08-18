@@ -64,19 +64,20 @@ function EditorPage() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="h-fit bg-gray-50">
+      <div className="flex flex-col h-full md:h-screen bg-gray-50">
         <NavbarEditor title={twibbonData?.title}/>
 
         {/* Mobile Layout */}
-        <div className="md:hidden">
-          <div className="h-[calc(100vh-64px-320px)] flex flex-col">
+        <div className="flex flex-col flex-1 md:hidden">
+          {/* CardEditor Area - Fixed Height with padding for fixed ControlPanel */}
+          <div className="flex-1 min-h-0 ">
             <CardEditor frameImage={frameImage} filters={filters} />
           </div>
           
-          {/* Mobile Filter Panel */}
-          <div className="p-4 bg-white border-t border-gray-200">
-            {/* Mobile Tabs */}
-            <div className="flex p-1 mb-4 bg-gray-100 rounded-lg">
+          {/* Mobile Filter Panel - Scrollable */}
+          <div className="flex flex-col h-64 bg-white border-t border-gray-200 pb-[500px]">
+            {/* Mobile Tabs - Fixed */}
+            <div className="flex flex-shrink-0 p-1 m-4 mb-2 bg-gray-100 rounded-lg">
               <button
                 onClick={() => setActiveTab('presets')}
                 className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
@@ -109,8 +110,8 @@ function EditorPage() {
               </button>
             </div>
 
-            {/* Mobile Content */}
-            <div className="overflow-y-auto max-h-64">
+            {/* Mobile Content - Scrollable */}
+            <div className="flex-1 px-4 pb-4 ">
               {activeTab === 'presets' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between mb-3">
@@ -233,8 +234,6 @@ function EditorPage() {
                     </div>
                   </div>
 
-                  
-
                   {/* Sepia */}
                   <div className="p-3 border rounded-lg bg-amber-50 border-amber-100">
                     <div className="space-y-3">
@@ -276,7 +275,7 @@ function EditorPage() {
           </div>
         </div>
 
-        {/* Desktop Layout */}
+        {/* Desktop Layout - Unchanged */}
         <div className="hidden gap-6 p-6 mx-auto md:grid md:grid-cols-2 max-w-7xl">
           <div className="">
             <CardEditor frameImage={frameImage} filters={filters} />
@@ -416,7 +415,6 @@ function EditorPage() {
                     </div>
                   </div>
 
-            
                   {/* Effect Controls */}
                   <div className="p-4 border rounded-lg bg-amber-50 border-amber-100">
                     <h4 className="mb-3 font-medium text-gray-700">✨ Efek</h4>

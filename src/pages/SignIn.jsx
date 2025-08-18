@@ -14,7 +14,7 @@ import { signInSchema } from "../helper/yup/index";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(null); 
+  const [selectedRole, setSelectedRole] = useState(null);
   const { openToast } = useModalStore();
   const token = localStorage.getItem("token");
   const { setEmail, setToken } = useGlobalStore();
@@ -22,7 +22,7 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!token) {
+    if (token) {
       navigate("/");
     }
   }, [token, navigate]);

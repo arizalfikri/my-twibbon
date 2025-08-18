@@ -1,64 +1,109 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ModalAlert from "../../layout/ModalAlert";
 import { X, MessageCircle, Send, ArrowLeft } from "lucide-react";
+import { useGET, usePOST } from "../../services/api";
+import { useForm } from "react-hook-form";
 
-function DetailResult({ isOpen, onClose, cardData }) {
-  const [comment, setComment] = useState("");
+function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const [komentars, setKomentars] = useState([
-    {
-      id: 1,
-      user: "Arbisan",
-      comment: "Keren banget designnya!",
-      time: "2 jam yang lalu",
-    },
-    {
-      id: 2,
-      user: "Kenzosan",
-      comment: "Bagus sekali, semangat terus!",
-      time: "5 jam yang lalu",
-    },
-    {
-      id: 3,
-      user: "Budi Santoso",
-      comment: "Mantap jiwa! Keep up the good work bro",
-      time: "1 hari yang lalu",
-    },
-    {
-      id: 4,
-      user: "Arbisan",
-      comment: "Inspiratif sekali karyanya, sukses terus ya!",
-      time: "2 hari yang lalu",
-    },
-    {
-      id: 5,
-      user: "Dewi",
-      comment: "Wah luar biasa!",
-      time: "3 hari yang lalu",
-    },
-  ]);
+  const [komentars, setKomentars] = useState([]);
 
-  if (!isOpen) return null;
+  // API calls - only make requests when we have id_user_twibbons
+  const {
+    data: KomentarData,
+    isLoading,
+    refetch,
+  } = useGET(`twibbon/user/${id_user_twibbons}/comments`);
 
-  const handleSubmitComment = (e) => {
-    e.preventDefault();
-    if (comment.trim()) {
-      const newKomentar = {
-        id: komentars.length + 1,
-        user: "Current User",
-        comment: comment.trim(),
-        time: "Baru saja",
-      };
-      setKomentars([newKomentar, ...komentars]);
-      setComment("");
+  const { mutateAsync, isPending } = usePOST(
+    `twibbon/user/${id_user_twibbons}/comments`
+  );
+
+  // Helper function to format time
+  const formatTime = (dateString) => {
+    const now = new Date();
+    const commentDate = new Date(dateString);
+    const diffInMs = now - commentDate;
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} menit yang lalu`;
+    } else if (diffInHours < 24) {
+      return `${diffInHours} jam yang lalu`;
+    } else {
+      return `${diffInDays} hari yang lalu`;
     }
   };
 
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm();
 
-  const data = cardData ;
+  useEffect(() => {
+    if (KomentarData?.data) {
+      const transformedComments = KomentarData.data.map((comment) => ({
+        id: comment.id,
+        user:
+          comment.author?.fullname ||
+          comment.author?.username ||
+          `User ${comment.user_id}`,
+        comment: comment.content,
+        time: formatTime(comment.createdAt),
+        user_id: comment.user_id,
+        replies: comment.replies || [],
+      }));
+      setKomentars(transformedComments);
+    } else {
+      // If no data or no API endpoint, show empty state
+      setKomentars([]);
+    }
+  }, [KomentarData, id_user_twibbons]);
+
+  // Refetch comments when modal opens
+  useEffect(() => {
+    if (isOpen && id_user_twibbons) {
+      refetch();
+    }
+  }, [isOpen, id_user_twibbons, refetch]);
+
+  if (!isOpen || !cardData) return null;
+
+  const onSubmit = async (data) => {
+    console.log("Form submitted:", data); // Debug log
+    if (!data.comment?.trim()) {
+      console.log("Empty comment, returning"); // Debug log
+      return;
+    }
+
+    try {
+      console.log("Sending comment:", data.comment); // Debug log
+      const response = await mutateAsync({
+        url: `twibbon/user/${id_user_twibbons}/comments`,
+        data: {
+          content: data.comment,
+        },
+      });
+
+      if (response.status === 201) {
+        console.log("Comment sent successfully"); // Debug log
+        reset();
+        refetch();
+      }
+    } catch (error) {
+      console.error("Error submit komentar:", error);
+    }
+  };
+
+  const data = cardData;
 
   // Mobile full screen version
   const MobileVersion = () => (
+    <ModalAlert onClose={onClose}>
     <div className="fixed inset-0 z-50 flex flex-col bg-white">
       {/* App Bar */}
       <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 shadow-sm">
@@ -76,18 +121,14 @@ function DetailResult({ isOpen, onClose, cardData }) {
       <div className="flex-1 px-2 overflow-y-auto">
         {/* Image */}
         <div className="px-10 w-fit h-fit">
-          <img
-            src={data.image}
-            alt={data.title}
-            className="w-full h-fit "
-          />
+          <img src={data.image} alt={data.title} className="w-full h-fit " />
         </div>
 
         {/* Info Section */}
         <div className="p-4">
-          <h2 className="mb-3 text-xl font-bold text-gray-800">
-            {data.title}
-          </h2>
+            <h2 className="mb-3 text-xl font-bold text-gray-800">
+              {data.title}
+            </h2>
 
           <div className="mb-4">
             <div className="text-sm text-gray-600">
@@ -106,15 +147,15 @@ function DetailResult({ isOpen, onClose, cardData }) {
           </div>
 
           <div className="mb-4 text-sm text-blue-600">{data.status}</div>
-          
+
           <div className="flex items-center mb-6 space-x-3 text-sm text-gray-500">
             <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-full">
               <span className="text-sm font-bold text-white">IF</span>
             </div>
             <div>
-              <div className="font-medium text-gray-700">
-                {data.eventTitle}
-              </div>
+                <div className="font-medium text-gray-700">
+                  {data.eventTitle}
+                </div>
               <div className="text-sm">@{data.creator}</div>
             </div>
           </div>
@@ -127,31 +168,47 @@ function DetailResult({ isOpen, onClose, cardData }) {
               </h3>
 
               {/* Form input komentar */}
-              <form onSubmit={handleSubmitComment} className="flex mb-6 space-x-3">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex mb-4 space-x-3"
+              >
                 <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full">
                   <span className="text-xs font-medium text-white">U</span>
                 </div>
+
                 <div className="flex flex-1 space-x-2">
                   <input
+                    {...register("comment", { required: true })}
                     type="text"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
                     placeholder="Bagikan pesan kamu..."
                     className="flex-1 px-4 py-3 text-sm border border-gray-300 rounded-full focus:outline-none focus:border-blue-500"
+                    disabled={isPending || !id_user_twibbons}
                   />
+
                   <button
                     type="submit"
-                    disabled={!comment.trim()}
-                    className="flex items-center gap-1 px-4 py-3 text-sm font-medium text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isPending || !id_user_twibbons}
+                    className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed min-w-[60px]"
                   >
-                    <Send className="w-4 h-4" />
+                    {isPending ? (
+                      <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </form>
 
+              {/* Loading state for comments */}
+              {isLoading && (
+                <div className="py-4 text-center">
+                  <p className="text-gray-500">Memuat komentar...</p>
+                </div>
+              )}
+
               {/* Daftar komentar */}
               <div className="space-y-4">
-                {komentars.length === 0 ? (
+                {!isLoading && komentars.length === 0 ? (
                   <div className="py-8 text-center">
                     <p className="text-gray-500">Belum ada komentar</p>
                     <p className="text-sm text-gray-400">Mulai percakapan</p>
@@ -186,12 +243,16 @@ function DetailResult({ isOpen, onClose, cardData }) {
         </div>
       </div>
     </div>
+    </ModalAlert>
   );
 
   // Desktop modal version
   const DesktopVersion = () => (
     <ModalAlert onClose={onClose}>
-      <div className="relative w-full max-w-4xl mx-auto bg-white rounded-lg shadow-xl" style={{ height: '90vh' }}>
+      <div
+        className="relative w-full max-w-4xl mx-auto bg-white rounded-lg shadow-xl"
+        style={{ height: "80vh" }}
+      >
         {/* Close button */}
         <button
           onClick={onClose}
@@ -251,71 +312,88 @@ function DetailResult({ isOpen, onClose, cardData }) {
             </div>
 
             {/* Komentar Section */}
-            <div className="flex flex-col flex-1">
+            <div className="flex flex-col flex-1 min-h-0">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="flex items-center gap-2 font-semibold text-gray-800">
                   <MessageCircle className="w-5 h-5" /> Komentar
                 </h3>
               </div>
 
-
               {/* Form input komentar */}
-              <div className="p-4 border-t border-gray-200">
-                <form onSubmit={handleSubmitComment} className="flex space-x-3">
+              <div className="p-4 border-b border-gray-200">
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="flex space-x-3"
+                >
                   <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full">
                     <span className="text-xs font-medium text-white">U</span>
                   </div>
+
                   <div className="flex flex-1 space-x-2">
                     <input
+                      {...register("comment", { required: true })}
                       type="text"
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
                       placeholder="Bagikan pesan kamu..."
-                      className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-full focus:outline-none focus:border-blue-500"
+                      className="flex-1 px-4 py-3 text-sm border border-gray-300 rounded-full focus:outline-none focus:border-blue-500"
+                      disabled={isPending || !id_user_twibbons}
                     />
+
                     <button
-                      type="submit"
-                      disabled={!comment.trim()}
-                      className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      type="submit" 
+                      disabled={isPending || !id_user_twibbons}
+                      className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed min-w-[60px]"
                     >
-                      <Send className="w-4 h-4" /> Post
+                      {isPending ? (
+                        <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
+                      ) : (
+                        <Send className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                 </form>
-                
+              </div>
+
+              {/* Loading state for comments */}
+              {isLoading && (
+                <div className="flex items-center justify-center flex-1">
+                  <p className="text-gray-500">Memuat komentar...</p>
+                </div>
+              )}
+
               {/* Daftar komentar dengan scroll saat overflow */}
-              <div className="flex-1 px-6 py-4 space-y-4 overflow-y-auto">
-                {komentars.length === 0 ? (
-                  <div className="py-8 text-center">
-                    <p className="text-gray-500">Belum ada komentar</p>
-                    <p className="text-sm text-gray-400">Mulai percakapan</p>
-                  </div>
-                ) : (
-                  komentars.map((c) => (
-                    <div key={c.id} className="flex space-x-3">
-                      <div className="flex items-center justify-center w-8 h-8 bg-gray-300 rounded-full">
-                        <span className="text-xs font-medium text-gray-600">
-                          {c.user.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="px-3 py-2 bg-gray-100 rounded-lg">
-                          <div className="text-sm font-medium text-gray-800">
-                            {c.user}
-                          </div>
-                          <div className="text-sm text-gray-700">
-                            {c.comment}
-                          </div>
-                        </div>
-                        <div className="mt-1 ml-3 text-xs text-gray-500">
-                          {c.time}
-                        </div>
-                      </div>
+              {!isLoading && (
+                <div className="flex-1 min-h-0 px-6 py-4 space-y-4 overflow-y-auto">
+                  {komentars.length === 0 ? (
+                    <div className="py-8 text-center">
+                      <p className="text-gray-500">Belum ada komentar</p>
+                      <p className="text-sm text-gray-400">Mulai percakapan</p>
                     </div>
-                  ))
-                )}
-              </div>
-              </div>
+                  ) : (
+                    komentars.map((c) => (
+                      <div key={c.id} className="flex space-x-3">
+                        <div className="flex items-center justify-center w-8 h-8 bg-gray-300 rounded-full">
+                          <span className="text-xs font-medium text-gray-600">
+                            {c.user.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="px-3 py-2 bg-gray-100 rounded-lg">
+                            <div className="text-sm font-medium text-gray-800">
+                              {c.user}
+                            </div>
+                            <div className="text-sm text-gray-700">
+                              {c.comment}
+                            </div>
+                          </div>
+                          <div className="mt-1 ml-3 text-xs text-gray-500">
+                            {c.time}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -329,7 +407,7 @@ function DetailResult({ isOpen, onClose, cardData }) {
       <div className="block lg:hidden">
         <MobileVersion />
       </div>
-      
+
       {/* Desktop version */}
       <div className="hidden lg:block">
         <DesktopVersion />
