@@ -71,10 +71,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     if (KomentarData?.data) {
       const transformedComments = KomentarData.data.map((comment) => ({
         id: comment.id,
-        user:
-          comment.author?.fullname ||
-          comment.author?.username ||
-          `User ${comment.user_id}`,
+        user: `User ${comment.user_id}`,
         comment: comment.content,
         time: formatTime(comment.createdAt),
         user_id: comment.user_id,
@@ -129,6 +126,9 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
         case 401:
           setShowLoginModal(true);
           break;
+        case 403:
+          setShowLoginModal(true);
+          break;
         default:
           // Handle other errors if needed
           console.error("Server error:", error);
@@ -137,15 +137,12 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     }
   };
 
-  // Handle login modal functions
   const handleSwitchToRegister = () => {
-    // Add your register modal logic here
     setShowLoginModal(false);
   };
 
   const handleLoginSuccess = () => {
     setShowLoginModal(false);
-    // Optionally refetch data after successful login
     if (id_user_twibbons) {
       refetch();
     }
@@ -224,7 +221,6 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                   onSubmit={handleSubmit(onSubmit)}
                   className="flex mb-4 space-x-3"
                 >
-
                   <div className="flex flex-1 space-x-2">
                     <input
                       {...register("comment", { required: true })}
@@ -406,7 +402,6 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 </form>
               </div>
 
-              {/* Loading state for comments */}
               {isLoading && (
                 <div className="flex items-center justify-center flex-1">
                   <p className="text-gray-500">Memuat komentar...</p>

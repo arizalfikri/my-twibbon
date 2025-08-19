@@ -12,16 +12,19 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { createTwiboneSchema } from "../helper/yup";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import ModalLogin from "../components/modal/modalLogin";
 
 function TwiboneCreatePage() {
   const queryClient = useQueryClient();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const { mutateAsync, isPending } = usePOST("/event-twibbon");
   const { openToast } = useModalStore();
   const { token } = useGlobalStore();
   const navigate = useNavigate();
+
   // Media Query: Deteksi desktop
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
@@ -70,6 +73,10 @@ function TwiboneCreatePage() {
     if (currentStep > 0) setCurrentStep((s) => s - 1);
   };
 
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+  };
+
   const onSubmit = async (data) => {
     try {
       const response = await mutateAsync({
@@ -89,13 +96,15 @@ function TwiboneCreatePage() {
     } catch (error) {
       switch (error?.response.status) {
         case 401:
-          openToast("toast", true, "kurang data");
+          openToast("toast", true, "Anda Harus Menjadi Kontributor.", "info");
+          setShowLoginModal(true);
           break;
         case 400:
           openToast("toast", true, error?.response.message);
           break;
         case 403:
           openToast("toast", true, "Anda Harus Menjadi Kontributor.", "info");
+          setShowLoginModal(true);
           break;
         default:
           openToast("toast", true, "Kesalahan Server");
@@ -103,6 +112,7 @@ function TwiboneCreatePage() {
       }
     }
   };
+
   const renderStepContent = () => {
     const adjustedStep = isDesktop ? currentStep + 1 : currentStep;
     const key = isDesktop ? "desktop" : "mobile";
@@ -313,6 +323,13 @@ function TwiboneCreatePage() {
       </div>
 
       <ModalFileTypeError />
+
+      {/* Modal Login untuk Kontributor */}
+      <ModalLogin
+        isOpen={showLoginModal}
+        onClose={handleCloseLoginModal}
+        kontributor={true}
+      />
     </div>
   );
 }

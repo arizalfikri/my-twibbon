@@ -10,7 +10,7 @@ import InputPassword from "../FormControl/InputPassword";
 import InputWithLabel from "../FormControl/InputWithLabel";
 import { InputType } from "../FormControl";
 
-export default function ModalLogin({ isOpen, onClose }) {
+export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
   const [selectedRole, setSelectedRole] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +19,9 @@ export default function ModalLogin({ isOpen, onClose }) {
   const { setToken, setEmail } = useGlobalStore();
   const navigate = useNavigate();
 
-  const participantLogin = usePOST("/auth/login-participant");
+  // Tentukan endpoint berdasarkan prop kontributor
+  const loginEndpoint = kontributor ? "/auth/login" : "/auth/login-participant";
+  const loginMutation = usePOST(loginEndpoint);
 
   const {
     handleSubmit,
@@ -33,18 +35,17 @@ export default function ModalLogin({ isOpen, onClose }) {
     try {
       let response;
 
-        response = await participantLogin.mutateAsync({
-          url: "/auth/login-participant",
-          data: { email: data.email, password: data.password },
-        });
+      response = await loginMutation.mutateAsync({
+        url: loginEndpoint,
+        data: { email: data.email, password: data.password },
+      });
       
-
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("email", response.data.email);
         setToken(response.data.token);
         setEmail(response.data.email);
-        openToast("success", true, "Login Berhasil",);
+        openToast("success", true, "Login Berhasil");
 
         onClose();
       }
@@ -77,7 +78,9 @@ export default function ModalLogin({ isOpen, onClose }) {
         </button>
 
           <div className="text-center text-white">
-            <h2 className="mb-1 text-2xl font-bold">Selamat Datang Kembali!</h2>
+            <h2 className="mb-1 text-2xl font-bold">
+              {kontributor ? "Login Kontributor" : "Selamat Datang Kembali!"}
+            </h2>
           </div>
         </div>
 
