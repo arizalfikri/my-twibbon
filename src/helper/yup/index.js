@@ -2,16 +2,22 @@ import * as yup from "yup";
 
 export const signInSchema = yup.object({
     email: yup.string().required("Email harus diisi"),
-    password: yup.string().required("Password harus diisi"),
+    password: yup
+        .string().required("Password harus diisi")
+        .min(6, 'Password minimal 6 karakter'),
+
 });
 
 export const signUpSchema = yup.object({
     fullname: yup.string().required("Nama Lengkap harus diisi"),
     email: yup.string().required("Email harus diisi"),
-    password: yup.string().required("Password harus diisi"),
+    password: yup.string().required("Password harus diisi")
+        .min(6, 'Password minimal 6 karakter'),
+    
     confirm_password: yup
         .string()
         .oneOf([yup.ref("password"), null], "Konfirmasi Password tidak cocok")
+        .min(6, 'Password minimal 6 karakter')
         .required("Konfirmasi Password wajib diisi"),
 });
 
@@ -49,4 +55,17 @@ export const setPasswordSchema = yup.object({
         .string()
         .oneOf([yup.ref("password"), null], "Konfirmasi Password tidak cocok")
         .required("Konfirmasi Password wajib diisi"),
+});
+
+export const editTwiboneSchema = yup.object({
+    title: yup.string().required("Judul harus diisi"),
+    caption: yup
+        .string()
+        .required("Caption harus diisi")
+        .max(500, "Caption maksimal 500 karakter"),
+    link: yup
+        .string()
+        .required("Link harus diisi")
+        .matches(/^\S*$/, "Link tidak boleh mengandung spasi"),
+
 });

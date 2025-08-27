@@ -48,7 +48,7 @@ function MainTwibone() {
     if (twibbon?.data?.template_twibbon) {
       const imageURL = `https://api-twibbon-dev.digiduindo.com${twibbon.data.template_twibbon}`;
       setFrameImage(imageURL);
-    }
+    } 
   }, [twibbon]);
 
   useState(() => {
@@ -100,8 +100,8 @@ function MainTwibone() {
             <div className="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full">
               <ImageOff className="w-10 h-10 text-gray-400" />
             </div>
-            <div className="absolute flex items-center justify-center w-8 h-8 rounded-full -bottom-1 -right-1 bg-cyan-100">
-              <Users className="w-4 h-4 text-cyan-500" />
+            <div className="absolute flex items-center justify-center w-8 h-8 bg-purple-100 rounded-full -bottom-1 -right-1">
+              <Users className="w-4 h-4 text-purple-500" />
             </div>
           </div>
 
@@ -118,9 +118,9 @@ function MainTwibone() {
 
           {/* Decorative Elements */}
           <div className="flex mt-6 space-x-2">
-            <div className="w-2 h-2 rounded-full bg-cyan-200 animate-pulse"></div>
-            <div className="w-2 h-2 delay-100 rounded-full bg-cyan-300 animate-pulse"></div>
-            <div className="w-2 h-2 delay-200 rounded-full bg-cyan-400 animate-pulse"></div>
+            <div className="w-2 h-2 bg-purple-200 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 delay-100 bg-purple-300 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 delay-200 bg-purple-400 rounded-full animate-pulse"></div>
           </div>
         </div>
       </div>
@@ -167,10 +167,7 @@ function MainTwibone() {
               />
             </div>
 
-            {/* Notification Bell (optional) */}
-            <button className="p-2 transition-colors rounded-full hover:bg-gray-100">
-              <Bell className="w-5 h-5 text-gray-400" />
-            </button>
+
           </div>
         </div>
       </header>

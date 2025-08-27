@@ -2,7 +2,7 @@ import React from "react";
 import { X } from "lucide-react";
 import ModalKeluarEditor from "../modal/modalKeluarEditor";
 import { useModalStore } from "../../helper/store/modal.store";
-import LogoGypem from "../../assets/images/gypem_logo.png";
+import LogoGypem from "../../assets/images/gypem_logo_putih.png";
 
 function NavbarEditor({ title }) {
   const { openModal } = useModalStore();
@@ -18,11 +18,11 @@ function NavbarEditor({ title }) {
           <div className="flex items-center justify-between h-16">
             {/* Desktop: Logo di kiri */}
             <div className="items-center hidden md:flex">
-              <h1 className="flex text-lg font-semibold text-white truncate">
+              <h1 className="flex items-center justify-center gap-3 text-lg font-semibold text-white truncate">
                 <img
                   src={LogoGypem}
                   alt="Logo Gypem"
-                  className="object-contain w-8 h-8"
+                  className="object-contain w-12 h-12"
                 />
                 {title}
               </h1>

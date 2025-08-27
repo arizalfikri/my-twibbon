@@ -9,6 +9,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [komentars, setKomentars] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [expandedComments, setExpandedComments] = useState(new Set());
 
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 1024 : true
@@ -23,7 +24,10 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // API calls - only make requests when we have id_user_twibbons
+  const {
+    data: infoUser,
+  } = useGET(`event-user-twibbon/${id_user_twibbons}`);
+
   const {
     data: KomentarData,
     isLoading,
@@ -60,6 +64,33 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     }
   };
 
+  // Helper function to get user initials
+  const getUserInitials = (name) => {
+    if (!name) return "U";
+    const words = name.trim().split(" ");
+    if (words.length >= 2) {
+      return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+    }
+    return words[0].charAt(0).toUpperCase();
+  };
+
+  // Helper function to truncate text
+  const truncateText = (text, maxLength) => {
+    if (!text || text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+  };
+
+  // Toggle comment expansion
+  const toggleCommentExpansion = (commentId) => {
+    const newExpanded = new Set(expandedComments);
+    if (newExpanded.has(commentId)) {
+      newExpanded.delete(commentId);
+    } else {
+      newExpanded.add(commentId);
+    }
+    setExpandedComments(newExpanded);
+  };
+
   const {
     handleSubmit,
     register,
@@ -71,7 +102,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     if (KomentarData?.data) {
       const transformedComments = KomentarData.data.map((comment) => ({
         id: comment.id,
-        user: `User ${comment.user_id}`,
+        user: ` ${comment?.author_gypem?.user_firstname||comment?.author?.fullname}`,
         comment: comment.content,
         time: formatTime(comment.createdAt),
         user_id: comment.user_id,
@@ -95,7 +126,6 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   // Check if user is authenticated
   const isAuthenticated = () => {
     const token = localStorage.getItem("token");
-
     return !!token;
   };
 
@@ -167,10 +197,16 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 px-2 overflow-y-auto">
-          {/* Image */}
-          <div className="px-10 w-fit h-fit">
-            <img src={data.image} alt={data.title} className="w-full h-fit " />
+        <div className="flex-1 overflow-y-auto">
+          {/* Image - Centered for Surface Pro 7 width */}
+          <div className="flex justify-center p-4 bg-gray-50">
+            <div className="w-full max-w-md">
+              <img 
+                src={data.image} 
+                alt={data.title} 
+                className="w-full h-auto rounded-lg shadow-md" 
+              />
+            </div>
           </div>
 
           {/* Info Section */}
@@ -182,10 +218,10 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
             <div className="mb-4">
               <div className="text-sm text-gray-600">
                 {showFullDescription
-                  ? data.description
-                  : data.description?.slice(0, 150) ?? ""}
+                  ? infoUser?.data?.caption || ""
+                  : (infoUser?.data?.caption?.slice(0, 150) ?? "")}
               </div>
-              {data.description?.length > 150 && (
+              {infoUser?.data?.caption?.length > 150 && (
                 <button
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-800 focus:outline-none"
@@ -198,14 +234,18 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
             <div className="mb-4 text-sm text-blue-600">{data.status}</div>
 
             <div className="flex items-center mb-6 space-x-3 text-sm text-gray-500">
-              <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-full">
-                <span className="text-sm font-bold text-white">IF</span>
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
+                <span className="text-sm font-bold text-white">
+                  {getUserInitials(infoUser?.data?.author?.user_firstname || "Unknown User")}
+                </span>
               </div>
-              <div>
-                <div className="font-medium text-gray-700">
-                  {data.eventTitle}
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-gray-700 truncate">
+                  {truncateText(infoUser?.data?.author?.user_firstname || "Unknown User", 20)}
                 </div>
-                <div className="text-sm">@{data.creator}</div>
+                <div className="text-sm truncate">
+                  @{truncateText(infoUser?.data?.author?.user_email || "unknown@email.com", 25)}
+                </div>
               </div>
             </div>
 
@@ -264,28 +304,44 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                       <p className="text-sm text-gray-400">Mulai percakapan</p>
                     </div>
                   ) : (
-                    komentars.map((c) => (
-                      <div key={c.id} className="flex space-x-3">
-                        <div className="flex items-center justify-center w-8 h-8 bg-gray-300 rounded-full">
-                          <span className="text-xs font-medium text-gray-600">
-                            {c.user.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="px-3 py-2 bg-gray-100 rounded-lg">
-                            <div className="text-sm font-medium text-gray-800">
-                              {c.user}
+                    komentars.map((c) => {
+                      const isExpanded = expandedComments.has(c.id);
+                      const shouldTruncate = c.comment.length > 100;
+                      const displayComment = isExpanded || !shouldTruncate 
+                        ? c.comment 
+                        : c.comment.slice(0, 100);
+
+                      return (
+                        <div key={c.id} className="flex space-x-3">
+                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600">
+                            <span className="text-xs font-bold text-white">
+                              {getUserInitials(c.user)}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="px-3 py-2 bg-gray-100 rounded-lg">
+                              <div className="text-sm font-medium text-gray-800 truncate">
+                                {truncateText(c.user, 25)}
+                              </div>
+                              <div className="text-sm text-gray-700 break-words break-all overflow-wrap-anywhere">
+                                {displayComment}
+                                {shouldTruncate && (
+                                  <button
+                                    onClick={() => toggleCommentExpansion(c.id)}
+                                    className="inline-block ml-2 text-blue-600 hover:text-blue-800 focus:outline-none"
+                                  >
+                                    {isExpanded ? "Sembunyikan" : "Selengkapnya"}
+                                  </button>
+                                )}
+                              </div>
                             </div>
-                            <div className="text-sm text-gray-700">
-                              {c.comment}
+                            <div className="mt-1 ml-3 text-xs text-gray-500">
+                              {c.time}
                             </div>
                           </div>
-                          <div className="mt-1 ml-3 text-xs text-gray-500">
-                            {c.time}
-                          </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -332,10 +388,10 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
               <div className="mb-3">
                 <div className="overflow-hidden overflow-y-auto text-sm text-gray-600 max-h-20">
                   {showFullDescription
-                    ? data.description
-                    : data.description?.slice(0, 100) ?? ""}
+                    ? infoUser?.data?.caption || ""
+                    : (infoUser?.data?.caption?.slice(0, 100) ?? "")}
                 </div>
-                {data.description?.length > 100 && (
+                {infoUser?.data?.caption?.length > 100 && (
                   <button
                     onClick={() => setShowFullDescription(!showFullDescription)}
                     className="mt-1 text-xs text-blue-600 hover:text-blue-800 focus:outline-none"
@@ -345,16 +401,19 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 )}
               </div>
 
-              <div className="mb-4 text-xs text-blue-600">{data.status}</div>
               <div className="flex items-center space-x-3 text-sm text-gray-500">
-                <div className="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full">
-                  <span className="text-xs font-bold text-white">IF</span>
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
+                  <span className="text-xs font-bold text-white">
+                    {getUserInitials(infoUser?.data?.author?.user_firstname || "Unknown User")}
+                  </span>
                 </div>
-                <div>
-                  <div className="font-medium text-gray-700">
-                    {data.eventTitle}
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-gray-700 truncate">
+                    {truncateText(infoUser?.data?.author?.user_firstname || "Unknown User", 20)}
                   </div>
-                  <div className="text-xs">@{data.creator}</div>
+                  <div className="text-xs truncate">
+                    @{truncateText(infoUser?.data?.author?.user_email || "unknown@email.com", 25)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -417,28 +476,44 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                       <p className="text-sm text-gray-400">Mulai percakapan</p>
                     </div>
                   ) : (
-                    komentars.map((c) => (
-                      <div key={c.id} className="flex space-x-3">
-                        <div className="flex items-center justify-center w-8 h-8 bg-gray-300 rounded-full">
-                          <span className="text-xs font-medium text-gray-600">
-                            {c.user.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="px-3 py-2 bg-gray-100 rounded-lg">
-                            <div className="text-sm font-medium text-gray-800">
-                              {c.user}
+                    komentars.map((c) => {
+                      const isExpanded = expandedComments.has(c.id);
+                      const shouldTruncate = c.comment.length > 100;
+                      const displayComment = isExpanded || !shouldTruncate 
+                        ? c.comment 
+                        : c.comment.slice(0, 100);
+
+                      return (
+                        <div key={c.id} className="flex space-x-3">
+                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600">
+                            <span className="text-xs font-bold text-white">
+                              {getUserInitials(c.user)}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="px-3 py-2 bg-gray-100 rounded-lg">
+                              <div className="text-sm font-medium text-gray-800 truncate">
+                                {truncateText(c.user, 25)}
+                              </div>
+                              <div className="text-sm text-gray-700 break-words break-all overflow-wrap-anywhere">
+                                {displayComment}
+                                {shouldTruncate && (
+                                  <button
+                                    onClick={() => toggleCommentExpansion(c.id)}
+                                    className="inline-block ml-2 text-blue-600 hover:text-blue-800 focus:outline-none"
+                                  >
+                                    {isExpanded ? "Sembunyikan" : "Selengkapnya"}
+                                  </button>
+                                )}
+                              </div>
                             </div>
-                            <div className="text-sm text-gray-700">
-                              {c.comment}
+                            <div className="mt-1 ml-3 text-xs text-gray-500">
+                              {c.time}
                             </div>
                           </div>
-                          <div className="mt-1 ml-3 text-xs text-gray-500">
-                            {c.time}
-                          </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
               )}

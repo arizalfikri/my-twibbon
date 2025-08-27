@@ -59,3 +59,27 @@ export const useDELETE = (key) => {
         mutationFn: deleteData,
     });
 };
+
+
+
+const patchData = async ({ url, data }) => {
+    const formData = new FormData();
+    for (const key in data) {
+        formData.append(key, data[key]);
+    }
+
+    const response = await apiClient.patch(url, formData, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+    });
+    return response.data;
+};
+
+export const usePATCH = (key) => {
+    return useMutation({
+        mutationKey: [key],
+        mutationFn: patchData,
+    });
+};
+

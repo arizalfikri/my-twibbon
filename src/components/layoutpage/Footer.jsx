@@ -1,47 +1,131 @@
 import React from 'react'
-import LogoGypem from '../../assets/images/gypem_logo.png';
+import LogoGypem from '../../assets/images/gypem_logo_putih.png';
+
 function Footer() {
     return (
-        <footer className="bg-[#4C0D68] w-full">
-            <div className="px-4 py-8 mx-auto text-white max-w-screen-2xl">
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <footer className="bg-[#4C0D68] relative">
+            {/* Top decorative wave */}
+            <div className="absolute top-0 left-0 w-full overflow-hidden">
+                <svg className="relative block w-full h-16" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" fill="#ffffff" fillOpacity="0.1"></path>
+                </svg>
+            </div>
 
-                    <div className="text-xs font-normal leading-loose md:text-sm">
-                        <img src={LogoGypem} alt="Gypem" className="w-[61px] h-[59px]" />
-                        <span className="flex items-center gap-1 mt-5">
-                            Powered By
-                            <p className="ml-1 font-semibold">Digital Edu Indonesia</p>
-                        </span>
-                        <p className="mt-5 font-light">
-                            Gedung Jaya Lantai 9 Blok A02 Jl. M.H. Thamrin No. 12 RT 002/001, Kel. Kebon Sirih, Kec. Menteng, Jakarta Pusat 10340
-                        </p>
-                    </div>
-
-
-                    <div>
-                        <h5 className="mb-3 font-semibold">Navigasi</h5>
-                        <ul className="space-y-2">
-                            <li><a href="/" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Beranda</a></li>
-                            <li><a href="/create" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Create Twibone</a></li>
-                          
-                        </ul>
-                    </div>
-
-
-                    <div>
-                        <h5 className="mb-3 font-semibold">Lainnya</h5>
-                        <ul className="space-y-2">
-                            <li><a href="/SignIn" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Login</a></li>
-                            <li><a href="/SignUp" className="text-xs font-normal transition-all duration-200 hover:font-semibold">Daftar</a></li>
-                          
-                        </ul>
+            {/* Main Content - Horizontal Layout */}
+            <div className="relative px-4 py-16 mx-auto max-w-screen-2xl">
+                {/* Top Section - Company Info Centered */}
+                <div className="mb-12 text-center">
+                    <div className="flex items-center justify-center gap-4 mb-6">
+                        <img src={LogoGypem} alt="Gypem" className="w-20 h-20 drop-shadow-lg" />
+                        <div className="text-white">
+                            <h2 className="mb-1 text-3xl font-bold">Gypem</h2>
+                            <p className="text-sm opacity-80">Transforming Digital Education</p>
+                        </div>
                     </div>
                     
+                    <div className="flex items-center justify-center gap-2 mb-8">
+                        <span className="text-sm text-white">Powered By</span>
+                        <div className="px-4 py-2 bg-white border border-white rounded-full bg-opacity-15 backdrop-blur-sm border-opacity-20">
+                            <span className="text-sm font-semibold text-white">Digital Edu Indonesia</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Navigation Cards Layout */}
+                <div className="grid grid-cols-1 gap-6 mb-12 md:grid-cols-2 lg:grid-cols-4">
+                    {/* Quick Links Card */}
+                    <div className="p-6 transition-all duration-300 bg-white border border-white bg-opacity-10 backdrop-blur-sm rounded-2xl border-opacity-20 hover:bg-opacity-15">
+                        <h3 className="flex items-center gap-2 mb-4 text-lg font-bold text-white">
+                            <span className="w-2 h-2 bg-white rounded-full"></span>
+                            Navigasi
+                        </h3>
+                        <ul className="space-y-3">
+                            <li>
+                                <a href="/" className="flex items-center gap-2 text-sm text-white transition-colors duration-200 hover:text-purple-200 group">
+                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                                    </svg>
+                                    Beranda
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/create" className="flex items-center gap-2 text-sm text-white transition-colors duration-200 hover:text-purple-200 group">
+                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd"></path>
+                                    </svg>
+                                    Create Twibone
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Account Card */}
+                    <div className="p-6 transition-all duration-300 bg-white border border-white bg-opacity-10 backdrop-blur-sm rounded-2xl border-opacity-20 hover:bg-opacity-15">
+                        <h3 className="flex items-center gap-2 mb-4 text-lg font-bold text-white">
+                            <span className="w-2 h-2 bg-white rounded-full"></span>
+                            Akun
+                        </h3>
+                        <ul className="space-y-3">
+                            <li>
+                                <a href="/SignIn" className="flex items-center gap-2 text-sm text-white transition-colors duration-200 hover:text-purple-200 group">
+                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clipRule="evenodd"></path>
+                                    </svg>
+                                    Login
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/SignUp" className="flex items-center gap-2 text-sm text-white transition-colors duration-200 hover:text-purple-200 group">
+                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"></path>
+                                    </svg>
+                                    Daftar
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Contact Card */}
+                    <div className="p-6 transition-all duration-300 bg-white border border-white bg-opacity-10 backdrop-blur-sm rounded-2xl border-opacity-20 hover:bg-opacity-15 lg:col-span-2">
+                        <h3 className="flex items-center gap-2 mb-4 text-lg font-bold text-white">
+                            <span className="w-2 h-2 bg-white rounded-full"></span>
+                            Lokasi Kami
+                        </h3>
+                        <div className="flex items-start gap-3 text-sm text-white">
+                            <svg className="w-5 h-5 mt-0.5 flex-shrink-0 text-purple-200" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"></path>
+                            </svg>
+                            <div className="leading-relaxed opacity-90">
+                                <p className="mb-1 font-medium">Gedung Jaya Lantai 9 Blok A02</p>
+                                <p>Jl. M.H. Thamrin No. 12 RT 002/001</p>
+                                <p>Kel. Kebon Sirih, Kec. Menteng</p>
+                                <p>Jakarta Pusat 10340</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Section */}
+                <div className="pt-8 border-t border-white border-opacity-20">
+                    <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+                        <div className="text-sm text-center text-white opacity-80 md:text-left">
+                            <p>© {new Date().getFullYear()} Gypem by Digital Edu Indonesia. All rights reserved.</p>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            <a href="#" className="text-sm text-white transition-colors duration-200 hover:text-purple-200">
+                                Privacy Policy
+                            </a>
+                            <a href="#" className="text-sm text-white transition-colors duration-200 hover:text-purple-200">
+                                Terms of Service
+                            </a>
+                            <a href="#" className="text-sm text-white transition-colors duration-200 hover:text-purple-200">
+                                Contact Us
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </footer>
-
-
     )
 }
 

@@ -8,6 +8,9 @@ import MainTwibone from "../pages/MainTwibone.jsx";
 import TwiboneCreatePage from "../pages/twiboneCreatePage.jsx";
 import SignIn from "../pages/SignIn.jsx";
 import SignUp from "../pages/SignUp.jsx";
+import DetailProfile from "../pages/DetailProfile.jsx";
+import ExploreTwibone from "../pages/ExploreTwibone.jsx";
+import EditProfile from "../pages/EditProfile.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +19,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <TwiboneHomepage />,
+      },
+      {
+        path: "Explore",
+        element: <ExploreTwibone />,
       },
       {
         path: "EditorPage",
@@ -41,6 +48,13 @@ export const router = createBrowserRouter([
       {
         path: "Create",
         element: <TwiboneCreatePage />,
+      },
+      {
+        path: "DetailProfile",
+        element: <DetailProfile />,
+      },{
+        path: "EditProfile",
+        element: <EditProfile />,
       },
     ],
   },

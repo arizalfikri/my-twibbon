@@ -1,0 +1,140 @@
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { TrendingUp, User, Edit2, MoreVertical, Trash2 } from "lucide-react";
+import PropTypes from "prop-types";
+
+const CardProfile = ({ twibon, isGrid = true, onEdit, onDelete }) => {
+  const [showDeleteMenu, setShowDeleteMenu] = useState(false);
+
+  const handleEdit = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onEdit) {
+      onEdit(twibon);
+    }
+  };
+
+  const handleDelete = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onDelete) {
+      onDelete(twibon);
+    }
+    setShowDeleteMenu(false);
+  };
+
+  const toggleDeleteMenu = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowDeleteMenu(!showDeleteMenu);
+  };
+
+  return (
+    <Link
+      to={`/${twibon.slug}`}
+      className={`block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group ${
+        isGrid ? "" : "flex flex-col sm:flex-row"
+      }`}
+    >
+      <div
+        className={`relative ${
+          isGrid 
+            ? "aspect-[1/1]" 
+            : "aspect-[16/9] sm:aspect-[1/1] sm:w-48 sm:flex-shrink-0"
+        }`}
+      >
+        <img
+          src={`https://api-twibbon-dev.digiduindo.com${twibon.image}`}
+          alt={twibon.title}
+          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+
+      <div className={`p-3 sm:p-4 ${isGrid ? "" : "flex-1"}`}>
+        <div className="flex items-start justify-between mb-2">
+          <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-[#4C0D68] transition-colors text-sm sm:text-base">
+            {twibon.title}
+          </h3>
+        </div>
+
+        <div className="flex items-center justify-between mb-3 text-xs text-gray-500 sm:text-sm">
+          <span>by {twibon.author}</span>
+        </div>
+
+        <div className="flex items-center justify-between mb-3 text-xs text-gray-600 sm:text-sm">
+          <div className="flex items-center gap-1">
+            <User className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span>{twibon.User}</span>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col justify-start gap-2 pt-2 border-t border-gray-300 sm:flex-row sm:pt-3">
+          {/* Edit Button */}
+          <button
+            onClick={handleEdit}
+            className={`flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-gray-100 hover:bg-[#4C0D68] hover:text-white rounded-lg transition-all duration-200 ${
+              isGrid ? "w-full" : "w-full sm:w-28"
+            }`}
+            title="Edit"
+          >
+            <Edit2 className="w-3 h-3" />
+            <span className="">Edit</span>
+          </button>
+
+          {/* Delete Menu Button */}
+          <div className="relative w-full sm:w-auto">
+            <button
+              onClick={toggleDeleteMenu}
+              className="flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-gray-100 hover:bg-red-500 hover:text-white rounded-lg transition-all duration-200 w-full sm:w-auto h-full"
+              title="More options"
+            >
+              <MoreVertical className="w-3 h-3" />
+              <span className="sm:hidden">More</span>
+            </button>
+
+            {/* Delete Dropdown Menu */}
+            {showDeleteMenu && (
+              <div className="absolute right-0 bottom-full mb-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px] w-full sm:w-auto">
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center w-full h-full gap-2 px-3 py-2 text-xs text-left text-red-600 rounded-lg sm:text-sm hover:bg-red-50"
+                >
+                  <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Overlay to close dropdown when clicking outside */}
+      {showDeleteMenu && (
+        <div
+          className="fixed inset-0 z-5"
+          onClick={() => setShowDeleteMenu(false)}
+        />
+      )}
+    </Link>
+  );
+};
+
+CardProfile.propTypes = {
+  twibon: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    title: PropTypes.string,
+    category: PropTypes.string,
+    author: PropTypes.string,
+    User: PropTypes.number,
+    image: PropTypes.string.isRequired,
+    slug: PropTypes.string.isRequired,
+    isNew: PropTypes.bool,
+    isTrending: PropTypes.bool,
+  }).isRequired,
+  isGrid: PropTypes.bool,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
+};
+
+export default CardProfile;

@@ -276,7 +276,7 @@ function EditorPage() {
         </div>
 
         {/* Desktop Layout - Unchanged */}
-        <div className="hidden p-6 mx-auto gap-52 md:grid md:grid-cols-2 max-w-7xl">
+        <div className="hidden gap-8 p-6 mx-auto md:grid md:grid-cols-2 max-w-7xl">
           <div className="">
             <CardEditor frameImage={frameImage} filters={filters} />
           </div>

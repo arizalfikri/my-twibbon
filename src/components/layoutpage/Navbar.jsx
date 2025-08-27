@@ -8,27 +8,96 @@ import {
   ArrowRightFromLine,
   UserPlus,
 } from "lucide-react";
-import React, { useState } from "react";
-import LogoGypem from "../../assets/images/gypem_logo.png";
-import { useNavigate, Link } from "react-router-dom";
-import { Menu as HeadlessMenu, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import React, { useState, useEffect } from "react";
+import LogoGypem from "../../assets/images/gypem_logo_putih.png";
+import { useNavigate, Link, useLocation, useSearchParams } from "react-router-dom";
 import { useGlobalStore } from "../../helper/store/global.store";
 import ModalLogout from "../modal/ModalLogout";
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // Add logout modal state
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { email, token, setEmail, setToken } = useGlobalStore();
+  const { email, token, fullname } = useGlobalStore();
+
+  // Sync search query with URL params when on explore page
+  useEffect(() => {
+    if (location.pathname === '/explore') {
+      const searchFromUrl = searchParams.get("search");
+      if (searchFromUrl) {
+        setSearchQuery(decodeURIComponent(searchFromUrl));
+      } else {
+        setSearchQuery("");
+      }
+    }
+  }, [searchParams, location.pathname]);
 
   // Handle logout button click - show modal instead of direct logout
   const handleLogoutClick = () => {
     setIsLogoutModalOpen(true);
-    setIsMobileMenuOpen(false); // Close mobile menu if open
-    setIsSidebarOpen(false); // Close sidebar if open
+    setIsMobileMenuOpen(false);
+    setIsSidebarOpen(false);
+  };
+
+  // Handle search functionality for mobile (form submit)
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Use simpler encoding for mobile to avoid %20
+      const cleanQuery = searchQuery.trim().replace(/\s+/g, ' ');
+      navigate(`/explore?search=${cleanQuery}`);
+      setIsMobileMenuOpen(false);
+    } else if (location.pathname === '/explore') {
+      setSearchParams({});
+      setIsMobileMenuOpen(false);
+    }
+  };
+
+  // Handle search input change
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    // If on explore page and desktop, update URL in real-time with proper encoding
+    if (location.pathname === '/explore' && window.innerWidth >= 768) {
+      if (value.trim()) {
+        setSearchParams({ search: value.trim() });
+      } else {
+        setSearchParams({});
+      }
+    }
+  };
+
+  // Handle search key press for mobile
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  };
+
+  // Handle desktop search submit (when user presses enter)
+  const handleDesktopSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Use simpler encoding to avoid %20 display
+      const cleanQuery = searchQuery.trim().replace(/\s+/g, ' ');
+      navigate(`/explore?search=${cleanQuery}`);
+    } else if (location.pathname === '/explore') {
+      // Clear search params if empty and already on explore page
+      setSearchParams({});
+    }
+  };
+
+  // Function to clear search
+  const clearSearch = () => {
+    setSearchQuery("");
+    if (location.pathname === '/explore') {
+      setSearchParams({});
+    }
   };
 
   return (
@@ -38,11 +107,11 @@ function Navbar() {
           <div className="flex items-center justify-between">
             {/* Logo Section */}
             <Link to="/" className="flex items-center space-x-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded">
+              <div className="flex items-center justify-center w-12 h-12 rounded">
                 <img
                   src={LogoGypem}
                   alt="Logo Gypem"
-                  className="object-contain w-8 h-8"
+                  className="object-contain w-20 h-20"
                 />
               </div>
               <span className="text-lg font-semibold">Gypem Twibone</span>
@@ -50,21 +119,36 @@ function Navbar() {
 
             {/* Desktop Search Bar */}
             <div className="flex-1 hidden max-w-md mx-8 md:flex">
-              <div className="relative w-full">
+              <form onSubmit={handleDesktopSearch} className="relative w-full">
                 <input
                   type="text"
-                  placeholder="Cari"
-                  className="w-full bg-[#6B1E7A] border border-[#8B2E9B] rounded-full px-4 py-2 pl-10 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  placeholder="Cari twibone..."
+                  value={searchQuery}
+                  onChange={handleSearchInputChange}
+                  className="w-full bg-[#6B1E7A] border border-[#8B2E9B] rounded-full px-4 py-2 pl-10 pr-10 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                 />
-                <Search className="absolute w-4 h-4 text-gray-300 transform -translate-y-1/2 left-3 top-1/2" />
-              </div>
+                <button
+                  type="submit"
+                  className="absolute text-gray-300 transform -translate-y-1/2 left-3 top-1/2 hover:text-white"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
+                {/* Clear button - hanya muncul jika ada search query */}
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="absolute text-gray-300 transform -translate-y-1/2 right-3 top-1/2 hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </form>
             </div>
 
             {/* Desktop Right Section */}
             <div className="items-center hidden space-x-2 md:flex">
-              <button className="p-2 hover:bg-[#6B1E7A] rounded-full transition-colors">
-                <HelpCircle className="w-5 h-5" />
-              </button>
+             
               <Link
                 to="/create"
                 className="bg-yellow-400 text-[#4C0D68] px-4 py-2 rounded-full font-semibold flex items-center space-x-2 hover:bg-yellow-300 transition-colors"
@@ -96,23 +180,36 @@ function Navbar() {
           {isMobileMenuOpen && (
             <div className="mt-4 space-y-4 md:hidden">
               {/* Mobile Search Bar */}
-              <div className="relative">
+              <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
-                  placeholder="Cari"
+                  placeholder="Cari twibone..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#6B1E7A] border border-[#8B2E9B] rounded-full px-4 py-2 pl-10 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  onChange={handleSearchInputChange}
+                  onKeyPress={handleSearchKeyPress}
+                  className="w-full bg-[#6B1E7A] border border-[#8B2E9B] rounded-full px-4 py-2 pl-10 pr-10 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                 />
-                <Search className="absolute w-4 h-4 text-gray-300 transform -translate-y-1/2 left-3 top-1/2" />
-              </div>
+                <button
+                  type="submit"
+                  className="absolute text-gray-300 transform -translate-y-1/2 left-3 top-1/2 hover:text-white"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
+                {/* Clear button untuk mobile */}
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="absolute text-gray-300 transform -translate-y-1/2 right-3 top-1/2 hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </form>
 
               {/* Mobile Menu Items */}
               <div className="flex flex-col space-y-2">
-                <button className="flex items-center space-x-2 p-3 hover:bg-[#6B1E7A] rounded-lg transition-colors">
-                  <HelpCircle className="w-5 h-5" />
-                  <span>Bantuan</span>
-                </button>
+                
                 <Link
                   to="/create"
                   className="bg-yellow-400 text-[#4C0D68] px-4 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors"
@@ -129,20 +226,20 @@ function Navbar() {
                 {/* Mobile Login Button */}
                 {token ? (
                   <div className="px-4 space-y-3">
-                    <div className="grid grid-cols-[auto_1fr] gap-3 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg">
+                    <Link to="/DetailProfile" className="grid grid-cols-[auto_1fr] gap-3 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg">
                       <div className="bg-[#4C0D68] p-2 rounded-full w-10 h-10 flex items-center justify-center">
                         <User className="w-5 h-5 text-white" />
                       </div>
                       <div className="text-left">
                         <p className="text-sm font-semibold text-[#4C0D68]">
-                          User
+                          {fullname}
                         </p>
                         <p className="text-xs text-gray-600">{email}</p>
                       </div>
-                    </div>
+                    </Link>
 
                     <button
-                      onClick={handleLogoutClick} // Use handleLogoutClick instead of direct logout
+                      onClick={handleLogoutClick}
                       className="w-full px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
                     >
                       Logout
@@ -198,15 +295,15 @@ function Navbar() {
 
             {/* Login Button */}
             {token && (
-              <div className="grid grid-cols-[auto_1fr] gap-4 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg">
+              <Link to="/DetailProfile" className="grid grid-cols-[auto_1fr] gap-4 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg">
                 <div className="bg-[#4C0D68] p-2 rounded-full w-10 h-10 flex items-center justify-center">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-[#4C0D68]">User</p>
+                  <p className="text-sm font-semibold text-[#4C0D68]">{fullname}</p>
                   <p className="text-xs text-gray-600">{email}</p>
                 </div>
-              </div>
+              </Link>
             )}
 
             {!token && (
@@ -243,22 +340,22 @@ function Navbar() {
           {/* Logout Button in Sidebar Footer */}
           {token && (
             <button
-              onClick={handleLogoutClick} // Use handleLogoutClick instead of direct logout
+              onClick={handleLogoutClick}
               className="w-full px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
             >
               Logout
             </button>
-          )}
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* ModalLogout Component */}
-      <ModalLogout
-        isOpen={isLogoutModalOpen} 
-        onClose={() => setIsLogoutModalOpen(false)} 
-      />
-    </>
-  );
-}
+        {/* ModalLogout Component */}
+        <ModalLogout
+          isOpen={isLogoutModalOpen} 
+          onClose={() => setIsLogoutModalOpen(false)} 
+        />
+      </>
+    );
+  }
 
-export default Navbar;
+  export default Navbar;

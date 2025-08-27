@@ -36,7 +36,7 @@ export default function ModalFileTypeError() {
           </button>
         </div>
 
-        {/* Icon Error */}
+        {/* Icon Error - Transparency Theme */}
         <div className="flex justify-center mb-4">
           <svg
             width="64"
@@ -46,53 +46,65 @@ export default function ModalFileTypeError() {
             xmlns="http://www.w3.org/2000/svg"
           >
             <rect width="64" height="64" rx="32" fill="#FFD8E4" />
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M32 16C24.268 16 18 22.268 18 30C18 37.732 24.268 44 32 44C39.732 44 46 37.732 46 30C46 22.268 39.732 16 32 16ZM28.5 23.5C28.5 22.6716 29.1716 22 30 22H34C34.8284 22 35.5 22.6716 35.5 23.5V32.5C35.5 33.3284 34.8284 34 34 34H30C29.1716 34 28.5 33.3284 28.5 32.5V23.5ZM30 36.5C29.1716 36.5 28.5 37.1716 28.5 38C28.5 38.8284 29.1716 39.5 30 39.5H34C34.8284 39.5 35.5 38.8284 35.5 38C35.5 37.1716 34.8284 36.5 34 36.5H30Z"
-              fill="#E81212"
-            />
-            <path
-              d="M30 24H34V32H30V24Z"
-              fill="white"
-            />
-            <rect
-              x="30"
-              y="36"
-              width="4"
-              height="2"
-              fill="white"
-            />
+            {/* Background pattern to show transparency */}
+            <defs>
+              <pattern id="checkerboard" patternUnits="userSpaceOnUse" width="4" height="4">
+                <rect width="2" height="2" fill="#f0f0f0"/>
+                <rect x="2" y="2" width="2" height="2" fill="#f0f0f0"/>
+                <rect x="2" y="0" width="2" height="2" fill="#d0d0d0"/>
+                <rect x="0" y="2" width="2" height="2" fill="#d0d0d0"/>
+              </pattern>
+            </defs>
+            
+            {/* Image frame */}
+            <rect x="20" y="22" width="24" height="18" rx="2" fill="url(#checkerboard)" stroke="#E81212" strokeWidth="2"/>
+            
+            {/* Error X mark */}
+            <circle cx="32" cy="31" r="8" fill="#E81212"/>
+            <path d="M28 27L36 35M36 27L28 35" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+            
+            {/* Warning triangle at bottom */}
+            <path d="M32 42L28 48H36L32 42Z" fill="#FFB020"/>
+            <path d="M31 44H33V46H31V44ZM31 47H33V48H31V47Z" fill="white"/>
           </svg>
         </div>
 
         {/* Content */}
         <div className="mb-8 text-center text-white">
-          <h3 className="mb-3 text-xl font-medium">Format File Tidak Valid</h3>
+          <h3 className="mb-3 text-xl font-medium">Gambar Harus Transparan</h3>
           <p className="text-sm leading-relaxed text-purple-200">
-            File yang Anda pilih tidak didukung. Harap pilih file dengan format 
-            <span className="font-semibold"> JPG, JPEG, atau PNG</span> dengan ukuran maksimal 10MB.
+            File gambar yang Anda pilih tidak memiliki latar belakang transparan. 
+            Harap pilih gambar dengan format <span className="font-semibold">PNG transparan </span> 
+            atau edit gambar Anda untuk menghilangkan latar belakang.
           </p>
         </div>
 
-        {/* Supported formats info */}
+        {/* Transparency requirements info */}
         <div className="p-4 mb-6 rounded-lg bg-white/10">
           <div className="text-sm text-white">
-            <div className="mb-2 font-medium">Format yang didukung:</div>
-            <div className="flex items-center space-x-4 text-xs">
-              <div className="flex items-center space-x-1">
+            <div className="mb-2 font-medium">Persyaratan gambar:</div>
+            <div className="space-y-1 text-xs">
+              <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>JPG/JPEG</span>
+                <span>Format PNG dengan background transparan</span>
               </div>
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>PNG</span>
+                <span>Tidak ada latar belakang putih atau warna solid</span>
               </div>
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                <span>Max 10MB</span>
+                <span>Ukuran maksimal 10MB</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Help text */}
+        <div className="p-3 mb-6 rounded-lg bg-blue-500/20">
+          <div className="text-xs text-blue-200">
+            <span className="font-medium">💡 Tips:</span> Gunakan tools seperti Remove.bg atau editor foto 
+            untuk menghilangkan background gambar Anda.
           </div>
         </div>
 
@@ -102,7 +114,7 @@ export default function ModalFileTypeError() {
             className="bg-[#E8121F] hover:bg-[#d43c46] text-white text-sm font-medium px-8 py-3 rounded-lg transition-colors duration-200 w-full"
             onClick={handleClose}
           >
-            Pilih File Lain
+            Pilih Gambar Transparan
           </button>
         </div>
       </div>

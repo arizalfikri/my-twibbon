@@ -17,7 +17,7 @@ const SignIn = () => {
   const [selectedRole, setSelectedRole] = useState(null);
   const { openToast } = useModalStore();
   const token = localStorage.getItem("token");
-  const { setEmail, setToken } = useGlobalStore();
+  const { setEmail, setToken, setFullName, setRole } = useGlobalStore();
 
   const navigate = useNavigate();
 
@@ -56,8 +56,12 @@ const SignIn = () => {
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("email", response.data.email);
+        localStorage.setItem("fullname", response.data.user.fullname);
+        localStorage.setItem("role", response.data.user.role);
         setToken(response.data.token);
         setEmail(response.data.email);
+        setFullName(response.data.user.fullname);
+        setRole(response.data.user.role);
         navigate("/");
       }
     } catch (error) {

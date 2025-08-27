@@ -5,14 +5,20 @@ import { useGlobalStore } from "../../helper/store/global.store";
 import { useNavigate } from "react-router-dom";
 
 function ModalLogout({ isOpen, onClose }) {
-  const { setToken, setEmail } = useGlobalStore();
+  const { setToken, setEmail, setFullName, setRole } = useGlobalStore();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
+    localStorage.removeItem("fullname");
+    localStorage.removeItem("role");
+
     setToken(null);
     setEmail(null);
+    setFullName(null);
+    setRole(null);
+
     onClose();
     navigate("/");
   };

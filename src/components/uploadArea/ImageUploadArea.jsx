@@ -1,27 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Upload,
   X,
-  Image,
+  Image as ImageIcon, // ✅ Rename icon
   Camera,
 } from "lucide-react";
 import { useModalStore } from "../../helper/store/modal.store";
 
-function ImageUploadArea({ name = "image", setValue, error }) {
+function ImageUploadArea({ name = "image", setValue, error, value }) {
   const [dragActive, setDragActive] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const { openModal } = useModalStore();
 
-  const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+  const allowedTypes = ["image/png"]; // ✅ PNG saja, karena transparansi
+
+  // ✅ Restore preview image when component mounts with existing value
+  useEffect(() => {
+    if (value instanceof File) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedImage(e.target.result);
+      };
+      reader.readAsDataURL(value);
+    } else if (value && typeof value === 'string') {
+      // Handle jika value berupa URL string
+      setUploadedImage(value);
+    } else if (!value) {
+      // Clear preview jika tidak ada value
+      setUploadedImage(null);
+    }
+  }, [value]);
 
   const handleFile = (file) => {
     if (file && allowedTypes.includes(file.type)) {
+      const img = new Image();
       const reader = new FileReader();
-      reader.onload = (e) => setUploadedImage(e.target.result);
+
+      reader.onload = (e) => {
+        img.src = e.target.result;
+
+        img.onload = () => {
+          // Buat canvas untuk membaca pixel
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+
+          const imageData = ctx.getImageData(0, 0, img.width, img.height).data;
+
+          let hasTransparency = false;
+          for (let i = 3; i < imageData.length; i += 4) {
+            if (imageData[i] < 255) {
+              hasTransparency = true;
+              break;
+            }
+          }
+
+          if (hasTransparency) {
+            setUploadedImage(img.src);
+            setValue(name, file); // kirim ke react-hook-form
+          } else {
+            openModal("modalFileError", true); // ✅ tampilkan error
+            setUploadedImage(null);
+            setValue(name, null);
+          }
+        };
+      };
+
       reader.readAsDataURL(file);
-      setValue(name, file); // ← kirim file ke react-hook-form
     } else {
-      openModal("modalFileError", true);
+      openModal("modalFileError", true); // format salah
     }
   };
 
@@ -85,7 +134,7 @@ function ImageUploadArea({ name = "image", setValue, error }) {
                   <X size={16} />
                   <span>Hapus</span>
                 </button>
-                <label className="flex items-center px-4 py-2 space-x-2 text-white transition-colors bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600">
+                <label className="flex items-center px-4 py-2 space-x-2 text-black transition-colors bg-yellow-400 rounded-lg cursor-pointer hover:bg-yellow-600">
                   <Camera size={16} />
                   <span>Ganti</span>
                   <input
@@ -106,8 +155,8 @@ function ImageUploadArea({ name = "image", setValue, error }) {
               <p className="mb-6 text-sm text-gray-500">
                 atau klik untuk memilih file
               </p>
-              <label className="inline-flex items-center px-6 py-3 space-x-2 text-white transition-colors bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700">
-                <Image size={20} />
+              <label className="inline-flex items-center px-6 py-3 space-x-2 text-black transition-colors bg-yellow-400 rounded-lg cursor-pointer hover:bg-yellow-600 ">
+                <ImageIcon  size={20} />
                 <span>Pilih Gambar</span>
                 <input
                   type="file"

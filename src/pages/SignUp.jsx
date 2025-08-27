@@ -69,6 +69,9 @@ function SignUp() {
           case 401:
             openToast("toast", true, "Email sudah terdaftar");
             break;
+              case 409:
+            openToast("toast", true, "Email sudah terdaftar");
+            break;
           default:
             openToast("toast", true, "Kesalahan Server");
             break;

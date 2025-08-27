@@ -5,7 +5,7 @@ import InputWithLabel from "../components/FormControl/InputWithLabel";
 import ImageUploadArea from "../components/uploadArea/ImageUploadArea";
 import ModalFileTypeError from "../components/modal/modalFileTypeError";
 import { useForm } from "react-hook-form";
-import { usePOST } from "../services/api";
+import { useGET, usePOST } from "../services/api";
 import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -13,6 +13,7 @@ import { createTwiboneSchema } from "../helper/yup";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import ModalLogin from "../components/modal/modalLogin";
+import { useDebounce } from "use-debounce";
 
 function TwiboneCreatePage() {
   const queryClient = useQueryClient();
@@ -24,6 +25,9 @@ function TwiboneCreatePage() {
   const { openToast } = useModalStore();
   const { token } = useGlobalStore();
   const navigate = useNavigate();
+
+  // Get twibbons data for duplicate checking
+  const { data: twibbonsData } = useGET("/twibbons");
 
   // Media Query: Deteksi desktop
   useEffect(() => {
@@ -41,9 +45,60 @@ function TwiboneCreatePage() {
     formState: { errors },
     watch,
     setValue,
+    setError,
+    clearErrors,
+    trigger,
   } = useForm({ resolver: yupResolver(createTwiboneSchema) });
 
   const descValue = watch("caption") || "";
+  const imageValue = watch("image"); // ✅ Watch image value
+
+  // Watch for title and link changes
+  const watchTitle = watch("title");
+  const watchLink = watch("link");
+  const [debouncedTitle] = useDebounce(watchTitle, 600);
+  const [debouncedLink] = useDebounce(watchLink, 600);
+
+  // Duplicate checking with debounce
+  useEffect(() => {
+    if (!twibbonsData?.data) return;
+
+    if (debouncedTitle) {
+      const isDuplicateTitle = twibbonsData.data.some(
+        (item) =>
+          item.title.toLowerCase() === debouncedTitle.toLowerCase()
+      );
+      if (isDuplicateTitle) {
+        setError("title", {
+          type: "manual",
+          message: "Judul sudah digunakan oleh kampanye lain",
+        });
+      } else {
+        clearErrors("title");
+      }
+    }
+
+    if (debouncedLink) {
+      const isDuplicateSlug = twibbonsData.data.some(
+        (item) =>
+          item.slug_event_twibbon.toLowerCase() === debouncedLink.toLowerCase()
+      );
+      if (isDuplicateSlug) {
+        setError("link", {
+          type: "manual",
+          message: "Link kampanye sudah digunakan",
+        });
+      } else {
+        clearErrors("link");
+      }
+    }
+  }, [
+    debouncedTitle,
+    debouncedLink,
+    twibbonsData,
+    setError,
+    clearErrors,
+  ]);
 
   // const visibilityOptions = [
   //   { value: "", label: "Pilih tingkat visibilitas" },
@@ -84,13 +139,8 @@ function TwiboneCreatePage() {
         data: data,
       });
       if (response.status === 201) {
-        queryClient.setQueryData(["twibbons"], (oldData) => {
-          if (!oldData) return { data: [response.data] };
-          return {
-            ...oldData,
-            data: [response.data, ...(oldData.data || [])],
-          };
-        });
+        await queryClient.invalidateQueries(["twibbons"]);
+        
         navigate("/");
       }
     } catch (error) {
@@ -105,6 +155,9 @@ function TwiboneCreatePage() {
         case 403:
           openToast("toast", true, "Anda Harus Menjadi Kontributor.", "info");
           setShowLoginModal(true);
+          break;
+        case 409:
+          openToast("toast", true, "Data sudah digunakan");
           break;
         default:
           openToast("toast", true, "Kesalahan Server");
@@ -124,7 +177,7 @@ function TwiboneCreatePage() {
             key={`${currentStep}-${key}`}
             className="w-full border-r border-gray-200 bg-gray-50 md:hidden"
           >
-            <ImageUploadArea name="image" setValue={setValue} error={errors} />
+            <ImageUploadArea name="image" setValue={setValue} error={errors} value={imageValue} />
           </div>
         );
 
@@ -209,6 +262,9 @@ function TwiboneCreatePage() {
     }
   };
 
+  // Check if submit should be disabled - include duplicate errors
+  const isSubmitDisabled = isPending || errors.title || errors.link;
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <NavbarEditor title="Create Twibone" />
@@ -220,6 +276,7 @@ function TwiboneCreatePage() {
             name="image"
             setValue={setValue}
             error={errors?.image}
+            value={imageValue}
           />
         </div>
 
@@ -239,7 +296,7 @@ function TwiboneCreatePage() {
                   <div
                     key={idx}
                     className={`h-2 flex-1 rounded-full ${
-                      idx <= currentStep ? "bg-blue-600" : "bg-gray-200"
+                      idx <= currentStep ? "bg-purple-600" : "bg-gray-200"
                     }`}
                   />
                 ))}
@@ -275,12 +332,12 @@ function TwiboneCreatePage() {
                         ? handleSubmit(onSubmit)
                         : nextStep
                     }
-                    disabled={isPending}
+                    disabled={isSubmitDisabled}
                     className={`flex items-center justify-center flex-1 px-6 py-3 text-white rounded-lg transition-colors
     ${
-      isPending
-        ? "bg-blue-400 cursor-not-allowed"
-        : "bg-blue-600 hover:bg-blue-700"
+      isSubmitDisabled
+        ? "bg-purple-400 cursor-not-allowed"
+        : "bg-purple-600 hover:bg-purple-700"
     }`}
                   >
                     {isPending ? (
