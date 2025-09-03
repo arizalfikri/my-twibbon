@@ -19,7 +19,9 @@ const queryClient = new QueryClient({
     },
   },
 });
-
+router.subscribe(({ location }) => {
+  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+});
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

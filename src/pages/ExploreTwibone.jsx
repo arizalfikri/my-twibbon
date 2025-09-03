@@ -1,15 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
-  Sparkles,
-  Filter,
   Grid,
   List,
   Search,
-  ImageOff,
-  Palette,
-  Heart,
-  SortAsc,
-  SortDesc,
   X,
 } from "lucide-react";
 import Navbar from "../components/layoutpage/Navbar";
@@ -17,6 +10,7 @@ import Footer from "../components/layoutpage/Footer";
 import CardHome from "../components/cards/CardHome";
 import { useGET } from "../services/api.js";
 import { useLocation, useSearchParams } from "react-router-dom";
+import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
 
 function ExploreTwibone() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,11 +23,15 @@ function ExploreTwibone() {
   const [showFilters, setShowFilters] = useState(false);
 
   const searchFromUrl = searchParams.get("search") || "";
-  
-  const displaySearchQuery = searchFromUrl ? decodeURIComponent(searchFromUrl).trim() : "";
+
+  const displaySearchQuery = searchFromUrl
+    ? decodeURIComponent(searchFromUrl).trim()
+    : "";
 
   const { data, isLoading, refetch } = useGET(
-    searchFromUrl ? `twibbons?q=${encodeURIComponent(searchFromUrl)}` : "twibbons"
+    searchFromUrl
+      ? `twibbons?q=${encodeURIComponent(searchFromUrl)}`
+      : "twibbons"
   );
 
   // Set default view mode sekali aja saat mount
@@ -56,28 +54,12 @@ function ExploreTwibone() {
 
   const twibbonData = data?.data || [];
 
-  // Sort logic (API handles search, we only handle sorting)
-  const sortedTwibbons = [...twibbonData].sort((a, b) => {
-    switch (sortBy) {
-      case "newest":
-        return new Date(b.created_at) - new Date(a.created_at);
-      case "oldest":
-        return new Date(a.created_at) - new Date(b.created_at);
-      case "title":
-        return (a.title || "").localeCompare(b.title || "");
-      case "popular":
-        return (b.views || 0) - (a.views || 0);
-      default:
-        return 0;
-    }
-  });
-
   // Update search query and URL
   const handleSearchChange = (value) => {
     setSearchQuery(value);
     if (value.trim()) {
       // Use cleaner URL params without excessive encoding
-      const cleanValue = value.trim().replace(/\s+/g, ' ');
+      const cleanValue = value.trim().replace(/\s+/g, " ");
       setSearchParams({ search: cleanValue });
     } else {
       setSearchParams({});
@@ -111,7 +93,8 @@ function ExploreTwibone() {
       );
     }
 
-    if (searchFromUrl && sortedTwibbons.length === 0) {
+    // ✅ Jika ada search tapi tidak ada data → tampilkan empty state pencarian
+    if (searchFromUrl && twibbonData.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
           <div className="max-w-md space-y-6 text-center">
@@ -125,8 +108,8 @@ function ExploreTwibone() {
                 Tidak Ditemukan
               </h3>
               <p className="leading-relaxed text-gray-600">
-                Tidak ada twibone yang cocok dengan pencarian "{displaySearchQuery}".
-                Coba kata kunci lain atau hapus filter.
+                Tidak ada twibone yang cocok dengan pencarian "
+                {displaySearchQuery}". Coba kata kunci lain atau hapus filter.
               </p>
             </div>
             <button
@@ -140,32 +123,8 @@ function ExploreTwibone() {
       );
     }
 
-    return (
-      <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
-        <div className="max-w-md space-y-6 text-center">
-          <div className="relative">
-            <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-purple-100 to-pink-100">
-              <ImageOff className="w-16 h-16 text-purple-400" />
-            </div>
-            <div className="absolute flex items-center justify-center w-10 h-10 bg-yellow-100 rounded-full -top-2 -right-2 animate-bounce">
-              <Palette className="w-5 h-5 text-yellow-600" />
-            </div>
-            <div className="absolute flex items-center justify-center w-10 h-10 bg-pink-100 rounded-full -bottom-2 -left-2 animate-pulse">
-              <Heart className="w-5 h-5 text-pink-600" />
-            </div>
-          </div>
-          <div className="space-y-3">
-            <h3 className="text-2xl font-bold text-gray-800">
-              Belum Ada Twibone Tersedia
-            </h3>
-            <p className="leading-relaxed text-gray-600">
-              Sepertinya belum ada twibone yang tersedia saat ini. Jadilah yang
-              pertama untuk membuat dan membagikan karya kreatif Anda!
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+    // ✅ Jika tidak ada search & kosong → pakai empty state dari Homepage
+    return <EmptyTwibbon />;
   };
 
   return (
@@ -202,8 +161,8 @@ function ExploreTwibone() {
                   {isLoading
                     ? "Memuat..."
                     : searchFromUrl
-                    ? `Menampilkan ${sortedTwibbons.length} hasil untuk "${displaySearchQuery}"`
-                    : `Menampilkan ${sortedTwibbons.length} twibone`}
+                    ? `Menampilkan ${twibbonData.length} hasil untuk "${displaySearchQuery}"`
+                    : `Menampilkan ${twibbonData.length} twibone`}
                 </p>
                 {searchFromUrl && (
                   <button
@@ -249,8 +208,8 @@ function ExploreTwibone() {
               {isLoading
                 ? "Memuat..."
                 : searchFromUrl
-                ? `Menampilkan ${sortedTwibbons.length} hasil untuk "${displaySearchQuery}"`
-                : `Menampilkan ${sortedTwibbons.length} twibone`}
+                ? `Menampilkan ${twibbonData.length} hasil untuk "${displaySearchQuery}"`
+                : `Menampilkan ${twibbonData.length} twibone`}
             </p>
             {searchFromUrl && (
               <button
@@ -271,15 +230,15 @@ function ExploreTwibone() {
               : "space-y-4"
           }`}
         >
-          {sortedTwibbons.length === 0
+          {twibbonData.length === 0
             ? renderEmptyState()
-            : sortedTwibbons.map((twibon) => (
+            : twibbonData.map((twibon) => (
                 <CardHome
                   key={twibon.id}
                   twibon={{
                     id: twibon.id,
                     title: twibon.title || "Tanpa Judul",
-                    author: twibon?.contributor?.fullname||"Gypem",
+                    author: twibon?.contributor?.fullname || "Gypem",
                     User: 0,
                     slug: twibon.slug_event_twibbon,
                     image: twibon.template_twibbon,
@@ -292,7 +251,7 @@ function ExploreTwibone() {
         </div>
 
         {/* Load More Button - if you want pagination */}
-        {sortedTwibbons.length > 0 && sortedTwibbons.length >= 20 && (
+        {twibbonData.length > 0 && twibbonData.length >= 20 && (
           <div className="mt-12 text-center">
             <button
               onClick={() => refetch()}

@@ -13,7 +13,7 @@ export const signUpSchema = yup.object({
     email: yup.string().required("Email harus diisi"),
     password: yup.string().required("Password harus diisi")
         .min(6, 'Password minimal 6 karakter'),
-    
+
     confirm_password: yup
         .string()
         .oneOf([yup.ref("password"), null], "Konfirmasi Password tidak cocok")
@@ -29,13 +29,14 @@ export const createTwiboneSchema = yup.object({
     caption: yup
         .string()
         .required("Caption harus diisi")
-        .max(500, "Caption maksimal 500 karakter"),
-    image: yup
-        .mixed()
-        .required("Gambar harus diunggah")
-        .test("fileType", "Format gambar tidak didukung", (value) => {
-            return value && ["image/jpeg", "image/png", "image/webp"].includes(value.type);
-        }),
+        .test("len", "Caption maksimal 500 karakter", (val) => {
+            return val ? val.length <= 500 : false;
+        }), image: yup
+            .mixed()
+            .required("Gambar harus diunggah")
+            .test("fileType", "Format gambar tidak didukung", (value) => {
+                return value && ["image/png"].includes(value.type);
+            }),
     link: yup
         .string()
         .required("Link harus diisi")

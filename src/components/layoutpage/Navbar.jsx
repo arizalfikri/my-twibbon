@@ -10,7 +10,12 @@ import {
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import LogoGypem from "../../assets/images/gypem_logo_putih.png";
-import { useNavigate, Link, useLocation, useSearchParams } from "react-router-dom";
+import {
+  useNavigate,
+  Link,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import { useGlobalStore } from "../../helper/store/global.store";
 import ModalLogout from "../modal/ModalLogout";
 
@@ -26,7 +31,7 @@ function Navbar() {
 
   // Sync search query with URL params when on explore page
   useEffect(() => {
-    if (location.pathname === '/explore') {
+    if (location.pathname === "/explore") {
       const searchFromUrl = searchParams.get("search");
       if (searchFromUrl) {
         setSearchQuery(decodeURIComponent(searchFromUrl));
@@ -48,10 +53,10 @@ function Navbar() {
     e.preventDefault();
     if (searchQuery.trim()) {
       // Use simpler encoding for mobile to avoid %20
-      const cleanQuery = searchQuery.trim().replace(/\s+/g, ' ');
+      const cleanQuery = searchQuery.trim().replace(/\s+/g, " ");
       navigate(`/explore?search=${cleanQuery}`);
       setIsMobileMenuOpen(false);
-    } else if (location.pathname === '/explore') {
+    } else if (location.pathname === "/explore") {
       setSearchParams({});
       setIsMobileMenuOpen(false);
     }
@@ -61,9 +66,9 @@ function Navbar() {
   const handleSearchInputChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
-    
+
     // If on explore page and desktop, update URL in real-time with proper encoding
-    if (location.pathname === '/explore' && window.innerWidth >= 768) {
+    if (location.pathname === "/explore" && window.innerWidth >= 768) {
       if (value.trim()) {
         setSearchParams({ search: value.trim() });
       } else {
@@ -74,7 +79,7 @@ function Navbar() {
 
   // Handle search key press for mobile
   const handleSearchKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch(e);
     }
   };
@@ -84,9 +89,9 @@ function Navbar() {
     e.preventDefault();
     if (searchQuery.trim()) {
       // Use simpler encoding to avoid %20 display
-      const cleanQuery = searchQuery.trim().replace(/\s+/g, ' ');
+      const cleanQuery = searchQuery.trim().replace(/\s+/g, " ");
       navigate(`/explore?search=${cleanQuery}`);
-    } else if (location.pathname === '/explore') {
+    } else if (location.pathname === "/explore") {
       // Clear search params if empty and already on explore page
       setSearchParams({});
     }
@@ -95,7 +100,7 @@ function Navbar() {
   // Function to clear search
   const clearSearch = () => {
     setSearchQuery("");
-    if (location.pathname === '/explore') {
+    if (location.pathname === "/explore") {
       setSearchParams({});
     }
   };
@@ -148,7 +153,6 @@ function Navbar() {
 
             {/* Desktop Right Section */}
             <div className="items-center hidden space-x-2 md:flex">
-             
               <Link
                 to="/create"
                 className="bg-yellow-400 text-[#4C0D68] px-4 py-2 rounded-full font-semibold flex items-center space-x-2 hover:bg-yellow-300 transition-colors"
@@ -209,7 +213,6 @@ function Navbar() {
 
               {/* Mobile Menu Items */}
               <div className="flex flex-col space-y-2">
-                
                 <Link
                   to="/create"
                   className="bg-yellow-400 text-[#4C0D68] px-4 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors"
@@ -226,7 +229,10 @@ function Navbar() {
                 {/* Mobile Login Button */}
                 {token ? (
                   <div className="px-4 space-y-3">
-                    <Link to="/DetailProfile" className="grid grid-cols-[auto_1fr] gap-3 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg">
+                    <Link
+                      to="/DetailProfile"
+                      className="grid grid-cols-[auto_1fr] gap-3 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg"
+                    >
                       <div className="bg-[#4C0D68] p-2 rounded-full w-10 h-10 flex items-center justify-center">
                         <User className="w-5 h-5 text-white" />
                       </div>
@@ -294,26 +300,38 @@ function Navbar() {
             </h3>
 
             {/* Login Button */}
-            {token && (
-              <Link to="/DetailProfile" className="grid grid-cols-[auto_1fr] gap-4 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg">
+            {token ? (
+              <Link
+                to="/DetailProfile"
+                className="grid grid-cols-[auto_1fr] gap-4 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg"
+              >
                 <div className="bg-[#4C0D68] p-2 rounded-full w-10 h-10 flex items-center justify-center">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-[#4C0D68]">{fullname}</p>
+                  <p className="text-sm font-semibold text-[#4C0D68]">
+                    {fullname}
+                  </p>
                   <p className="text-xs text-gray-600">{email}</p>
                 </div>
               </Link>
-            )}
-
-            {!token && (
-              <button
-                className="w-full bg-[#4C0D68] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-[#6B1E7A] transition-colors"
-                onClick={() => navigate("/SignIn")}
-              >
-                <User className="w-5 h-5" />
-                <span>Login</span>
-              </button>
+            ) : (
+              <>
+                <button
+                  className="w-full bg-[#4C0D68] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-[#6B1E7A] transition-colors"
+                  onClick={() => navigate("/SignIn")}
+                >
+                  <User className="w-5 h-5" />
+                  <span>Login</span>
+                </button>
+                <button
+                  className="w-full bg-yellow-400  text-[#4C0D68] px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors"
+                  onClick={() => navigate("/SignUp")}
+                >
+                  <User className="w-5 h-5" />
+                  <span>Daftar Kontributor</span>
+                </button>
+              </>
             )}
           </div>
 
@@ -330,7 +348,9 @@ function Navbar() {
               className="object-contain w-8 h-8"
             />
             <div>
-              <p className="text-sm font-semibold text-gray-800">Gypem Twibone</p>
+              <p className="text-sm font-semibold text-gray-800">
+                Gypem Twibone
+              </p>
               <p className="text-xs text-gray-500">
                 © 2024 All rights reserved
               </p>
@@ -345,17 +365,17 @@ function Navbar() {
             >
               Logout
             </button>
-            )}
-          </div>
+          )}
         </div>
+      </div>
 
-        {/* ModalLogout Component */}
-        <ModalLogout
-          isOpen={isLogoutModalOpen} 
-          onClose={() => setIsLogoutModalOpen(false)} 
-        />
-      </>
-    );
-  }
+      {/* ModalLogout Component */}
+      <ModalLogout
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+      />
+    </>
+  );
+}
 
-  export default Navbar;
+export default Navbar;

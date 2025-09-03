@@ -38,7 +38,7 @@ function MainTwibone() {
         status: "",
         eventTitle: twibbon.data.title,
         creator: utw.user_id,
-        user_twibbon_id: utw.id, 
+        user_twibbon_id: utw.id,
       }));
       setCards(userCards);
     }
@@ -48,7 +48,7 @@ function MainTwibone() {
     if (twibbon?.data?.template_twibbon) {
       const imageURL = `https://api-twibbon-dev.digiduindo.com${twibbon.data.template_twibbon}`;
       setFrameImage(imageURL);
-    } 
+    }
   }, [twibbon]);
 
   useState(() => {
@@ -148,26 +148,21 @@ function MainTwibone() {
             </div>
           </div>
           <div className="items-center justify-end hidden space-x-4 lg:flex">
-            {/* Link (clickable only on input area) */}
             <div className="flex overflow-hidden bg-gray-100 border border-gray-300 rounded-lg">
               <span className="px-3 py-2 text-sm text-gray-500 bg-gray-200 select-none">
-                twibbo.nz/
+                TwibbonGypem/
               </span>
               <input
                 type="text"
                 readOnly
-                value={
-                  twibbon?.data?.link?.split("http://twibbongypem.com/")[1] || "campaign-link"
-                }
+                value={twibbon?.data?.link?.replace(/^https?:\/\/[^/]+\//, "")}
                 onClick={() =>
                   navigator.clipboard.writeText(twibbon?.data?.link)
                 }
                 className="px-3 py-2 text-sm text-gray-800 bg-transparent focus:outline-none w-[160px] truncate cursor-pointer"
-                title="Klik untuk salin link"
+                title={twibbon?.data?.link}
               />
             </div>
-
-
           </div>
         </div>
       </header>

@@ -1,15 +1,29 @@
 import React, { useState, useEffect } from "react";
 import ModalAlert from "../../layout/ModalAlert";
-import { X, MessageCircle, Send, ArrowLeft } from "lucide-react";
-import { useGET, usePOST } from "../../services/api";
+import {
+  X,
+  MessageCircle,
+  Send,
+  ArrowLeft,
+  Edit3,
+  Trash2,
+  Check,
+  XIcon,
+} from "lucide-react";
+import { useGET, usePOST, usePATCH, useDELETE } from "../../services/api";
 import { useForm } from "react-hook-form";
 import ModalLogin from "./modalLogin";
+import ModalDeleteComment from "./ModalDeleteComment";
 
 function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [komentars, setKomentars] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [expandedComments, setExpandedComments] = useState(new Set());
+  const [editingComment, setEditingComment] = useState(null);
+  const [editContent, setEditContent] = useState("");
+  const [deleteCommentId, setDeleteCommentId] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
 
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 1024 : true
@@ -24,9 +38,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const {
-    data: infoUser,
-  } = useGET(`event-user-twibbon/${id_user_twibbons}`);
+  const { data: infoUser } = useGET(`event-user-twibbon/${id_user_twibbons}`);
 
   const {
     data: KomentarData,
@@ -34,34 +46,38 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     refetch,
   } = useGET(`twibbon/user/${id_user_twibbons}/comments`);
 
-  const { mutateAsync, isPending } = usePOST(
+  const { mutateAsync: postComment, isPending } = usePOST(
     `twibbon/user/${id_user_twibbons}/comments`
   );
 
-  // Helper function to format time - Fixed negative time issue
+  const { mutateAsync: patchComment } = usePATCH(
+    `twibbon/user/${id_user_twibbons}/comments/:comment_id`
+  );
+
+  // Form untuk komentar baru
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  // Helper function to format time
   const formatTime = (dateString) => {
     const now = new Date();
     const commentDate = new Date(dateString);
     const diffInMs = now - commentDate;
 
-    // Handle negative differences (future dates or invalid dates)
-    if (diffInMs < 0) {
-      return "baru saja";
-    }
+    if (diffInMs < 0) return "baru saja";
 
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-    if (diffInMinutes === 0) {
-      return "baru saja";
-    } else if (diffInMinutes < 60) {
-      return `${diffInMinutes} menit yang lalu`;
-    } else if (diffInHours < 24) {
-      return `${diffInHours} jam yang lalu`;
-    } else {
-      return `${diffInDays} hari yang lalu`;
-    }
+    if (diffInMinutes === 0) return "baru saja";
+    if (diffInMinutes < 60) return `${diffInMinutes} menit yang lalu`;
+    if (diffInHours < 24) return `${diffInHours} jam yang lalu`;
+    return `${diffInDays} hari yang lalu`;
   };
 
   // Helper function to get user initials
@@ -91,21 +107,82 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     setExpandedComments(newExpanded);
   };
 
-  const {
-    handleSubmit,
-    register,
-    reset,
-    formState: { errors },
-  } = useForm();
+  // Check if user can edit/delete comment
+  const canEditDeleteComment = (comment) => {
+    const currentUserFullName = localStorage.getItem("fullname");
+
+    if (!currentUserFullName) return false;
+
+    // Check if current user is the comment author
+    const isCommentOwner =
+      comment.user &&
+      comment.user.toLowerCase() === currentUserFullName.toLowerCase();
+
+    return isCommentOwner;
+  };
+
+  // Handle edit comment
+  const handleEditComment = (comment) => {
+    // Close any existing edit first
+    if (editingComment !== null) {
+      setEditingComment(null);
+      setEditContent("");
+    }
+
+    // Use setTimeout to ensure state is cleared before setting new state
+    setTimeout(() => {
+      setEditingComment(comment.id);
+      setEditContent(comment.comment);
+    }, 0);
+  };
+
+  // Save edited comment
+  const handleSaveEdit = async (commentId) => {
+    if (!editContent.trim()) return;
+
+    try {
+      const response = await patchComment({
+        url: `twibbon/user/${id_user_twibbons}/comments/${commentId}`,
+        data: {
+          content: editContent,
+        },
+      });
+
+      if (response.status === 200) {
+        setEditingComment(null);
+        setEditContent("");
+        refetch();
+      }
+    } catch (error) {
+      console.error("Error updating comment:", error);
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        setShowLoginModal(true);
+      }
+    }
+  };
+
+  // Cancel edit
+  const handleCancelEdit = () => {
+    setEditingComment(null);
+    setEditContent("");
+  };
+
+  // Handle delete success
+  const handleDeleteSuccess = () => {
+    refetch();
+  };
 
   useEffect(() => {
     if (KomentarData?.data) {
       const transformedComments = KomentarData.data.map((comment) => ({
         id: comment.id,
-        user: ` ${comment?.author_gypem?.user_firstname||comment?.author?.fullname}`,
+        user: `${
+          comment?.author_gypem?.user_firstname || comment?.author?.fullname
+        }`,
         comment: comment.content,
         time: formatTime(comment.createdAt),
         user_id: comment.user_id,
+        email: comment?.author_gypem?.user_email || comment?.author?.email,
         replies: comment.replies || [],
       }));
       setKomentars(transformedComments);
@@ -140,7 +217,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     }
 
     try {
-      const response = await mutateAsync({
+      const response = await postComment({
         url: `twibbon/user/${id_user_twibbons}/comments`,
         data: {
           content: data.comment,
@@ -177,8 +254,102 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
       refetch();
     }
   };
-
+  const showDeleteConfirmation = (commentId) => {
+    setDeleteCommentId(commentId);
+  };
   const data = cardData;
+
+  // Render comment component
+  const renderComment = (c) => {
+    const isExpanded = expandedComments.has(c.id);
+    const shouldTruncate = c.comment.length > 100;
+    const displayComment =
+      isExpanded || !shouldTruncate ? c.comment : c.comment.slice(0, 100);
+    const canEdit = canEditDeleteComment(c);
+    const isEditing = editingComment === c.id;
+
+    return (
+      <div key={c.id} className="flex space-x-3">
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600">
+          <span className="text-xs font-bold text-white">
+            {getUserInitials(c.user)}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="px-3 py-2 bg-gray-100 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-gray-800 truncate">
+                {truncateText(c.user, 25)}
+              </div>
+              {canEdit && !isEditing && (
+                <div className="flex space-x-1">
+                  <button
+                    onClick={() => handleEditComment(c)}
+                    className="p-1 text-gray-500 rounded hover:text-blue-600 hover:bg-blue-50"
+                  >
+                    <Edit3 className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={() => showDeleteConfirmation(c.id)}
+                    className="p-1 text-gray-500 rounded hover:text-red-600 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {isEditing ? (
+              <div className="mt-2">
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:border-blue-500"
+                  rows="3"
+                  placeholder="Edit komentar..."
+                  autoFocus
+                  onFocus={(e) => {
+                    // Set cursor to end of text
+                    const length = e.target.value.length;
+                    e.target.setSelectionRange(length, length);
+                  }}
+                />
+                <div className="flex justify-end mt-2 space-x-2">
+                  <button
+                    onClick={handleCancelEdit}
+                    className="flex items-center px-2 py-1 text-xs text-gray-600 hover:text-gray-800"
+                  >
+                    <XIcon className="w-3 h-3 mr-1" />
+                    Batal
+                  </button>
+                  <button
+                    onClick={() => handleSaveEdit(c.id)}
+                    className="flex items-center px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600"
+                  >
+                    <Check className="w-3 h-3 mr-1" />
+                    Simpan
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm text-gray-700 break-words break-all overflow-wrap-anywhere">
+                {displayComment}
+                {shouldTruncate && (
+                  <button
+                    onClick={() => toggleCommentExpansion(c.id)}
+                    className="inline-block ml-2 text-blue-600 hover:text-blue-800 focus:outline-none"
+                  >
+                    {isExpanded ? "Sembunyikan" : "Selengkapnya"}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="mt-1 ml-3 text-xs text-gray-500">{c.time}</div>
+        </div>
+      </div>
+    );
+  };
 
   // Mobile full screen version
   const MobileVersion = () => (
@@ -201,10 +372,10 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
           {/* Image - Centered for Surface Pro 7 width */}
           <div className="flex justify-center p-4 bg-gray-50">
             <div className="w-full max-w-md">
-              <img 
-                src={data.image} 
-                alt={data.title} 
-                className="w-full h-auto rounded-lg shadow-md" 
+              <img
+                src={data.image}
+                alt={data.title}
+                className="w-full h-auto rounded-lg shadow-md"
               />
             </div>
           </div>
@@ -219,7 +390,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
               <div className="text-sm text-gray-600">
                 {showFullDescription
                   ? infoUser?.data?.caption || ""
-                  : (infoUser?.data?.caption?.slice(0, 150) ?? "")}
+                  : infoUser?.data?.caption?.slice(0, 150) ?? ""}
               </div>
               {infoUser?.data?.caption?.length > 150 && (
                 <button
@@ -236,15 +407,24 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
             <div className="flex items-center mb-6 space-x-3 text-sm text-gray-500">
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                 <span className="text-sm font-bold text-white">
-                  {getUserInitials(infoUser?.data?.author?.user_firstname || "Unknown User")}
+                  {getUserInitials(
+                    infoUser?.data?.author?.user_firstname || "Unknown User"
+                  )}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-gray-700 truncate">
-                  {truncateText(infoUser?.data?.author?.user_firstname || "Unknown User", 20)}
+                  {truncateText(
+                    infoUser?.data?.author?.user_firstname || "Unknown User",
+                    20
+                  )}
                 </div>
                 <div className="text-sm truncate">
-                  @{truncateText(infoUser?.data?.author?.user_email || "unknown@email.com", 25)}
+                  @
+                  {truncateText(
+                    infoUser?.data?.author?.user_email || "unknown@email.com",
+                    25
+                  )}
                 </div>
               </div>
             </div>
@@ -304,44 +484,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                       <p className="text-sm text-gray-400">Mulai percakapan</p>
                     </div>
                   ) : (
-                    komentars.map((c) => {
-                      const isExpanded = expandedComments.has(c.id);
-                      const shouldTruncate = c.comment.length > 100;
-                      const displayComment = isExpanded || !shouldTruncate 
-                        ? c.comment 
-                        : c.comment.slice(0, 100);
-
-                      return (
-                        <div key={c.id} className="flex space-x-3">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600">
-                            <span className="text-xs font-bold text-white">
-                              {getUserInitials(c.user)}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="px-3 py-2 bg-gray-100 rounded-lg">
-                              <div className="text-sm font-medium text-gray-800 truncate">
-                                {truncateText(c.user, 25)}
-                              </div>
-                              <div className="text-sm text-gray-700 break-words break-all overflow-wrap-anywhere">
-                                {displayComment}
-                                {shouldTruncate && (
-                                  <button
-                                    onClick={() => toggleCommentExpansion(c.id)}
-                                    className="inline-block ml-2 text-blue-600 hover:text-blue-800 focus:outline-none"
-                                  >
-                                    {isExpanded ? "Sembunyikan" : "Selengkapnya"}
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                            <div className="mt-1 ml-3 text-xs text-gray-500">
-                              {c.time}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
+                    komentars.map((c) => renderComment(c))
                   )}
                 </div>
               </div>
@@ -389,7 +532,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 <div className="overflow-hidden overflow-y-auto text-sm text-gray-600 max-h-20">
                   {showFullDescription
                     ? infoUser?.data?.caption || ""
-                    : (infoUser?.data?.caption?.slice(0, 100) ?? "")}
+                    : infoUser?.data?.caption?.slice(0, 100) ?? ""}
                 </div>
                 {infoUser?.data?.caption?.length > 100 && (
                   <button
@@ -404,15 +547,24 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
               <div className="flex items-center space-x-3 text-sm text-gray-500">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                   <span className="text-xs font-bold text-white">
-                    {getUserInitials(infoUser?.data?.author?.user_firstname || "Unknown User")}
+                    {getUserInitials(
+                      infoUser?.data?.author?.user_firstname || "Unknown User"
+                    )}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-gray-700 truncate">
-                    {truncateText(infoUser?.data?.author?.user_firstname || "Unknown User", 20)}
+                    {truncateText(
+                      infoUser?.data?.author?.user_firstname || "Unknown User",
+                      20
+                    )}
                   </div>
                   <div className="text-xs truncate">
-                    @{truncateText(infoUser?.data?.author?.user_email || "unknown@email.com", 25)}
+                    @
+                    {truncateText(
+                      infoUser?.data?.author?.user_email || "unknown@email.com",
+                      25
+                    )}
                   </div>
                 </div>
               </div>
@@ -476,44 +628,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                       <p className="text-sm text-gray-400">Mulai percakapan</p>
                     </div>
                   ) : (
-                    komentars.map((c) => {
-                      const isExpanded = expandedComments.has(c.id);
-                      const shouldTruncate = c.comment.length > 100;
-                      const displayComment = isExpanded || !shouldTruncate 
-                        ? c.comment 
-                        : c.comment.slice(0, 100);
-
-                      return (
-                        <div key={c.id} className="flex space-x-3">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600">
-                            <span className="text-xs font-bold text-white">
-                              {getUserInitials(c.user)}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="px-3 py-2 bg-gray-100 rounded-lg">
-                              <div className="text-sm font-medium text-gray-800 truncate">
-                                {truncateText(c.user, 25)}
-                              </div>
-                              <div className="text-sm text-gray-700 break-words break-all overflow-wrap-anywhere">
-                                {displayComment}
-                                {shouldTruncate && (
-                                  <button
-                                    onClick={() => toggleCommentExpansion(c.id)}
-                                    className="inline-block ml-2 text-blue-600 hover:text-blue-800 focus:outline-none"
-                                  >
-                                    {isExpanded ? "Sembunyikan" : "Selengkapnya"}
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                            <div className="mt-1 ml-3 text-xs text-gray-500">
-                              {c.time}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
+                    komentars.map((c) => renderComment(c))
                   )}
                 </div>
               )}
@@ -532,20 +647,23 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     </ModalAlert>
   );
 
-  // Render based on isMobile state
   return (
     <>
       {isMobile ? <MobileVersion /> : <DesktopVersion />}
 
-      {/* Login Modal for Mobile */}
-      {isMobile && (
-        <ModalLogin
-          isOpen={showLoginModal}
-          onClose={() => setShowLoginModal(false)}
-          onSwitchToRegister={handleSwitchToRegister}
-          onLoginSuccess={handleLoginSuccess}
-        />
-      )}
+      <ModalLogin
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSwitchToRegister={handleSwitchToRegister}
+        onLoginSuccess={handleLoginSuccess}
+      />
+
+      <ModalDeleteComment
+        commentId={deleteCommentId}
+        id_user_twibbons={id_user_twibbons}
+        onDeleteSuccess={handleDeleteSuccess}
+        onClose={() => setDeleteCommentId(null)}
+      />
     </>
   );
 }

@@ -124,7 +124,7 @@ function ImageUploadArea({ name = "image", setValue, error, value }) {
               <img
                 src={uploadedImage}
                 alt="Uploaded"
-                className="object-contain max-w-full mb-4 rounded-lg shadow-md max-h-64"
+                className="object-contain max-w-full max-h-full mb-4 rounded-lg shadow-md md:h-[50vh]"
               />
               <div className="flex space-x-3">
                 <button

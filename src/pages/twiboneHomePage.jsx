@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import {
   Sparkles,
-  Filter,
   Grid,
   List,
   Plus,
-  ImageOff,
   Search,
-  Palette,
-  Heart,
   ArrowRight,
+  Upload,
+  Share2,
+  CheckCircle,
 } from "lucide-react";
-import { Link } from "react-router-dom"; // Assuming you're using React Router
+import { Link, useNavigate } from "react-router-dom"; // Assuming you're using React Router
 import Navbar from "../components/layoutpage/Navbar";
 import Footer from "../components/layoutpage/Footer";
 import CardHome from "../components/cards/CardHome";
@@ -19,28 +18,29 @@ import { useGET } from "../services/api.js";
 
 const categories = ["Semua"]; // sementara cuma ada 'Semua'
 
-import frame from "../assets/images/frame.png";
-import frame2 from "../assets/images/frame2.png";
-import frame3 from "../assets/images/frame3.png";
-import frame4 from "../assets/images/frame4.png";
-import twibonescroll from "../assets/images/twibone_scroll.png";
-import twibonescroll2 from "../assets/images/twibone_scroll2.png";
+import ASOE from "../assets/images/ASOE-Scroll.png";
+import IIS from "../assets/images/IIS-Scroll.png";
+import S2O from "../assets/images/S2O-Scroll.png";
+import Language from "../assets/images/Language-scroll.png";
+import IYPES from "../assets/images/IYPES-Scroll.png";
+import LOF6 from "../assets/images/LOF6-Scroll.png";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/free-mode";
+import "swiper/css/autoplay";
+
+import { Autoplay, FreeMode } from "swiper/modules";
+import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
 
 // Sample photos for the scrolling gallery
-const samplePhotos = [
-  frame,
-  frame2,
-  frame3,
-  frame4,
-  twibonescroll,
-  twibonescroll2,
-];
 
 function TwiboneHomepage() {
   const { data, isLoading } = useGET("twibbons");
-
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [viewMode, setViewMode] = useState("grid");
+  const samplePhotos = [ASOE, IIS, S2O, Language, IYPES,LOF6,ASOE, IIS, S2O, Language, IYPES];
 
   // 🔹 Set default: mobile list, laptop grid
   useEffect(() => {
@@ -60,210 +60,153 @@ function TwiboneHomepage() {
     };
   }, []);
 
-  // Add CSS for diagonal scrolling animation
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.textContent = `
-      @keyframes diagonal-scroll {
-        0% {
-          transform: translateX(0) translateY(0);
-        }
-        100% {
-          transform: translateX(-50%) translateY(20px);
-        }
-      }
-      
-      .animate-diagonal-scroll {
-        animation: diagonal-scroll 25s linear infinite;
-      }
-    `;
-    document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
-
   const twibbonData = data?.data || [];
 
   // 🔹 Limit to 8 twibones for homepage
   const filteredTwibbons = twibbonData.filter(() => true).slice(0, 8);
-
-  console.log("twibbonData:", twibbonData);
-
-  const renderEmptyState = () => {
-    return (
-      <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
-        <div className="max-w-md space-y-6 text-center">
-          <div className="relative">
-            <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-purple-100 to-pink-100">
-              <ImageOff className="w-16 h-16 text-purple-400" />
-            </div>
-            <div className="absolute flex items-center justify-center w-10 h-10 bg-yellow-100 rounded-full -top-2 -right-2 animate-bounce">
-              <Palette className="w-5 h-5 text-yellow-600" />
-            </div>
-            <div className="absolute flex items-center justify-center w-10 h-10 bg-pink-100 rounded-full -bottom-2 -left-2 animate-pulse">
-              <Heart className="w-5 h-5 text-pink-600" />
-            </div>
-            <div className="absolute flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full top-4 -left-4 animate-ping">
-              <Search className="w-4 h-4 text-blue-600" />
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <h3 className="text-2xl font-bold text-gray-800">
-              Belum Ada Twibone Tersedia
-            </h3>
-            <p className="leading-relaxed text-gray-600">
-              Sepertinya belum ada kreasi twibone yang tersedia saat ini.
-              Jadilah yang pertama untuk membuat dan membagikan karya kreatif
-              Anda!
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center justify-center gap-3 pt-4 sm:flex-row">
-            <button className="bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300 flex items-center gap-2 group">
-              <Plus className="w-5 h-5 transition-transform duration-300 group-hover:rotate-90" />
-              Buat Twibone Pertama
-            </button>
-            <button className="flex items-center gap-2 px-6 py-3 font-semibold text-purple-700 transition-all duration-300 border-2 border-purple-200 rounded-full hover:bg-purple-50">
-              <Search className="w-4 h-4" />
-              Cari Inspirasi
-            </button>
-          </div>
-
-          <div className="flex items-center justify-center pt-6 space-x-4">
-            <div className="flex space-x-2">
-              <div className="w-3 h-3 bg-purple-300 rounded-full animate-pulse"></div>
-              <div className="w-3 h-3 delay-100 bg-pink-300 rounded-full animate-pulse"></div>
-              <div className="w-3 h-3 delay-200 bg-yellow-300 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
       {/* Header Section with Diagonal Scrolling Photos */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#4C0D68] to-[#6B1E7A] text-white">
-        <div className="relative z-20 max-w-screen-xl px-4 mx-auto">
-          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#4C0D68] to-[#6B1E7A] text-white h-[540px] md:h-[640px] ">
+        <div className="relative z-20 grid h-full px-4 mx-auto max-w-screen-2xl">
+          <div className="relative grid items-center h-full gap-8 md:grid-cols-2 lg:gap-16">
             {/* ✅ Left Column - Text Content */}
-            <div className="items-center py-10 pt-10 space-y-6 text-center lg:text-left">
+            <div className="items-center justify-center space-y-4 text-center md:text-left md:space-y-6">
               <div className="flex items-center justify-center mb-4 lg:justify-start">
-                <Sparkles className="w-8 h-8 mr-2 text-yellow-400" />
-                <h1 className="text-4xl font-bold md:text-6xl">
+                <Sparkles className="w-6 h-6 mr-2 text-yellow-400 sm:w-7 sm:h-7 md:w-8 md:h-8" />
+                <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl">
                   Gypem Twibone
                 </h1>
               </div>
-              <p className="text-xl text-purple-100 md:text-2xl">
+              <p className="flex items-center justify-center text-lg text-purple-100 sm:text-xl md:text-2xl ">
                 Buat dan bagikan foto twibon untuk momen spesial Anda
               </p>
-              <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row lg:items-start lg:justify-start">
+              <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row md:items-start lg:justify-start lg:ms-10">
                 <Link to="/create">
-                  <button className="bg-yellow-400 text-[#4C0D68] px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-colors flex items-center gap-2">
-                    <Plus className="w-5 h-5" />
+                  <button className="bg-yellow-400 text-[#4C0D68] px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:bg-yellow-300 transition-colors flex items-center gap-2">
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                     Mulai Membuat
                   </button>
                 </Link>
                 <Link
                   to="/explore"
-                  className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-[#4C0D68] transition-colors inline-flex items-center gap-2"
+                  className="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold text-base sm:text-lg hover:bg-white hover:text-[#4C0D68] transition-colors inline-flex items-center gap-2"
                 >
                   Jelajahi Twibone
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Link>
-              </div>
-            </div>
-
-            {/* ✅ Right Column - Diagonal Scrolling Photos (Desktop only) */}
-            <div className="relative hidden overflow-hidden h-96 lg:block">
-              <div
-                className="absolute inset-0"
-                style={{
-                  transform: "rotate(-110deg)",
-                  transformOrigin: "center",
-                  width: "120%",
-                  height: "120%",
-                  left: "-10%",
-                  top: "-20%",
-                }}
-              >
-                {[0, 1].map((rowIndex) => (
-                  <div
-                    key={rowIndex}
-                    className="flex mb-6 space-x-3 animate-diagonal-scroll"
-                    style={{
-                      animationDelay: `${rowIndex * -3}s`,
-                      animationDuration: "25s",
-                      width: "200%",
-                      marginTop: `${rowIndex * 80}px`,
-                    }}
-                  >
-                    {[...samplePhotos, ...samplePhotos]
-                      .sort(() => Math.random() - 0.5)
-                      .map((photo, photoIndex) => (
-                        <div
-                          key={`${rowIndex}-${photoIndex}`}
-                          className="flex-shrink-0 w-40 h-40 overflow-hidden shadow-xl rounded-xl bg-white/10 backdrop-blur-sm aspect-square"
-                        >
-                          <div
-                            className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover hover:scale-110"
-                            style={{ backgroundImage: `url(${photo})` }}
-                          />
-                        </div>
-                      ))}
-                  </div>
-                ))}
               </div>
             </div>
           </div>
         </div>
-
-        {/* ✅ Full width gallery for mobile/tablet
-        <div className="relative overflow-hidden h-80 lg:hidden">
+        <div className="absolute bottom-0 w-full h-40 md:top-0 md:h-full md:-right-96">
           <div
-            className="absolute inset-0"
-            style={{
-              transform: "rotate(-110deg)",
-              transformOrigin: "center",
-              width: "150%",
-              height: "150%",
-              left: "-15%",
-              top: "-20%",
-            }}
+            className="absolute inset-0 rotate-[-110deg] md:origin-center w-[120%] h-[120%]  md:left-[-10%] md:top-[-20%] left-[-40%]  top-[-0%]
+      
+    "
           >
-            {[0, 1].map((rowIndex) => (
-              <div
-                key={rowIndex}
-                className="flex mb-6 space-x-3 animate-diagonal-scroll"
-                style={{
-                  animationDelay: `${rowIndex * -3}s`,
-                  animationDuration: "25s",
-                  width: "200%",
-                  marginTop: `${rowIndex * 60}px`,
-                }}
-              >
-                {[...samplePhotos, ...samplePhotos].map((photo, photoIndex) => (
-                  <div
-                    key={`${rowIndex}-${photoIndex}`}
-                     className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl rounded-xl bg-white/10 backdrop-blur-sm aspect-square"
-                  >
+            {/* === Row 1 === */}
+            <Swiper
+              modules={[Autoplay, FreeMode]}
+              slidesPerView="auto"
+              spaceBetween={20}
+              loop={true}
+              grabCursor={false}
+              centeredSlides={false}
+              allowTouchMove={true}
+              autoplay={{
+                delay: 0, // Changed from 1 to 0
+                disableOnInteraction: false,
+                reverseDirection: false,
+              }}
+              style={{
+                "--swiper-wrapper-transition-timing-function": "linear", // Added for smooth constant speed
+              }}
+              speed={6000}
+              className="w-full mb-10"
+            >
+              {[...samplePhotos, ...samplePhotos].map((photo, index) => (
+                <SwiperSlide key={`row1-${index}`} className="!w-auto">
+                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 backdrop-blur-sm rounded-xl">
                     <div
                       className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover hover:scale-110"
                       style={{ backgroundImage: `url(${photo})` }}
                     />
                   </div>
-                ))}
-              </div>
-            ))}
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* === Row 2 === */}
+            <Swiper
+              modules={[Autoplay, FreeMode]}
+              slidesPerView="auto"
+              spaceBetween={20}
+              loop={true}
+              grabCursor={false}
+              centeredSlides={false}
+              allowTouchMove={true}
+              autoplay={{
+                delay: 0,
+                disableOnInteraction: false,
+                reverseDirection: true,
+              }}
+              style={{
+                "--swiper-wrapper-transition-timing-function": "linear",
+              }}
+              speed={7000}
+              className="w-full mb-10"
+            >
+              {[...samplePhotos, ...samplePhotos].map((photo, index) => (
+                <SwiperSlide key={`row2-${index}`} className="!w-auto">
+                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 backdrop-blur-sm rounded-xl">
+                    <div
+                      className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover hover:scale-110"
+                      style={{ backgroundImage: `url(${photo})` }}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* === Row 3 === */}
+            <Swiper
+              modules={[Autoplay, FreeMode]}
+              slidesPerView="auto"
+              spaceBetween={20}
+              loop={true}
+              grabCursor={false}
+              centeredSlides={false}
+              allowTouchMove={true}
+              autoplay={{
+                delay: 0,
+                disableOnInteraction: false,
+                reverseDirection: false,
+              }}
+              style={{
+                "--swiper-wrapper-transition-timing-function": "linear",
+              }}
+              speed={5000}
+              className="w-full"
+            >
+              {[...samplePhotos, ...samplePhotos].map((photo, index) => (
+                <SwiperSlide key={`row3-${index}`} className="!w-auto">
+                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 backdrop-blur-sm rounded-xl">
+                    <div
+                      className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover hover:scale-110"
+                      style={{ backgroundImage: `url(${photo})` }}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
-          <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#4C0D68]/95 to-transparent pointer-events-none z-10"></div>
-        </div> */}
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-b from-[#4C0D68]/100 via-[#4C0D68]/95 to-transparent lg:from-[#4C0D68]/60 lg:via-transparent lg:to-transparent pointer-events-none z-10"></div>
       </section>
 
       <main className="px-4 py-8 mx-auto max-w-screen-2xl">
@@ -338,24 +281,28 @@ function TwiboneHomepage() {
               : "space-y-4"
           }`}
         >
-          {isLoading
-            ? renderEmptyState()
-            : filteredTwibbons.map((twibon) => (
-                <CardHome
-                  key={twibon.id}
-                  twibon={{
-                    id: twibon.id,
-                    title: twibon.title || "Tanpa Judul",
-                    author: twibon?.contributor?.fullname || "Gypem",
-                    User: 0,
-                    slug: twibon.slug_event_twibbon,
-                    image: twibon.template_twibbon,
-                    isNew: false,
-                    isTrending: false,
-                  }}
-                  isGrid={viewMode === "grid"}
-                />
-              ))}
+          {isLoading ? (
+            <p className="text-center col-span-full">Memuat...</p>
+          ) : filteredTwibbons.length === 0 ? (
+            <EmptyTwibbon />
+          ) : (
+            filteredTwibbons.map((twibon) => (
+              <CardHome
+                key={twibon.id}
+                twibon={{
+                  id: twibon.id,
+                  title: twibon.title || "Tanpa Judul",
+                  author: twibon?.contributor?.fullname || "Gypem",
+                  User: 0,
+                  slug: twibon.slug_event_twibbon,
+                  image: twibon.template_twibbon,
+                  isNew: false,
+                  isTrending: false,
+                }}
+                isGrid={viewMode === "grid"}
+              />
+            ))
+          )}
         </div>
 
         {/* View More Section */}
@@ -379,6 +326,128 @@ function TwiboneHomepage() {
             </div>
           </div>
         )}
+
+        {/* Enhanced Tutorial Section */}
+        <section className="py-20 mt-16 bg-gradient-to-r from-gray-50 to-purple-50 rounded-3xl">
+          <div className="max-w-screen-xl px-6 mx-auto">
+            <div className="mb-16 text-center">
+              <h2 className="mb-4 text-4xl font-bold text-gray-900">
+                Cara Mudah Membuat Twibone
+              </h2>
+              <p className="max-w-2xl mx-auto text-xl text-gray-600">
+                Ikuti langkah sederhana ini untuk menciptakan twibon yang
+                memukau dalam waktu singkat
+              </p>
+            </div>
+
+            <div className="grid gap-12 lg:grid-cols-3">
+              {/* Step 1 - Enhanced */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] rounded-2xl transform rotate-1 group-hover:rotate-2 transition-transform"></div>
+                <div className="relative p-8 bg-white shadow-lg rounded-2xl">
+                  <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] text-white rounded-full text-2xl font-bold shadow-lg mb-6 mx-auto">
+                    <Search className="w-8 h-8" />
+                  </div>
+                  <div className="absolute top-4 right-4 bg-yellow-400 text-[#4C0D68] px-3 py-1 rounded-full text-sm font-bold">
+                    Langkah 1
+                  </div>
+                  <h3 className="mb-4 text-xl font-bold text-gray-800">
+                    Pilih Template Favorit
+                  </h3>
+                  <p className="mb-6 leading-relaxed text-gray-600">
+                    Jelajahi ribuan template menarik dari berbagai kategori
+                    seperti wisuda, ulang tahun, wedding, dan event spesial
+                    lainnya.
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-[#4C0D68] font-medium">
+                    <CheckCircle className="w-4 h-4" />
+                    1000+ Template tersedia
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 2 - Enhanced */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] rounded-2xl transform -rotate-1 group-hover:-rotate-2 transition-transform"></div>
+                <div className="relative p-8 bg-white shadow-lg rounded-2xl">
+                  <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] text-white rounded-full text-2xl font-bold shadow-lg mb-6 mx-auto">
+                    <Upload className="w-8 h-8" />
+                  </div>
+                  <div className="absolute top-4 right-4 bg-yellow-400 text-[#4C0D68] px-3 py-1 rounded-full text-sm font-bold">
+                    Langkah 2
+                  </div>
+                  <h3 className="mb-4 text-xl font-bold text-gray-800">
+                    Upload & Edit Foto
+                  </h3>
+                  <p className="mb-6 leading-relaxed text-gray-600">
+                    Unggah foto terbaik Anda, lalu sesuaikan posisi, ukuran, dan
+                    rotasi dengan editor yang user-friendly.
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-[#4C0D68] font-medium">
+                    <CheckCircle className="w-4 h-4" />
+                    Editor drag & drop
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3 - Enhanced */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] rounded-2xl transform rotate-1 group-hover:rotate-2 transition-transform"></div>
+                <div className="relative p-8 bg-white shadow-lg rounded-2xl">
+                  <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] text-white rounded-full text-2xl font-bold shadow-lg mb-6 mx-auto">
+                    <Share2 className="w-8 h-8" />
+                  </div>
+                  <div className="absolute top-4 right-4 bg-yellow-400 text-[#4C0D68] px-3 py-1 rounded-full text-sm font-bold">
+                    Langkah 3
+                  </div>
+                  <h3 className="mb-4 text-xl font-bold text-gray-800">
+                    Download & Bagikan
+                  </h3>
+                  <p className="mb-6 leading-relaxed text-gray-600">
+                    Simpan hasil dalam kualitas HD dan bagikan langsung ke media
+                    sosial atau kirim ke teman-teman.
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-[#4C0D68] font-medium">
+                    <CheckCircle className="w-4 h-4" />
+                    Kualitas HD tersedia
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tutorial CTA */}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-16 mt-20 text-center">
+          <div className="w-full mx-auto">
+            <div className="p-12 bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] rounded-3xl text-white">
+              <Sparkles className="w-16 h-16 mx-auto mb-6 text-yellow-400" />
+              <h2 className="mb-4 text-3xl font-bold">
+                Siap Membuat Twibone Pertama Anda?
+              </h2>
+              <p className="mb-8 text-xl text-purple-100">
+                Bergabunglah dengan ribuan pengguna yang telah menciptakan momen
+                berkesan
+              </p>
+              <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+                <Link to="/create">
+                  <button className="bg-yellow-400 text-[#4C0D68] px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-colors flex items-center gap-2 justify-center">
+                    <Plus className="w-5 h-5" />
+                    Mulai Sekarang
+                  </button>
+                </Link>
+                <Link to="/explore">
+                  <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-[#4C0D68] transition-colors flex items-center gap-2 justify-center">
+                    <Search className="w-5 h-5" />
+                    Lihat Template
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

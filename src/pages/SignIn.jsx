@@ -204,13 +204,14 @@ const SignIn = () => {
                 {isPending ? "Loading..." : "Masuk"}
               </button>
             </div>
-
-            <button
-              type="button"
-              className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-100 hover:bg-gray-950 hover:text-white transition-smooth"
-            >
-              Google
-            </button>
+            {selectedRole == "contributor" ? null : (
+              <button
+                type="button"
+                className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-100 hover:bg-gray-950 hover:text-white transition-smooth"
+              >
+                Google
+              </button>
+            )}
           </form>
 
           <div className="mt-4 text-sm text-center text-gray-400 md:text-md ">

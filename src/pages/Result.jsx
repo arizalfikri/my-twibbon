@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import NavbarEditor from "../components/layoutpage/NavbarEditor";
 import CardEditor from "../components/cards/CardEditor";
 import useImageStore from "../helper/store/imagestore";
-import { Camera } from "lucide-react";
+import { Copy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ModalLogin from "../components/modal/modalLogin";
 import useTwibbonStore from "../helper/store/TwiboneUser";
@@ -166,24 +166,63 @@ function Result() {
               </h2>
               <form action="" onSubmit={handleSubmit(onSubmit)}>
                 <div className="space-y-4">
-                  <InputWithLabel
-                    control={control}
-                    name="caption"
-                    htmlFor="caption"
-                    label="caption "
-                    type="textarea"
-                    placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
-                    error={errors}
-                    disabled={isPending}
-                  ></InputWithLabel>
+                  {/* Wrapper untuk caption + tombol salin */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label
+                        htmlFor="caption"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Caption
+                      </label>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const captionValue = document.querySelector(
+                            "textarea[name='caption']"
+                          )?.value;
+                          if (captionValue) {
+                            await navigator.clipboard.writeText(captionValue);
+                            openToast(
+                              "toast",
+                              true,
+                              "Berhasil menyalin caption",
+                              "success"
+                            );
+                          } else {
+                            openToast("toast", true, "Caption kosong", "info");
+                          }
+                        }}
+                        className="px-2 py-1 text-xs text-purple-600 border rounded hover:bg-purple-50"
+                      >
+                        <Copy  className="w-5 h-5"/>
+                      </button>
+                    </div>
+
+                    <InputWithLabel
+                      control={control}
+                      name="caption"
+                      htmlFor="caption"
+                      type="textarea"
+                      placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
+                      error={errors}
+                      disabled={isPending}
+                    />
+                  </div>
+
                   <button
                     type="button"
                     onClick={handlePostClick}
                     disabled={isPending}
                     className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isPending ? "Sedang Posting..." : (isLoggedIn ? "Post ke Gypem" : "Masuk & Post ke Gypem")}
+                    {isPending
+                      ? "Sedang Posting..."
+                      : isLoggedIn
+                      ? "Post ke Gypem"
+                      : "Masuk & Post ke Gypem"}
                   </button>
+
                   <button
                     onClick={handleRestart}
                     className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
@@ -220,35 +259,51 @@ function Result() {
                   Posting Foto ini Ke Gypem
                 </h3>
 
-                <InputWithLabel
-                  className="h-96"
-                  control={control}
-                  name="caption"
-                  htmlFor="caption"
-                  label="caption "
-                  type="textarea"
-                  placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
-                  error={errors}
-                  maxLength={500}
-                  disabled={isPending}
-                ></InputWithLabel>
-              </div>
+                {/* Wrapper caption + tombol salin */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label
+                      htmlFor="caption"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Caption
+                    </label>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const captionValue = document.querySelector(
+                          "textarea[name='caption']"
+                        )?.value;
+                        if (captionValue) {
+                          await navigator.clipboard.writeText(captionValue);
+                          openToast(
+                            "toast",
+                            true,
+                            "Berhasil menyalin caption",
+                            "success"
+                          );
+                        } else {
+                          openToast("toast", true, "Caption kosong", "info");
+                        }
+                      }}
+                      className="px-2 py-1 text-xs text-purple-600 border rounded hover:bg-purple-50"
+                    >
+                      <Copy className="w-5"/>
+                    </button>
+                  </div>
 
-              <div className="grid w-full grid-cols-4 gap-3">
-                <button
-                  onClick={handleRestart}
-                  className="flex items-center justify-center col-span-2 px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
-                >
-                  Buat Lagi
-                </button>
-                <button
-                  type="button"
-                  onClick={handlePostClick}
-                  disabled={isPending}
-                  className="flex items-center justify-center col-span-2 gap-2 px-4 py-3 font-medium text-center text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isPending ? "Posting..." : (isLoggedIn ? "Post" : "Masuk & Post")}
-                </button>
+                  <InputWithLabel
+                    className="h-96"
+                    control={control}
+                    name="caption"
+                    htmlFor="caption"
+                    type="textarea"
+                    placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
+                    error={errors}
+                    maxLength={500}
+                    disabled={isPending}
+                  />
+                </div>
               </div>
             </form>
           )}

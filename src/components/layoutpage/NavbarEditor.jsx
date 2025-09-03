@@ -30,13 +30,13 @@ function NavbarEditor({ title }) {
 
             {/* Mobile: Logo di tengah */}
             <div className="flex flex-1 md:hidden">
-              <h1 className="flex text-base font-semibold text-white ">
+              <h1 className="flex items-center gap-2 text-base font-semibold text-white max-w-[300px] truncate">
                 <img
                   src={LogoGypem}
                   alt="Logo Gypem"
                   className="object-contain w-8 h-8"
                 />
-                {title}
+                <span className="truncate">{title}</span>
               </h1>
             </div>
 
