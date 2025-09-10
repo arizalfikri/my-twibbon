@@ -112,8 +112,9 @@ function Result() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <NavbarEditor title={twibbonData?.title} />
+
       <div className="items-center justify-center gap-6 p-6 mx-auto md:grid md:grid-cols-2 max-w-7xl">
         {/* Result photo section */}
         <div className="md:col-span-1">
@@ -127,14 +128,14 @@ function Result() {
             </div>
           </div>
 
-          {/* Download link - always below image */}
+          {/* Download link */}
           <div className="mt-4 text-center">
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               Foto belum terunduh?{" "}
               <a
                 href={resultImage}
                 download="twibbon-result.png"
-                className="font-semibold text-purple-600 hover:underline"
+                className="font-semibold text-purple-600 dark:text-purple-400 hover:underline"
               >
                 Unduh Ulang
               </a>
@@ -142,36 +143,36 @@ function Result() {
           </div>
         </div>
 
-        {/* Desktop Control Panel - positioned on the right */}
-        <div className="hidden p-6 bg-white border border-gray-200 rounded-lg shadow-sm md:block">
+        {/* Desktop Control Panel */}
+        <div className="hidden p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 md:block">
           {isPosted ? (
             <div className="text-center">
-              <h2 className="mb-4 text-xl font-semibold text-green-600">
+              <h2 className="mb-4 text-xl font-semibold text-green-600 dark:text-green-400">
                 Berhasil Diposting!
               </h2>
-              <p className="mb-6 text-gray-600">
+              <p className="mb-6 text-gray-600 dark:text-gray-400">
                 Foto Anda telah berhasil diposting ke Gypem.
               </p>
               <button
                 onClick={handleRestart}
-                className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
+                className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg dark:text-gray-200 hover:bg-yellow-600"
               >
                 Buat Twibbon Lagi
               </button>
             </div>
           ) : (
             <>
-              <h2 className="mb-4 text-xl font-semibold text-center text-gray-800">
+              <h2 className="mb-4 text-xl font-semibold text-center text-gray-800 dark:text-gray-100">
                 Posting Foto ini Ke Gypem
               </h2>
               <form action="" onSubmit={handleSubmit(onSubmit)}>
                 <div className="space-y-4">
-                  {/* Wrapper untuk caption + tombol salin */}
+                  {/* Caption + Copy */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label
                         htmlFor="caption"
-                        className="text-sm font-medium text-gray-700"
+                        className="text-sm font-medium text-gray-700 dark:text-gray-300"
                       >
                         Caption
                       </label>
@@ -193,9 +194,9 @@ function Result() {
                             openToast("toast", true, "Caption kosong", "info");
                           }
                         }}
-                        className="px-2 py-1 text-xs text-purple-600 border rounded hover:bg-purple-50"
+                        className="px-2 py-1 text-xs text-purple-600 border rounded dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-gray-700"
                       >
-                        <Copy  className="w-5 h-5"/>
+                        <Copy className="w-5 h-5" />
                       </button>
                     </div>
 
@@ -214,7 +215,7 @@ function Result() {
                     type="button"
                     onClick={handlePostClick}
                     disabled={isPending}
-                    className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-purple-500 dark:hover:bg-purple-600"
                   >
                     {isPending
                       ? "Sedang Posting..."
@@ -225,7 +226,7 @@ function Result() {
 
                   <button
                     onClick={handleRestart}
-                    className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
+                    className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900"
                   >
                     Buat Lagi
                   </button>
@@ -235,19 +236,19 @@ function Result() {
           )}
         </div>
 
-        {/* Mobile Control Panel - Positioned naturally at bottom */}
-        <div className="p-4 mt-6 bg-white border border-gray-200 rounded-lg shadow-sm md:hidden">
+        {/* Mobile Control Panel */}
+        <div className="p-4 mt-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 md:hidden">
           {isPosted ? (
             <div className="text-center">
-              <h3 className="mb-4 text-lg font-semibold text-green-600">
+              <h3 className="mb-4 text-lg font-semibold text-green-600 dark:text-green-400">
                 Berhasil Diposting!
               </h3>
-              <p className="mb-6 text-gray-600">
+              <p className="mb-6 text-gray-600 dark:text-gray-400">
                 Foto Anda telah berhasil diposting ke Gypem.
               </p>
               <button
                 onClick={handleRestart}
-                className="flex items-center justify-center w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-600"
+                className="flex items-center justify-center w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg dark:text-gray-200 hover:bg-yellow-600"
               >
                 Buat Twibbon Lagi
               </button>
@@ -255,16 +256,15 @@ function Result() {
           ) : (
             <form action="" onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4">
-                <h3 className="mb-2 text-lg font-semibold text-center text-gray-800">
+                <h3 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-gray-100">
                   Posting Foto ini Ke Gypem
                 </h3>
-
-                {/* Wrapper caption + tombol salin */}
+                {/* Caption + Copy */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label
                       htmlFor="caption"
-                      className="text-sm font-medium text-gray-700"
+                      className="text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       Caption
                     </label>
@@ -286,9 +286,9 @@ function Result() {
                           openToast("toast", true, "Caption kosong", "info");
                         }
                       }}
-                      className="px-2 py-1 text-xs text-purple-600 border rounded hover:bg-purple-50"
+                      className="px-2 py-1 text-xs text-purple-600 border rounded dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-gray-700"
                     >
-                      <Copy className="w-5"/>
+                      <Copy className="w-5" />
                     </button>
                   </div>
 
@@ -305,6 +305,25 @@ function Result() {
                   />
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={handlePostClick}
+                disabled={isPending}
+                className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-purple-500 dark:hover:bg-purple-600"
+              >
+                {isPending
+                  ? "Sedang Posting..."
+                  : isLoggedIn
+                  ? "Post ke Gypem"
+                  : "Masuk & Post ke Gypem"}
+              </button>
+
+              <button
+                onClick={handleRestart}
+                className="w-full px-4 py-3 mt-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900"
+              >
+                Buat Lagi
+              </button>
             </form>
           )}
         </div>

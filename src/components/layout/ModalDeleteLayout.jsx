@@ -1,6 +1,6 @@
 export default function ModalDeleteLayout({ children }) {
   return (
-    <div className="text-end m-10 -mt-2 mb-2">
+    <div className="m-10 mb-2 -mt-2 text-end">
       <div className="flex justify-center mt-7">
         <svg
           width="44"
@@ -19,10 +19,10 @@ export default function ModalDeleteLayout({ children }) {
         </svg>
       </div>
       <div className="text-center">
-        <p className="mt-3 mb-4 text-[20px] text-[#282828] font-semibold">
+        <p className="mt-3 mb-4 text-[20px] text-[#282828] font-semibold dark:text-white">
           Kamu yakin akan menghapus data?
         </p>
-        <p className="text-[#5F6980] text-[16px]">
+        <p className="text-[#5F6980] text-[16px] dark:text-gray-300">
           Data kamu akan terhapus setelah menekan tombol hapus
         </p>
       </div>

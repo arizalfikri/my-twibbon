@@ -6,7 +6,10 @@ import { router } from "./routes/index";
 import "./index.css";
 import { ModalToast } from "./components/modal/ModalToast";
 
-// Create a client
+const theme = localStorage.getItem("theme") || "light";
+if (theme === "dark") {
+  document.documentElement.classList.add("dark");
+}
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

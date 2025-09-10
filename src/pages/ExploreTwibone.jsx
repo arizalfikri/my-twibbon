@@ -77,14 +77,14 @@ function ExploreTwibone() {
       return (
         <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
           <div className="max-w-md space-y-6 text-center">
-            <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-purple-100 to-pink-100">
-              <div className="w-16 h-16 border-4 border-purple-400 rounded-full border-t-transparent animate-spin"></div>
+            <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30">
+              <div className="w-16 h-16 border-4 border-purple-400 rounded-full dark:border-purple-500 border-t-transparent animate-spin"></div>
             </div>
             <div className="space-y-3">
-              <h3 className="text-2xl font-bold text-gray-800">
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                 Memuat Twibone...
               </h3>
-              <p className="leading-relaxed text-gray-600">
+              <p className="leading-relaxed text-gray-600 dark:text-gray-400">
                 Sedang mengambil koleksi twibone untuk Anda.
               </p>
             </div>
@@ -99,22 +99,22 @@ function ExploreTwibone() {
         <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
           <div className="max-w-md space-y-6 text-center">
             <div className="relative">
-              <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-blue-100 to-purple-100">
-                <Search className="w-16 h-16 text-blue-400" />
+              <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30">
+                <Search className="w-16 h-16 text-blue-400 dark:text-blue-500" />
               </div>
             </div>
             <div className="space-y-3">
-              <h3 className="text-2xl font-bold text-gray-800">
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                 Tidak Ditemukan
               </h3>
-              <p className="leading-relaxed text-gray-600">
+              <p className="leading-relaxed text-gray-600 dark:text-gray-400">
                 Tidak ada twibone yang cocok dengan pencarian "
                 {displaySearchQuery}". Coba kata kunci lain atau hapus filter.
               </p>
             </div>
             <button
               onClick={clearSearch}
-              className="px-6 py-3 font-semibold text-purple-700 transition-all duration-300 border-2 border-purple-200 rounded-full hover:bg-purple-50"
+              className="px-6 py-3 font-semibold text-purple-700 transition-all duration-300 border-2 border-purple-200 rounded-full dark:text-purple-400 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20"
             >
               Hapus Pencarian
             </button>
@@ -128,7 +128,7 @@ function ExploreTwibone() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white">
       <Navbar />
 
       <main className="px-4 py-8 mx-auto max-w-screen-2xl">
@@ -137,27 +137,27 @@ function ExploreTwibone() {
           <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex-1 max-w-xl">
               <div className="relative md:hidden">
-                <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-3 top-1/2" />
                 <input
                   type="text"
                   placeholder="Cari twibone..."
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4C0D68] focus:border-transparent"
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#4C0D68] dark:focus:ring-[#8B3A9C] focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
                 />
                 {/* Clear button untuk mobile search */}
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={clearSearch}
-                    className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2 hover:text-gray-600"
+                    className="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 right-3 top-1/2 hover:text-gray-600 dark:hover:text-gray-300"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 )}
               </div>
               <div className="items-center hidden gap-8 mb-4 md:flex">
-                <p className="text-xl font-bold text-gray-600">
+                <p className="text-xl font-bold text-gray-600 dark:text-gray-300">
                   {isLoading
                     ? "Memuat..."
                     : searchFromUrl
@@ -167,7 +167,7 @@ function ExploreTwibone() {
                 {searchFromUrl && (
                   <button
                     onClick={clearSearch}
-                    className="text-sm text-purple-600 hover:text-purple-800"
+                    className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300"
                   >
                     Hapus pencarian
                   </button>
@@ -182,8 +182,8 @@ function ExploreTwibone() {
                   onClick={() => setViewMode("grid")}
                   className={`p-2 rounded-lg transition-colors ${
                     viewMode === "grid"
-                      ? "bg-[#4C0D68] text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "bg-[#4C0D68] dark:bg-[#6B1E7A] text-white"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`}
                 >
                   <Grid className="w-5 h-5" />
@@ -192,8 +192,8 @@ function ExploreTwibone() {
                   onClick={() => setViewMode("list")}
                   className={`p-2 rounded-lg transition-colors ${
                     viewMode === "list"
-                      ? "bg-[#4C0D68] text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "bg-[#4C0D68] dark:bg-[#6B1E7A] text-white"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`}
                 >
                   <List className="w-5 h-5" />
@@ -203,8 +203,8 @@ function ExploreTwibone() {
           </div>
 
           {/* Results Count */}
-          <div className="flex items-center justify-between mb-4 md:hidden">
-            <p className="text-gray-600">
+          <div className="flex items-center justify-between mb-4 md:hidden ">
+            <p className="text-gray-600 dark:text-gray-300">
               {isLoading
                 ? "Memuat..."
                 : searchFromUrl
@@ -214,7 +214,7 @@ function ExploreTwibone() {
             {searchFromUrl && (
               <button
                 onClick={clearSearch}
-                className="text-sm text-purple-600 hover:text-purple-800"
+                className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300"
               >
                 Hapus pencarian
               </button>
@@ -255,7 +255,7 @@ function ExploreTwibone() {
           <div className="mt-12 text-center">
             <button
               onClick={() => refetch()}
-              className="bg-[#4C0D68] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#6B1E7A] transition-colors"
+              className="bg-[#4C0D68] dark:bg-[#6B1E7A] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#6B1E7A] dark:hover:bg-[#8B3A9C] transition-colors"
             >
               Muat Lebih Banyak
             </button>

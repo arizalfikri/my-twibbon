@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import LoginImage from "../assets/images/login_image.png";
 import LogoGypem from "../assets/images/gypem_logo.png";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { usePOST } from "../services/api";
 import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
@@ -13,12 +13,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { signInSchema } from "../helper/yup/index";
 
 const SignIn = () => {
-  const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
   const { openToast } = useModalStore();
   const token = localStorage.getItem("token");
   const { setEmail, setToken, setFullName, setRole } = useGlobalStore();
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +38,6 @@ const SignIn = () => {
   const onSubmit = async (data) => {
     try {
       let response;
-
       if (selectedRole === "contributor") {
         response = await contributorLogin.mutateAsync({
           url: "/auth/login",
@@ -86,17 +83,18 @@ const SignIn = () => {
 
   const isPending = contributorLogin.isPending || participantLogin.isPending;
 
+  // Pilih role dulu
   if (!selectedRole) {
     return (
       <div id="root">
-        <div className="grid items-center justify-center h-screen grid-cols-1 overflow-x-hidden md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid items-center justify-center h-screen grid-cols-1 overflow-x-hidden bg-white dark:bg-gray-900 md:grid-cols-2 lg:grid-cols-3">
           <img
             className="hidden object-cover w-full h-full col-span-1 lg:block"
             src={LoginImage}
             alt="Login"
           />
 
-          <div className="flex flex-col justify-center col-span-3 px-4 py-16 overflow-auto lg:col-span-2 md:px-32 xl:px-52 md:py-20">
+          <div className="flex flex-col justify-center col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
             <a href="/">
               <img
                 src={LogoGypem}
@@ -106,7 +104,7 @@ const SignIn = () => {
             </a>
 
             <div className="mt-10 md:mt-5">
-              <h2 className="mb-8 text-2xl font-bold text-center text-gray-800">
+              <h2 className="mb-8 text-2xl font-bold text-center text-gray-800 dark:text-gray-200">
                 Pilih Role Login
               </h2>
 
@@ -116,7 +114,7 @@ const SignIn = () => {
                   onClick={() => setSelectedRole("contributor")}
                   className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-purple-700 gap-x-1 transition-smooth rounded-xl hover:bg-purple-900"
                 >
-                  Login sebagai kontributor
+                  Login sebagai Kontributor
                 </button>
 
                 <button
@@ -134,17 +132,17 @@ const SignIn = () => {
     );
   }
 
-  // Jika sudah memilih role, tampilkan form login
+  // Form login
   return (
     <div id="root">
-      <div className="grid items-center justify-center h-screen grid-cols-1 overflow-x-hidden md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid items-center justify-center h-screen grid-cols-1 overflow-x-hidden bg-white dark:bg-gray-900 md:grid-cols-2 lg:grid-cols-3">
         <img
           className="hidden object-cover w-full h-full col-span-1 lg:block"
           src={LoginImage}
           alt="Login"
         />
 
-        <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto lg:col-span-2 md:px-32 xl:px-52 md:py-20">
+        <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
           <a href="/">
             <img
               src={LogoGypem}
@@ -154,9 +152,9 @@ const SignIn = () => {
           </a>
 
           <div className="mt-4 mb-6 text-center">
-            <h2 className="text-xl font-semibold text-gray-800">
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
               Login sebagai{" "}
-              {selectedRole === "contributor" ? "kontributor" : "Peserta"}
+              {selectedRole === "contributor" ? "Kontributor" : "Peserta"}
             </h2>
           </div>
 
@@ -178,7 +176,7 @@ const SignIn = () => {
               <div className="relative">
                 <InputPassword
                   htmlFor="password"
-                  label="password"
+                  label="Password"
                   type={InputType.PASSWORD}
                   placeholder={"******"}
                   name="password"
@@ -190,7 +188,10 @@ const SignIn = () => {
             </div>
 
             <div className="flex justify-end my-5">
-              <a href="#" className="text-sm text-purple-700 hover:underline">
+              <a
+                href="#"
+                className="text-sm text-purple-700 hover:underline dark:text-purple-400"
+              >
                 Lupa kata sandi?
               </a>
             </div>
@@ -204,17 +205,18 @@ const SignIn = () => {
                 {isPending ? "Loading..." : "Masuk"}
               </button>
             </div>
-            {selectedRole == "contributor" ? null : (
+
+            {selectedRole === "contributor" ? null : (
               <button
                 type="button"
-                className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-100 hover:bg-gray-950 hover:text-white transition-smooth"
+                className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-100 hover:bg-gray-900 hover:text-white transition-smooth dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
               >
                 Google
               </button>
             )}
           </form>
 
-          <div className="mt-4 text-sm text-center text-gray-400 md:text-md ">
+          <div className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400 md:text-md ">
             Belum memiliki akun?{" "}
             <a
               href={
@@ -222,7 +224,7 @@ const SignIn = () => {
                   ? "https://gypem.com/register"
                   : "/SignUp"
               }
-              className="font-semibold text-purple-700 underline "
+              className="font-semibold text-purple-700 hover:underline dark:text-purple-400"
             >
               Klik di sini
             </a>

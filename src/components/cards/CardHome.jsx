@@ -7,7 +7,7 @@ const CardHome = ({ twibon, isGrid = true }) => {
   return (
     <Link
       to={`/${twibon.slug}`}
-      className={`block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group ${
+      className={`block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all duration-300 cursor-pointer group ${
         isGrid ? "" : "flex"
       }`}
     >
@@ -23,12 +23,12 @@ const CardHome = ({ twibon, isGrid = true }) => {
         />
         <div className="absolute flex gap-2 top-3 left-3">
           {twibon.isNew && (
-            <span className="px-2 py-1 text-xs font-medium text-white bg-green-500 rounded-full">
+            <span className="px-2 py-1 text-xs font-medium text-white bg-green-500 rounded-full dark:bg-green-600">
               Baru
             </span>
           )}
           {twibon.isTrending && (
-            <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-red-500 rounded-full">
+            <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-red-500 rounded-full dark:bg-red-600">
               <TrendingUp className="w-3 h-3" />
               Trending
             </span>
@@ -38,16 +38,16 @@ const CardHome = ({ twibon, isGrid = true }) => {
 
       <div className={`p-4 ${isGrid ? "" : "flex-1"}`}>
         <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-[#4C0D68] transition-colors">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-[#4C0D68] dark:group-hover:text-[#8B3A9C] transition-colors">
             {twibon.title}
           </h3>
         </div>
 
-        <div className="flex items-center justify-between mb-3 text-sm text-gray-500">
+        <div className="flex items-center justify-between mb-3 text-sm text-gray-500 dark:text-gray-400">
           <span>by {twibon.author}</span>
         </div>
 
-        <div className="flex items-center justify-between text-sm text-gray-600">
+        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               <User className="w-4 h-4" />

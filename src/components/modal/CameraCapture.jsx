@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { X, RotateCcw, Download, Camera } from "lucide-react";
 import Webcam from "react-webcam";
 
@@ -6,6 +6,13 @@ const CameraCapture = ({ onCapture, onClose }) => {
   const webcamRef = useRef(null);
   const [capturedImage, setCapturedImage] = useState(null);
   const [facingMode, setFacingMode] = useState("user");
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
 
   const videoConstraints = {
     width: 1280,
@@ -36,9 +43,9 @@ const CameraCapture = ({ onCapture, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black">
+    <div className="fixed inset-0 z-[9999] flex flex-col bg-black">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 text-white bg-black">
+      <div className="flex items-center justify-between p-4 text-white bg-black ">
         <h3 className="text-lg font-semibold">
           {capturedImage ? "Preview Foto" : "Ambil Foto"}
         </h3>
@@ -98,7 +105,7 @@ const CameraCapture = ({ onCapture, onClose }) => {
                 <RotateCcw size={20} />
               </button>
 
-              <button 
+              <button
                 onClick={capturePhoto}
                 className="flex items-center justify-center w-16 h-16 transition-colors bg-white rounded-full hover:bg-gray-200"
               >
@@ -110,8 +117,6 @@ const CameraCapture = ({ onCapture, onClose }) => {
 
             {/* Tombol kamera di kanan bawah (desktop) */}
             <div className="fixed z-50 flex-col hidden gap-4 md:flex bottom-80 right-6">
-              
-
               <button
                 onClick={capturePhoto}
                 className="flex items-center justify-center w-16 h-16 transition-colors bg-white rounded-full hover:bg-gray-200"

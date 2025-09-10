@@ -100,22 +100,13 @@ function TwiboneCreatePage() {
     clearErrors,
   ]);
 
-  // const visibilityOptions = [
-  //   { value: "", label: "Pilih tingkat visibilitas" },
-  //   { value: "publik", label: "Publik" },
-  //   { value: "terbatas", label: "Terbatas" },
-  //   { value: "privat", label: "Privat" },
-  // ];
-
   const steps = isDesktop
     ? [
         { title: "Rincian Kampanye" },
-        // , { title: "Kontak & Visibilitas"  }
       ]
     : [
         { title: "Gambar" },
         { title: "Rincian Kampanye" },
-        // { title: "Kontak & Visibilitas" },
       ];
 
   const totalSteps = steps.length;
@@ -140,7 +131,6 @@ function TwiboneCreatePage() {
       });
       if (response.status === 201) {
         await queryClient.invalidateQueries(["twibbons"]);
-        
         navigate("/");
       }
     } catch (error) {
@@ -175,7 +165,7 @@ function TwiboneCreatePage() {
         return (
           <div
             key={`${currentStep}-${key}`}
-            className="w-full border-r border-gray-200 bg-gray-50 md:hidden"
+            className="w-full border-r border-gray-200 bg-gray-50 dark:bg-gray-800 md:hidden"
           >
             <ImageUploadArea name="image" setValue={setValue} error={errors} value={imageValue} />
           </div>
@@ -221,57 +211,20 @@ function TwiboneCreatePage() {
           </div>
         );
 
-      // case 2:
-      //   return (
-      //     <div key={`${currentStep}-${key}`} className="space-y-6">
-      //       <InputWithLabel
-      //         control={control}
-      //         name="Template_Caption"
-      //         htmlFor="Template_Caption"
-      //         label={
-      //           <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-      //             <Globe size={16} className="text-gray-500" />
-      //             <span>Template Caption</span>
-      //           </div>
-      //         }
-      //         placeholder="contoh: Ayo dukung kampanye ini!"
-      //         error={errors.Template_Caption?.message}
-      //       />
-
-      //       <InputSelectWithLabel
-      //         control={control}
-      //         option_label="label"
-      //         option_value="value"
-      //         name="visibility"
-      //         htmlFor="visibility"
-      //         defaultValue=""
-      //         label={
-      //           <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-      //             <Tag size={16} className="text-gray-500" />
-      //             <span>Visibilitas</span>
-      //           </div>
-      //         }
-      //         options={visibilityOptions}
-      //         error={errors}
-      //       />
-      //     </div>
-      //   );
-
       default:
         return null;
     }
   };
 
-  // Check if submit should be disabled - include duplicate errors
   const isSubmitDisabled = isPending || errors.title || errors.link;
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
       <NavbarEditor title="Create Twibone" />
 
       <div className="flex flex-col flex-1 md:flex-row md:overflow-hidden">
         {/* Sidebar Gambar (desktop) */}
-        <div className="hidden w-1/2 border-r border-gray-200 md:block bg-gray-50">
+        <div className="hidden w-1/2 border-r border-gray-200 dark:border-gray-700 md:block bg-gray-50 dark:bg-gray-800">
           <ImageUploadArea
             name="image"
             setValue={setValue}
@@ -281,14 +234,14 @@ function TwiboneCreatePage() {
         </div>
 
         {/* Form Step */}
-        <div className="flex-1 bg-white md:w-1/2">
-          <div className="h-full bg-white">
+        <div className="flex-1 bg-white dark:bg-gray-900 md:w-1/2">
+          <div className="h-full bg-white dark:bg-gray-900">
             {/* Header */}
-            <div className="p-4 border-b border-gray-200 md:p-6">
-              <h3 className="text-lg font-semibold text-gray-800">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 md:p-6">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                 {steps[currentStep]?.title}
               </h3>
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 Lengkapi informasi kampanye Anda
               </p>
               <div className="flex items-center mt-4 space-x-2">
@@ -296,12 +249,12 @@ function TwiboneCreatePage() {
                   <div
                     key={idx}
                     className={`h-2 flex-1 rounded-full ${
-                      idx <= currentStep ? "bg-purple-600" : "bg-gray-200"
+                      idx <= currentStep ? "bg-purple-600" : "bg-gray-200 dark:bg-gray-700"
                     }`}
                   />
                 ))}
               </div>
-              <div className="mt-2 text-xs text-gray-500">
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                 Langkah {currentStep + 1} dari {totalSteps}
               </div>
             </div>
@@ -312,13 +265,13 @@ function TwiboneCreatePage() {
                 {renderStepContent()}
               </div>
 
-              <div className="p-4 border-t border-gray-200 md:p-6">
+              <div className="p-4 border-t border-gray-200 dark:border-gray-700 md:p-6">
                 <div className="flex items-center space-x-4">
                   {currentStep > 0 && (
                     <button
                       type="button"
                       onClick={prevStep}
-                      className="flex items-center justify-center px-4 py-3 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+                      className="flex items-center justify-center px-4 py-3 text-gray-700 bg-gray-200 rounded-lg dark:text-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
                     >
                       <ChevronLeft size={20} className="mr-2" />
                       Kembali

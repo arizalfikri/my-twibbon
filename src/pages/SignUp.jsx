@@ -69,7 +69,7 @@ function SignUp() {
           case 401:
             openToast("toast", true, "Email sudah terdaftar");
             break;
-              case 409:
+          case 409:
             openToast("toast", true, "Email sudah terdaftar");
             break;
           default:
@@ -87,7 +87,7 @@ function SignUp() {
           src={LoginImage}
           alt="Login"
         />
-        <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto lg:col-span-2 md:px-32 xl:px-52 md:py-20">
+        <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto text-gray-800 bg-white dark:bg-gray-900 dark:text-gray-100 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
           <a href="/">
             <img
               src={LogoGypem}
@@ -139,7 +139,9 @@ function SignUp() {
             <div className="flex flex-col gap-2 mt-8 md:flex-row">
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold bg-purple-700 text-white px-4 py-2.5 w-full rounded-xl hover:bg-purple-900"
+                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold 
+                       bg-purple-700 text-white px-4 py-2.5 w-full rounded-xl 
+                       hover:bg-purple-900 disabled:opacity-50"
               >
                 Daftar
               </button>
@@ -147,11 +149,11 @@ function SignUp() {
           </form>
 
           <div className="mt-3 text-sm text-center">
-            <p className="text-gray-400">
+            <p className="text-gray-600 dark:text-gray-400">
               Sudah punya akun?{" "}
               <a
                 href="/SignIn"
-                className="font-medium text-purple-700 underline"
+                className="font-medium text-purple-700 underline dark:text-purple-400"
               >
                 Masuk
               </a>

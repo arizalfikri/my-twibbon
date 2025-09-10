@@ -22,7 +22,7 @@ function ImageUploadArea({ name = "image", setValue, error, value }) {
         setUploadedImage(e.target.result);
       };
       reader.readAsDataURL(value);
-    } else if (value && typeof value === 'string') {
+    } else if (value && typeof value === "string") {
       // Handle jika value berupa URL string
       setUploadedImage(value);
     } else if (!value) {
@@ -102,17 +102,17 @@ function ImageUploadArea({ name = "image", setValue, error, value }) {
   return (
     <div className="h-full p-6">
       <div className="flex flex-col h-full">
-        <h3 className="mb-4 text-lg font-semibold text-gray-800">
+        <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">
           Upload Gambar
         </h3>
 
         <div
           className={`flex-1 border-2 border-dashed rounded-xl transition-all duration-300 flex flex-col items-center justify-center ${
             dragActive
-              ? "border-blue-400 bg-blue-50"
+              ? "border-blue-400 bg-blue-50 dark:bg-blue-900/30"
               : uploadedImage
-              ? "border-green-400 bg-green-50"
-              : "border-gray-300 bg-gray-50 hover:border-gray-400"
+              ? "border-green-400 bg-green-50 dark:bg-green-900/10"
+              : "border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600"
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -134,7 +134,7 @@ function ImageUploadArea({ name = "image", setValue, error, value }) {
                   <X size={16} />
                   <span>Hapus</span>
                 </button>
-                <label className="flex items-center px-4 py-2 space-x-2 text-black transition-colors bg-yellow-400 rounded-lg cursor-pointer hover:bg-yellow-600">
+                <label className="flex items-center px-4 py-2 space-x-2 text-black transition-colors bg-yellow-400 rounded-lg cursor-pointer hover:bg-yellow-600 dark:text-gray-900">
                   <Camera size={16} />
                   <span>Ganti</span>
                   <input
@@ -149,14 +149,14 @@ function ImageUploadArea({ name = "image", setValue, error, value }) {
           ) : (
             <div className="text-center">
               <Upload size={48} className="mx-auto mb-4 text-gray-400" />
-              <p className="mb-2 text-lg font-medium text-gray-600">
+              <p className="mb-2 text-lg font-medium text-gray-600 dark:text-gray-300">
                 Drag & drop gambar di sini
               </p>
-              <p className="mb-6 text-sm text-gray-500">
+              <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
                 atau klik untuk memilih file
               </p>
-              <label className="inline-flex items-center px-6 py-3 space-x-2 text-black transition-colors bg-yellow-400 rounded-lg cursor-pointer hover:bg-yellow-600 ">
-                <ImageIcon  size={20} />
+              <label className="inline-flex items-center px-6 py-3 space-x-2 text-black transition-colors bg-yellow-400 rounded-lg cursor-pointer hover:bg-yellow-600 dark:text-gray-900">
+                <ImageIcon size={20} />
                 <span>Pilih Gambar</span>
                 <input
                   type="file"
@@ -165,7 +165,7 @@ function ImageUploadArea({ name = "image", setValue, error, value }) {
                   className="hidden"
                 />
               </label>
-              <p className="mt-4 text-xs text-gray-400">
+              <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">
                 Format yang didukung: JPG, PNG (Max 10MB)
               </p>
               {error && (

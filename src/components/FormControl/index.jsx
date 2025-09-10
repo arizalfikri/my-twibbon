@@ -36,15 +36,17 @@ const Input = (props) => {
     control,
     error,
   } = props;
+
   const isTextarea = type === InputType.TEXTAREA;
+
   const classProps = twMerge(
-    "w-full py-2 px-3 border",
+    "w-full py-2 px-3 border focus:outline-none",
+    "bg-white text-black placeholder-gray-500 dark:bg-gray-900 dark:text-white dark:placeholder-gray-400",
     theme,
     size,
-    isTextarea && "min-h-[10rem]",
+    isTextarea && "min-h-[10rem] resize-none",
     className
   );
-
 
   return (
     <Controller
@@ -52,7 +54,7 @@ const Input = (props) => {
       name={name}
       render={({ field: { value = "", onChange, ref } }) => (
         <>
-          {type === InputType.TEXTAREA ? (
+          {isTextarea ? (
             <textarea
               ref={ref}
               onClick={onClick}

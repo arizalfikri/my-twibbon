@@ -17,7 +17,7 @@ export function ModalToast() {
                     }`}
                 >
                     <div
-                        className="fixed inset-0 z-0 bg-[#a7b7c0] bg-opacity-10 backdrop-brightness-10"
+                        className="fixed inset-0 z-0 bg-[#a7b7c0] dark:bg-gray-900 bg-opacity-10 dark:bg-opacity-10 backdrop-brightness-10"
                         onClick={onClose}
                     ></div>
                     <motion.div

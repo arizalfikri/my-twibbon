@@ -8,7 +8,18 @@ import UploadModal from "../modal/UploudModal";
 import CameraCapture from "../modal/CameraCapture";
 import ControlPanel from "../ui/ControlPanel";
 
-function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, saturation: 100, hue: 0, blur: 0, sepia: 0, grayscale: 0 } }) {
+function CardEditor({
+  frameImage,
+  filters = {
+    brightness: 100,
+    contrast: 100,
+    saturation: 100,
+    hue: 0,
+    blur: 0,
+    sepia: 0,
+    grayscale: 0,
+  },
+}) {
   const containerRef = useRef(null);
   const navigate = useNavigate();
   const { image, setImage, setResultImage } = useImageStore();
@@ -27,9 +38,17 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
   const [frameAspectRatio, setFrameAspectRatio] = useState("1/1");
 
   useEffect(() => {
+    return () => {
+      setShowUploadModal(false);
+      setShowCamera(false);
+    };
+  }, [setShowUploadModal, setShowCamera]);
+
+  useEffect(() => {
     if (!frameImage) return;
     const img = new Image();
-    img.onload = () => setFrameAspectRatio(`${img.naturalWidth}/${img.naturalHeight}`);
+    img.onload = () =>
+      setFrameAspectRatio(`${img.naturalWidth}/${img.naturalHeight}`);
     img.onerror = () => setFrameAspectRatio("1/1");
     img.src = frameImage;
   }, [frameImage]);
@@ -37,7 +56,7 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
   // Generate CSS filter string from filters object
   const generateFilterString = (filtersObj) => {
     const filterParts = [];
-    
+
     if (filtersObj.brightness !== 100) {
       filterParts.push(`brightness(${filtersObj.brightness}%)`);
     }
@@ -59,13 +78,13 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
     if (filtersObj.grayscale > 0) {
       filterParts.push(`grayscale(${filtersObj.grayscale}%)`);
     }
-    
-    return filterParts.length > 0 ? filterParts.join(' ') : 'none';
+
+    return filterParts.length > 0 ? filterParts.join(" ") : "none";
   };
 
   // Apply filters to canvas context manually for user image only
   const applyFiltersToUserImage = (canvas, filtersObj) => {
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
 
@@ -85,9 +104,9 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
       // Apply contrast
       if (filtersObj.contrast !== 100) {
         const contrastFactor = filtersObj.contrast / 100;
-        r = Math.min(255, Math.max(0, ((r - 128) * contrastFactor) + 128));
-        g = Math.min(255, Math.max(0, ((g - 128) * contrastFactor) + 128));
-        b = Math.min(255, Math.max(0, ((b - 128) * contrastFactor) + 128));
+        r = Math.min(255, Math.max(0, (r - 128) * contrastFactor + 128));
+        g = Math.min(255, Math.max(0, (g - 128) * contrastFactor + 128));
+        b = Math.min(255, Math.max(0, (b - 128) * contrastFactor + 128));
       }
 
       // Apply saturation
@@ -111,9 +130,12 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
       // Apply sepia
       if (filtersObj.sepia > 0) {
         const factor = filtersObj.sepia / 100;
-        const tr = (0.393 * r + 0.769 * g + 0.189 * b) * factor + r * (1 - factor);
-        const tg = (0.349 * r + 0.686 * g + 0.168 * b) * factor + g * (1 - factor);
-        const tb = (0.272 * r + 0.534 * g + 0.131 * b) * factor + b * (1 - factor);
+        const tr =
+          (0.393 * r + 0.769 * g + 0.189 * b) * factor + r * (1 - factor);
+        const tg =
+          (0.349 * r + 0.686 * g + 0.168 * b) * factor + g * (1 - factor);
+        const tb =
+          (0.272 * r + 0.534 * g + 0.131 * b) * factor + b * (1 - factor);
         r = Math.min(255, tr);
         g = Math.min(255, tg);
         b = Math.min(255, tb);
@@ -128,8 +150,8 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
 
     // Apply hue rotation using CSS filter if needed
     if (filtersObj.hue !== 0) {
-      const tempCanvas = document.createElement('canvas');
-      const tempCtx = tempCanvas.getContext('2d');
+      const tempCanvas = document.createElement("canvas");
+      const tempCtx = tempCanvas.getContext("2d");
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height;
       tempCtx.filter = `hue-rotate(${filtersObj.hue}deg)`;
@@ -142,8 +164,9 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
 
   // Generate final image with filtered user image and clean frame
   const generateFinalImageWithSeparateLayers = async () => {
-    if (!containerRef.current || !image) throw new Error("Container or image not found");
-    
+    if (!containerRef.current || !image)
+      throw new Error("Container or image not found");
+
     // Load frame image
     const frameImg = new Image();
     frameImg.src = frameImage;
@@ -155,19 +178,25 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
 
     const frameWidth = frameImg.naturalWidth;
     const frameHeight = frameImg.naturalHeight;
-    const { offsetWidth: containerWidth, offsetHeight: containerHeight } = containerRef.current;
-    const scaleRatio = Math.min(frameWidth / containerWidth, frameHeight / containerHeight);
+    const { offsetWidth: containerWidth, offsetHeight: containerHeight } =
+      containerRef.current;
+    const scaleRatio = Math.min(
+      frameWidth / containerWidth,
+      frameHeight / containerHeight
+    );
 
     // Temporarily remove filters and capture the current zoom/pan state
-    const userImage = containerRef.current.querySelector('[data-user-image="true"]');
-    const originalFilter = userImage ? userImage.style.filter : '';
-    
+    const userImage = containerRef.current.querySelector(
+      '[data-user-image="true"]'
+    );
+    const originalFilter = userImage ? userImage.style.filter : "";
+
     if (userImage) {
-      userImage.style.filter = 'none';
+      userImage.style.filter = "none";
     }
-    
-    await new Promise(res => setTimeout(res, 100));
-    
+
+    await new Promise((res) => setTimeout(res, 100));
+
     // Capture only the user image area with current zoom/pan applied
     const canvas = await html2canvas(containerRef.current, {
       useCORS: true,
@@ -179,18 +208,20 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
       logging: false,
       onclone: (clonedDoc) => {
         // Hide frame in the cloned document to capture only user image
-        const frameInClone = clonedDoc.querySelector('img[alt="Twibbon Frame"]');
+        const frameInClone = clonedDoc.querySelector(
+          'img[alt="Twibbon Frame"]'
+        );
         if (frameInClone) {
-          frameInClone.style.display = 'none';
+          frameInClone.style.display = "none";
         }
-        
-        clonedDoc.querySelectorAll('img').forEach(img => {
-          img.style.maxWidth = 'none';
-          img.style.maxHeight = 'none';
+
+        clonedDoc.querySelectorAll("img").forEach((img) => {
+          img.style.maxWidth = "none";
+          img.style.maxHeight = "none";
         });
-      }
+      },
     });
-    
+
     // Restore original filter
     if (userImage) {
       userImage.style.filter = originalFilter;
@@ -200,24 +231,24 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
     const filteredCanvas = applyFiltersToUserImage(canvas, filters);
 
     // Create final canvas with correct dimensions
-    const finalCanvas = document.createElement('canvas');
+    const finalCanvas = document.createElement("canvas");
     finalCanvas.width = frameWidth;
     finalCanvas.height = frameHeight;
-    const ctx = finalCanvas.getContext('2d');
-    
+    const ctx = finalCanvas.getContext("2d");
+
     // Draw the filtered user image (preserving zoom/pan)
     ctx.drawImage(filteredCanvas, 0, 0, frameWidth, frameHeight);
-    
+
     // Draw clean frame on top (without filters)
     ctx.drawImage(frameImg, 0, 0, frameWidth, frameHeight);
 
-    return finalCanvas.toDataURL('image/png', 1.0);
+    return finalCanvas.toDataURL("image/png", 1.0);
   };
 
   // Fallback method using html2canvas with separate handling
   const generateFinalImageFallback = async () => {
     if (!containerRef.current) throw new Error("Container not found");
-    
+
     // Load frame image
     const frameImg = new Image();
     frameImg.src = frameImage;
@@ -229,23 +260,31 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
 
     const frameWidth = frameImg.naturalWidth;
     const frameHeight = frameImg.naturalHeight;
-    const { offsetWidth: containerWidth, offsetHeight: containerHeight } = containerRef.current;
-    const scaleRatio = Math.min(frameWidth / containerWidth, frameHeight / containerHeight);
+    const { offsetWidth: containerWidth, offsetHeight: containerHeight } =
+      containerRef.current;
+    const scaleRatio = Math.min(
+      frameWidth / containerWidth,
+      frameHeight / containerHeight
+    );
 
     // Temporarily remove filters and frame, then capture user image with zoom/pan
-    const userImage = containerRef.current.querySelector('[data-user-image="true"]');
-    const frameElement = containerRef.current.querySelector('img[alt="Twibbon Frame"]');
-    
-    const originalFilter = userImage ? userImage.style.filter : '';
-    
+    const userImage = containerRef.current.querySelector(
+      '[data-user-image="true"]'
+    );
+    const frameElement = containerRef.current.querySelector(
+      'img[alt="Twibbon Frame"]'
+    );
+
+    const originalFilter = userImage ? userImage.style.filter : "";
+
     if (userImage) {
-      userImage.style.filter = 'none';
+      userImage.style.filter = "none";
     }
     if (frameElement) {
-      frameElement.style.display = 'none';
+      frameElement.style.display = "none";
     }
 
-    await new Promise(res => setTimeout(res, 100));
+    await new Promise((res) => setTimeout(res, 100));
 
     const userCanvas = await html2canvas(containerRef.current, {
       useCORS: true,
@@ -256,11 +295,11 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
       scale: scaleRatio,
       logging: false,
       onclone: (clonedDoc) => {
-        clonedDoc.querySelectorAll('img').forEach(img => {
-          img.style.maxWidth = 'none';
-          img.style.maxHeight = 'none';
+        clonedDoc.querySelectorAll("img").forEach((img) => {
+          img.style.maxWidth = "none";
+          img.style.maxHeight = "none";
         });
-      }
+      },
     });
 
     // Restore elements
@@ -268,25 +307,25 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
       userImage.style.filter = originalFilter;
     }
     if (frameElement) {
-      frameElement.style.display = '';
+      frameElement.style.display = "";
     }
 
     // Apply filters only to user image canvas
     const filteredUserCanvas = applyFiltersToUserImage(userCanvas, filters);
 
     // Create final composition with correct dimensions
-    const finalCanvas = document.createElement('canvas');
+    const finalCanvas = document.createElement("canvas");
     finalCanvas.width = frameWidth;
     finalCanvas.height = frameHeight;
-    const ctx = finalCanvas.getContext('2d');
+    const ctx = finalCanvas.getContext("2d");
 
     // Draw filtered user image with proper scaling
     ctx.drawImage(filteredUserCanvas, 0, 0, frameWidth, frameHeight);
-    
+
     // Draw clean frame on top
     ctx.drawImage(frameImg, 0, 0, frameWidth, frameHeight);
 
-    return finalCanvas.toDataURL('image/png', 1.0);
+    return finalCanvas.toDataURL("image/png", 1.0);
   };
 
   // Handle download with separate layer approach
@@ -294,47 +333,47 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
     try {
       setIsDownloading(true);
       let dataUrl;
-      
+
       try {
         // Try the separate layers method first
         dataUrl = await generateFinalImageWithSeparateLayers();
       } catch (error) {
-        console.warn('Separate layers method failed, using fallback:', error);
+        console.warn("Separate layers method failed, using fallback:", error);
         // Use fallback method
         dataUrl = await generateFinalImageFallback();
       }
-      
+
       // Trigger download
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = dataUrl;
       link.download = `twibbon_${Date.now()}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       // Store in Zustand
       setResultImage(dataUrl);
       setImage(dataUrl);
-      navigate('/result');
+      navigate("/result");
     } catch (error) {
-      console.error('Download failed:', error);
-      alert('Download gagal. Silakan coba lagi.');
+      console.error("Download failed:", error);
+      alert("Download gagal. Silakan coba lagi.");
     } finally {
       setIsDownloading(false);
     }
   };
 
-  const handleImageUpload = e => {
+  const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
     setImage(url);
-    navigate('/editorpage');
+    navigate("/editorpage");
   };
 
-  const handleCameraCapture = dataUrl => {
+  const handleCameraCapture = (dataUrl) => {
     setImage(dataUrl);
-    navigate('/editorpage');
+    navigate("/editorpage");
   };
 
   const currentFilterString = generateFilterString(filters);
@@ -346,7 +385,11 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
           <div
             ref={containerRef}
             className="relative max-w-sm w-full md:w-[200%] overflow-hidden lg:max-w-md rounded-xl"
-            style={{ aspectRatio: frameAspectRatio, minWidth: '320px', minHeight: '320px' }}
+            style={{
+              aspectRatio: frameAspectRatio,
+              minWidth: "320px",
+              minHeight: "320px",
+            }}
           >
             {image && (
               <TransformWrapper
@@ -358,17 +401,19 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
                 wheel={{ step: 50 }}
                 doubleClick={{ disabled: true }}
               >
-                <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }}>
+                <TransformComponent
+                  wrapperStyle={{ width: "100%", height: "100%" }}
+                >
                   <img
                     src={image}
                     alt="Uploaded"
                     className="object-cover w-full h-full"
                     crossOrigin="anonymous"
                     data-user-image="true"
-                    style={{ 
-                      maxWidth: 'none', 
-                      maxHeight: 'none',
-                      filter: currentFilterString
+                    style={{
+                      maxWidth: "none",
+                      maxHeight: "none",
+                      filter: currentFilterString,
                     }}
                   />
                 </TransformComponent>
@@ -379,11 +424,9 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
               alt="Twibbon Frame"
               className="absolute inset-0 object-cover w-full h-full pointer-events-none"
               crossOrigin="anonymous"
-              style={{ maxWidth: 'none', maxHeight: 'none' }}
+              style={{ maxWidth: "none", maxHeight: "none" }}
             />
           </div>
-
-      
 
           <ControlPanel onDownload={handleDownload} hasImage={!!image} />
         </div>
@@ -392,13 +435,22 @@ function CardEditor({ frameImage, filters = { brightness: 100, contrast: 100, sa
       <UploadModal
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
-        onFileSelect={e => { handleImageUpload(e); closeUploadModal(); }}
-        onCameraSelect={() => { openCamera(); closeUploadModal(); }}
+        onFileSelect={(e) => {
+          handleImageUpload(e);
+          closeUploadModal();
+        }}
+        onCameraSelect={() => {
+          openCamera();
+          closeUploadModal();
+        }}
       />
 
       {showCamera && (
         <CameraCapture
-          onCapture={dataUrl => { handleCameraCapture(dataUrl); closeCamera(); }}
+          onCapture={(dataUrl) => {
+            handleCameraCapture(dataUrl);
+            closeCamera();
+          }}
           onClose={closeCamera}
         />
       )}
