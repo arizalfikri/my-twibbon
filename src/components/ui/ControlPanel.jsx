@@ -15,7 +15,7 @@ const ControlPanel = ({ onDownload, hasImage = false }) => {
   return (
     <>
       {/* Mobile Controls */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-lg md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-lg dark:border-gray-900 dark:bg-gray-700 md:hidden">
         <div className="grid w-full max-w-sm grid-cols-4 gap-3 mx-auto">
           <UploadButton variant="icon" />
           <DownloadButton 

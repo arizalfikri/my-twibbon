@@ -64,7 +64,7 @@ function EditorPage() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex flex-col h-full bg-gray-900 md:h-screen">
+      <div className="flex flex-col h-full bg-white dark:bg-gray-900 md:h-screen">
         <NavbarEditor title={twibbonData?.title} />
 
         {/* Mobile Layout */}
@@ -74,16 +74,16 @@ function EditorPage() {
             <CardEditor frameImage={frameImage} filters={filters} />
           </div>
 
-          {/* Mobile Filter Panel */}
-          <div className="flex flex-col h-64 bg-gray-800 border-t border-gray-700 pb-[500px]">
-            {/* Mobile Tabs - Dark */}
-            <div className="flex flex-shrink-0 p-1 m-4 mb-2 bg-gray-700 rounded-lg">
+          {/* Mobile Filter Panel - Light/Dark */}
+          <div className="flex flex-col h-64 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 pb-[500px]">
+            {/* Mobile Tabs - Light/Dark */}
+            <div className="flex flex-shrink-0 p-1 m-4 mb-2 bg-gray-100 rounded-lg dark:bg-gray-700">
               <button
                 onClick={() => setActiveTab("presets")}
                 className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
                   activeTab === "presets"
-                    ? "bg-gray-600 text-white shadow-sm"
-                    : "text-gray-300 hover:text-white"
+                    ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                    : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 🎨 Preset
@@ -92,8 +92,8 @@ function EditorPage() {
                 onClick={() => setActiveTab("basic")}
                 className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
                   activeTab === "basic"
-                    ? "bg-gray-600 text-white shadow-sm"
-                    : "text-gray-300 hover:text-white"
+                    ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                    : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 ⚙️ Dasar
@@ -102,23 +102,25 @@ function EditorPage() {
                 onClick={() => setActiveTab("effects")}
                 className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
                   activeTab === "effects"
-                    ? "bg-gray-600 text-white shadow-sm"
-                    : "text-gray-300 hover:text-white"
+                    ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                    : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 ✨ Efek
               </button>
             </div>
 
-            {/* Mobile Content - Dark Mode */}
+            {/* Mobile Content - Light/Dark Mode */}
             <div className="flex-1 px-4 pb-4 ">
               {activeTab === "presets" && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-gray-200">Filter Preset</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-200">
+                      Filter Preset
+                    </h3>
                     <button
                       onClick={resetFilters}
-                      className="text-sm font-medium text-blue-400 hover:text-blue-300"
+                      className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                     >
                       Reset
                     </button>
@@ -136,10 +138,12 @@ function EditorPage() {
                           grayscale: 0,
                         })
                       }
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border rounded-lg border-yellow-600/50 bg-gradient-to-br from-yellow-900/30 to-orange-900/30 hover:from-yellow-800/40 hover:to-orange-800/40"
+                      className="flex items-center justify-center p-3 space-x-2 transition-all border border-yellow-300 rounded-lg dark:border-yellow-600/50 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 hover:from-yellow-200 hover:to-orange-200 dark:hover:from-yellow-800/40 dark:hover:to-orange-800/40"
                     >
                       <span>☀️</span>
-                      <span className="text-sm font-medium text-gray-200">Cerah</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
+                        Cerah
+                      </span>
                     </button>
                     <button
                       onClick={() =>
@@ -153,10 +157,12 @@ function EditorPage() {
                           grayscale: 0,
                         })
                       }
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border rounded-lg bg-gradient-to-br from-amber-900/30 to-yellow-900/30 border-amber-600/50 hover:from-amber-800/40 hover:to-yellow-800/40"
+                      className="flex items-center justify-center p-3 space-x-2 transition-all border rounded-lg bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 border-amber-300 dark:border-amber-600/50 hover:from-amber-200 hover:to-yellow-200 dark:hover:from-amber-800/40 dark:hover:to-yellow-800/40"
                     >
                       <span>📷</span>
-                      <span className="text-sm font-medium text-gray-200">Vintage</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
+                        Vintage
+                      </span>
                     </button>
                     <button
                       onClick={() =>
@@ -170,10 +176,12 @@ function EditorPage() {
                           grayscale: 0,
                         })
                       }
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border rounded-lg border-pink-600/50 bg-gradient-to-br from-pink-900/30 to-purple-900/30 hover:from-pink-800/40 hover:to-purple-800/40"
+                      className="flex items-center justify-center p-3 space-x-2 transition-all border border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-pink-200 hover:to-purple-200 dark:hover:from-pink-800/40 dark:hover:to-purple-800/40"
                     >
                       <span>🌈</span>
-                      <span className="text-sm font-medium text-gray-200">Vivid</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
+                        Vivid
+                      </span>
                     </button>
                     <button
                       onClick={() =>
@@ -187,10 +195,12 @@ function EditorPage() {
                           grayscale: 100,
                         })
                       }
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border rounded-lg border-gray-600/50 bg-gradient-to-br from-gray-800/30 to-slate-800/30 hover:from-gray-700/40 hover:to-slate-700/40"
+                      className="flex items-center justify-center p-3 space-x-2 transition-all border border-gray-300 rounded-lg dark:border-gray-600/50 bg-gradient-to-br from-gray-100 to-slate-100 dark:from-gray-800/30 dark:to-slate-800/30 hover:from-gray-200 hover:to-slate-200 dark:hover:from-gray-700/40 dark:hover:to-slate-700/40"
                     >
                       <span>⚫</span>
-                      <span className="text-sm font-medium text-gray-200">B&W</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
+                        B&W
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -198,14 +208,14 @@ function EditorPage() {
 
               {activeTab === "basic" && (
                 <div className="space-y-4">
-                  {/* Brightness Control - Dark */}
-                  <div className="p-3 border rounded-lg border-yellow-600/30 bg-yellow-900/20">
+                  {/* Brightness Control - Light/Dark */}
+                  <div className="p-3 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-200">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
                           ☀️ Kecerahan
                         </span>
-                        <span className="px-2 py-1 text-sm font-bold text-yellow-300 rounded bg-yellow-800/50">
+                        <span className="px-2 py-1 text-sm font-bold text-yellow-700 bg-yellow-200 rounded dark:text-yellow-300 dark:bg-yellow-800/50">
                           {filters.brightness}%
                         </span>
                       </div>
@@ -217,19 +227,19 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("brightness", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-yellow"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-yellow"
                       />
                     </div>
                   </div>
 
-                  {/* Contrast Control - Dark */}
-                  <div className="p-3 border rounded-lg border-purple-600/30 bg-purple-900/20">
+                  {/* Contrast Control - Light/Dark */}
+                  <div className="p-3 border border-purple-200 rounded-lg dark:border-purple-600/30 bg-purple-50 dark:bg-purple-900/20">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-200">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
                           🔳 Kontras
                         </span>
-                        <span className="px-2 py-1 text-sm font-bold text-purple-300 rounded bg-purple-800/50">
+                        <span className="px-2 py-1 text-sm font-bold text-purple-700 bg-purple-200 rounded dark:text-purple-300 dark:bg-purple-800/50">
                           {filters.contrast}%
                         </span>
                       </div>
@@ -241,19 +251,19 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("contrast", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-purple"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-purple"
                       />
                     </div>
                   </div>
 
-                  {/* Saturation Control - Dark */}
-                  <div className="p-3 border rounded-lg border-pink-600/30 bg-pink-900/20">
+                  {/* Saturation Control - Light/Dark */}
+                  <div className="p-3 border border-pink-200 rounded-lg dark:border-pink-600/30 bg-pink-50 dark:bg-pink-900/20">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-200">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
                           🎨 Saturasi
                         </span>
-                        <span className="px-2 py-1 text-sm font-bold text-pink-300 rounded bg-pink-800/50">
+                        <span className="px-2 py-1 text-sm font-bold text-pink-700 bg-pink-200 rounded dark:text-pink-300 dark:bg-pink-800/50">
                           {filters.saturation}%
                         </span>
                       </div>
@@ -265,7 +275,7 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("saturation", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-pink"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-pink"
                       />
                     </div>
                   </div>
@@ -274,14 +284,14 @@ function EditorPage() {
 
               {activeTab === "effects" && (
                 <div className="space-y-4">
-                  {/* Hue Control - Dark */}
-                  <div className="p-3 border rounded-lg border-indigo-600/30 bg-indigo-900/20">
+                  {/* Hue Control - Light/Dark */}
+                  <div className="p-3 border border-indigo-200 rounded-lg dark:border-indigo-600/30 bg-indigo-50 dark:bg-indigo-900/20">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-200">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
                           🌀 Rona Warna
                         </span>
-                        <span className="px-2 py-1 text-sm font-bold text-indigo-300 rounded bg-indigo-800/50">
+                        <span className="px-2 py-1 text-sm font-bold text-indigo-700 bg-indigo-200 rounded dark:text-indigo-300 dark:bg-indigo-800/50">
                           {filters.hue}°
                         </span>
                       </div>
@@ -293,19 +303,19 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("hue", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-indigo"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-indigo"
                       />
                     </div>
                   </div>
 
-                  {/* Sepia - Dark */}
-                  <div className="p-3 border rounded-lg bg-amber-900/20 border-amber-600/30">
+                  {/* Sepia - Light/Dark */}
+                  <div className="p-3 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-600/30">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-200">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
                           🍂 Sepia
                         </span>
-                        <span className="px-2 py-1 text-sm font-bold rounded text-amber-300 bg-amber-800/50">
+                        <span className="px-2 py-1 text-sm font-bold rounded text-amber-700 dark:text-amber-300 bg-amber-200 dark:bg-amber-800/50">
                           {filters.sepia}%
                         </span>
                       </div>
@@ -317,19 +327,19 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("sepia", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-amber"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-amber"
                       />
                     </div>
                   </div>
 
-                  {/* Grayscale - Dark */}
-                  <div className="p-3 border rounded-lg bg-slate-800/20 border-slate-600/30">
+                  {/* Grayscale - Light/Dark */}
+                  <div className="p-3 border rounded-lg bg-slate-50 dark:bg-slate-800/20 border-slate-200 dark:border-slate-600/30">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-200">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
                           ⬜ Grayscale
                         </span>
-                        <span className="px-2 py-1 text-sm font-bold rounded text-slate-300 bg-slate-700/50">
+                        <span className="px-2 py-1 text-sm font-bold rounded text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700/50">
                           {filters.grayscale}%
                         </span>
                       </div>
@@ -341,7 +351,7 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("grayscale", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-slate"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-slate"
                       />
                     </div>
                   </div>
@@ -357,10 +367,10 @@ function EditorPage() {
             <CardEditor frameImage={frameImage} filters={filters} />
           </div>
 
-          {/* Enhanced Settings Panel - Dark */}
-          <div className="bg-gray-800 border border-gray-700 shadow-lg rounded-xl">
-            <div className="flex items-center justify-between p-6 border-b border-gray-700">
-              <h2 className="text-xl font-semibold text-gray-200">
+          {/* Enhanced Settings Panel - Light/Dark */}
+          <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                 🎨 Filter & Pengaturan
               </h2>
               <button
@@ -371,10 +381,10 @@ function EditorPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-6 overflow-y-auto max-h-[600px] custom-scrollbar">
-              {/* Preset Filters - Dark */}
+            <div className="p-6 space-y-6 overflow-y-auto max-h-[600px]  bg-white dark:bg-gray-900">
+              {/* Preset Filters - Light/Dark */}
               <div>
-                <h3 className="mb-4 text-lg font-medium text-gray-200">
+                <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
                   Filter Preset
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
@@ -390,10 +400,12 @@ function EditorPage() {
                         grayscale: 0,
                       })
                     }
-                    className="flex items-center p-4 space-x-3 transition-all border-2 rounded-lg border-yellow-600/50 bg-gradient-to-br from-yellow-900/30 to-orange-900/30 hover:from-yellow-800/40 hover:to-orange-800/40 hover:border-yellow-500/70"
+                    className="flex items-center p-4 space-x-3 transition-all border-2 border-yellow-300 rounded-lg dark:border-yellow-600/50 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 hover:from-yellow-200 hover:to-orange-200 dark:hover:from-yellow-800/40 dark:hover:to-orange-800/40 hover:border-yellow-400 dark:hover:border-yellow-500/70"
                   >
                     <span className="text-2xl">☀️</span>
-                    <span className="font-medium text-gray-200">Cerah</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-200">
+                      Cerah
+                    </span>
                   </button>
                   <button
                     onClick={() =>
@@ -407,10 +419,12 @@ function EditorPage() {
                         grayscale: 0,
                       })
                     }
-                    className="flex items-center p-4 space-x-3 transition-all border-2 rounded-lg bg-gradient-to-br from-amber-900/30 to-yellow-900/30 border-amber-600/50 hover:from-amber-800/40 hover:to-yellow-800/40 hover:border-amber-500/70"
+                    className="flex items-center p-4 space-x-3 transition-all border-2 rounded-lg border-amber-300 dark:border-amber-600/50 bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 hover:from-amber-200 hover:to-yellow-200 dark:hover:from-amber-800/40 dark:hover:to-yellow-800/40 hover:border-amber-400 dark:hover:border-amber-500/70"
                   >
                     <span className="text-2xl">📷</span>
-                    <span className="font-medium text-gray-200">Vintage</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-200">
+                      Vintage
+                    </span>
                   </button>
                   <button
                     onClick={() =>
@@ -424,10 +438,12 @@ function EditorPage() {
                         grayscale: 0,
                       })
                     }
-                    className="flex items-center p-4 space-x-3 transition-all border-2 rounded-lg border-pink-600/50 bg-gradient-to-br from-pink-900/30 to-purple-900/30 hover:from-pink-800/40 hover:to-purple-800/40 hover:border-pink-500/70"
+                    className="flex items-center p-4 space-x-3 transition-all border-2 border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-pink-200 hover:to-purple-200 dark:hover:from-pink-800/40 dark:hover:to-purple-800/40 hover:border-pink-400 dark:hover:border-pink-500/70"
                   >
                     <span className="text-2xl">🌈</span>
-                    <span className="font-medium text-gray-200">Vivid</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-200">
+                      Vivid
+                    </span>
                   </button>
                   <button
                     onClick={() =>
@@ -441,29 +457,33 @@ function EditorPage() {
                         grayscale: 100,
                       })
                     }
-                    className="flex items-center p-4 space-x-3 transition-all border-2 rounded-lg border-gray-600/50 bg-gradient-to-br from-gray-800/30 to-slate-800/30 hover:from-gray-700/40 hover:to-slate-700/40 hover:border-gray-500/70"
+                    className="flex items-center p-4 space-x-3 transition-all border-2 border-gray-300 rounded-lg dark:border-gray-600/50 bg-gradient-to-br from-gray-100 to-slate-100 dark:from-gray-800/30 dark:to-slate-800/30 hover:from-gray-200 hover:to-slate-200 dark:hover:from-gray-700/40 dark:hover:to-slate-700/40 hover:border-gray-400 dark:hover:border-gray-500/70"
                   >
                     <span className="text-2xl">⚫</span>
-                    <span className="font-medium text-gray-200">B&W</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-200">
+                      B&W
+                    </span>
                   </button>
                 </div>
               </div>
 
-              {/* Basic Controls - Dark */}
+              {/* Basic Controls - Light/Dark */}
               <div>
-                <h3 className="mb-4 text-lg font-medium text-gray-200">
+                <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
                   Kontrol Dasar
                 </h3>
                 <div className="space-y-4">
-                  {/* Brightness Control - Dark */}
-                  <div className="p-4 border rounded-lg border-yellow-600/30 bg-yellow-900/20">
-                    <h4 className="mb-3 font-medium text-gray-200">
+                  {/* Brightness Control - Light/Dark */}
+                  <div className="p-4 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
+                    <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
                       ☀️ Brightness
                     </h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-300">Kecerahan</span>
-                        <span className="px-2 py-1 text-sm font-medium text-yellow-300 rounded bg-yellow-800/50">
+                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                          Kecerahan
+                        </span>
+                        <span className="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-200 rounded dark:text-yellow-300 dark:bg-yellow-800/50">
                           {filters.brightness}%
                         </span>
                       </div>
@@ -475,20 +495,22 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("brightness", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-yellow"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-yellow"
                       />
                     </div>
                   </div>
 
-                  {/* Contrast Control - Dark */}
-                  <div className="p-4 border rounded-lg border-purple-600/30 bg-purple-900/20">
-                    <h4 className="mb-3 font-medium text-gray-200">
+                  {/* Contrast Control - Light/Dark */}
+                  <div className="p-4 border border-purple-200 rounded-lg dark:border-purple-600/30 bg-purple-50 dark:bg-purple-900/20">
+                    <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
                       🔳 Contrast
                     </h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-300">Kontras</span>
-                        <span className="px-2 py-1 text-sm font-medium text-purple-300 rounded bg-purple-800/50">
+                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                          Kontras
+                        </span>
+                        <span className="px-2 py-1 text-sm font-medium text-purple-700 bg-purple-200 rounded dark:text-purple-300 dark:bg-purple-800/50">
                           {filters.contrast}%
                         </span>
                       </div>
@@ -500,20 +522,22 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("contrast", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-purple"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-purple"
                       />
                     </div>
                   </div>
 
-                  {/* Saturation Control - Dark */}
-                  <div className="p-4 border rounded-lg border-pink-600/30 bg-pink-900/20">
-                    <h4 className="mb-3 font-medium text-gray-200">
+                  {/* Saturation Control - Light/Dark */}
+                  <div className="p-4 border border-pink-200 rounded-lg dark:border-pink-600/30 bg-pink-50 dark:bg-pink-900/20">
+                    <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
                       🎨 Saturation
                     </h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-300">Saturasi</span>
-                        <span className="px-2 py-1 text-sm font-medium text-pink-300 rounded bg-pink-800/50">
+                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                          Saturasi
+                        </span>
+                        <span className="px-2 py-1 text-sm font-medium text-pink-700 bg-pink-200 rounded dark:text-pink-300 dark:bg-pink-800/50">
                           {filters.saturation}%
                         </span>
                       </div>
@@ -525,28 +549,30 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("saturation", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-pink"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-pink"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Advanced Controls - Dark */}
+              {/* Advanced Controls - Light/Dark */}
               <div>
-                <h3 className="mb-4 text-lg font-medium text-gray-200">
+                <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
                   Kontrol Lanjut
                 </h3>
                 <div className="space-y-4">
-                  {/* Hue Control - Dark */}
-                  <div className="p-4 border rounded-lg border-indigo-600/30 bg-indigo-900/20">
-                    <h4 className="mb-3 font-medium text-gray-200">🌀 Hue</h4>
+                  {/* Hue Control - Light/Dark */}
+                  <div className="p-4 border border-indigo-200 rounded-lg dark:border-indigo-600/30 bg-indigo-50 dark:bg-indigo-900/20">
+                    <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
+                      🌀 Hue
+                    </h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-300">
+                        <span className="text-sm text-gray-600 dark:text-gray-300">
                           Rona Warna
                         </span>
-                        <span className="px-2 py-1 text-sm font-medium text-indigo-300 rounded bg-indigo-800/50">
+                        <span className="px-2 py-1 text-sm font-medium text-indigo-700 bg-indigo-200 rounded dark:text-indigo-300 dark:bg-indigo-800/50">
                           {filters.hue}°
                         </span>
                       </div>
@@ -558,20 +584,24 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("hue", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-indigo"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-indigo"
                       />
                     </div>
                   </div>
 
-                  {/* Effect Controls - Dark */}
-                  <div className="p-4 border rounded-lg bg-amber-900/20 border-amber-600/30">
-                    <h4 className="mb-3 font-medium text-gray-200">✨ Efek</h4>
+                  {/* Effect Controls - Light/Dark */}
+                  <div className="p-4 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-600/30">
+                    <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
+                      ✨ Efek
+                    </h4>
 
-                    {/* Sepia - Dark */}
+                    {/* Sepia - Light/Dark */}
                     <div className="mb-3 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-300">🍂 Sepia</span>
-                        <span className="px-2 py-1 text-sm font-medium rounded text-amber-300 bg-amber-800/50">
+                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                          🍂 Sepia
+                        </span>
+                        <span className="px-2 py-1 text-sm font-medium rounded text-amber-700 dark:text-amber-300 bg-amber-200 dark:bg-amber-800/50">
                           {filters.sepia}%
                         </span>
                       </div>
@@ -583,17 +613,17 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("sepia", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-amber"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-amber"
                       />
                     </div>
 
-                    {/* Grayscale - Dark */}
+                    {/* Grayscale - Light/Dark */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-300">
+                        <span className="text-sm text-gray-600 dark:text-gray-300">
                           ⬜ Grayscale
                         </span>
-                        <span className="px-2 py-1 text-sm font-medium rounded text-slate-300 bg-slate-700/50">
+                        <span className="px-2 py-1 text-sm font-medium rounded text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700/50">
                           {filters.grayscale}%
                         </span>
                       </div>
@@ -605,7 +635,7 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("grayscale", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-slate"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-slate"
                       />
                     </div>
                   </div>
@@ -615,8 +645,6 @@ function EditorPage() {
           </div>
         </div>
       </div>
-
-
     </QueryClientProvider>
   );
 }
