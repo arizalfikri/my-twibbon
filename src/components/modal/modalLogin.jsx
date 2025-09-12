@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import ModalAlert from "../../layout/ModalAlert";
 import { Mail, X } from "lucide-react";
@@ -11,6 +12,7 @@ import InputWithLabel from "../FormControl/InputWithLabel";
 import { InputType } from "../FormControl";
 
 export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
   const { openToast } = useModalStore();
@@ -45,7 +47,7 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
         setEmail(response.data.email);
         setFullName(response.data.user.fullname);
         setRole(response.data.user.role);
-        openToast("toast", true, "Login Berhasil", "success");
+        openToast("toast", true, t('auth.login_successful'), "success");
 
         onClose();
       }
@@ -53,9 +55,9 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
     } catch (error) {
       const status = error.response?.status;
       if (status === 401) {
-        openToast("toast", true, "Email atau password tidak valid");
+        openToast("toast", true, t('auth.invalid_credentials'));
       } else {
-        openToast("toast", true, "Terjadi kesalahan pada server");
+        openToast("toast", true, t('auth.server_error'));
       }
     } finally {
       setIsLoading(false);
@@ -78,7 +80,7 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
 
           <div className="text-center text-white">
             <h2 className="mb-1 text-2xl font-bold">
-              {kontributor ? "Login Kontributor" : "Selamat Datang Kembali!"}
+              {kontributor ? t('auth.login_as_contributor') : t('auth.welcome_back')}
             </h2>
           </div>
         </div>
@@ -89,13 +91,13 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
             {/* Email Input */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Alamat Email
+                {t('auth.email_address')}
               </label>
               <div className="relative">
                 <InputWithLabel
                   htmlFor="email"
                   type={InputType.TEXT}
-                  placeholder="nama@example.com"
+                  placeholder={t('auth.email_placeholder')}
                   name="email"
                   id="email"
                   style="rounded-lg"
@@ -112,13 +114,13 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
             {/* Password Input */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Kata Sandi
+                {t('auth.password')}
               </label>
               <div className="relative">
                 <InputPassword
                   htmlFor="password"
                   type={InputType.PASSWORD}
-                  placeholder="Masukkan kata sandi Anda"
+                  placeholder={t('auth.enter_password')}
                   name="password"
                   id="password"
                   control={control}
@@ -135,14 +137,14 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
                   className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 dark:border-gray-600"
                 />
                 <span className="text-gray-600 dark:text-gray-400">
-                  Ingat saya
+                  {t('auth.remember_me')}
                 </span>
               </label>
               <button
                 type="button"
                 className="font-medium text-purple-600 hover:text-purple-700"
               >
-                Lupa kata sandi?
+                {t('auth.forgot_password')}
               </button>
             </div>
 
@@ -159,10 +161,10 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
               {isLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="w-5 h-5 mr-3 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
-                  Masuk...
+                  {t('auth.logging_in')}
                 </div>
               ) : (
-                "Masuk"
+                t('auth.login')
               )}
             </button>
           </form>
@@ -177,7 +179,7 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
                   </div>
                   <div className="relative flex justify-center text-sm">
                     <span className="px-2 text-gray-500 bg-white dark:bg-gray-900 dark:text-gray-400">
-                      atau lanjutkan dengan
+                      {t('auth.or_continue_with')}
                     </span>
                   </div>
                 </div>
@@ -213,14 +215,14 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
 
           {/* Register Link */}
           <div className="mt-3 text-sm text-center text-gray-600 dark:text-gray-400">
-            Belum punya akun?{" "}
+            {t('auth.no_account')}{" "}
             <a
               href="https://gypem.com/register"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-purple-600 hover:text-purple-700"
             >
-              Daftar sekarang
+              {t('auth.register_now')}
             </a>
           </div>
         </div>

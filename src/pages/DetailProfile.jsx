@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { Edit, Users, Trophy } from "lucide-react";
 import { useGET, useDELETE } from "../services/api.js";
 import Navbar from "../components/layoutpage/Navbar.jsx";
@@ -12,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
 
 const DetailProfile = () => {
+  const { t } = useTranslation();
   const { data: profileData, isLoading, refetch } = useGET("my-profile");
   const [viewMode, setViewMode] = useState("grid");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -23,6 +25,7 @@ const DetailProfile = () => {
     role === "contributor" ? "Campaign" : "Posts"
   );
   const navigate = useNavigate();
+  
   // Updated data extraction based on new API structure
   const userData = profileData?.data || {};
   const twibbonData = userData.my_event_twibbons || [];
@@ -36,7 +39,7 @@ const DetailProfile = () => {
 
   // Tentukan tabs berdasarkan role
   const availableTabs =
-    role === "contributor" ? ["Campaign"] : role === "user" ? ["Posts"] : [];
+    role === "contributor" ? [t('profile.campaign')] : role === "user" ? [t('profile.posts')] : [];
 
   useEffect(() => {
     if (!role) {
@@ -48,15 +51,18 @@ const DetailProfile = () => {
     setSelectedItemId(itemId);
     setShowDeleteModal(true);
   };
+  
   const handleEditClick = (itemData) => {
     setSelectedItemData(itemData);
     setShowEditModal(true);
   };
+  
   const handleDeleteSuccess = () => {
     setShowDeleteModal(false);
     setSelectedItemId(null);
     refetch();
   };
+  
   const handleEditSuccess = () => {
     setShowEditModal(false);
     setSelectedItemData(null);
@@ -110,7 +116,7 @@ const DetailProfile = () => {
                     <button className="flex items-center gap-2 px-4 py-2 transition-colors bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
                       <Edit className="w-4 h-4 dark:text-white" />
                       <p className="text-gray-700 dark:text-gray-300">
-                        Edit Profile
+                        {t('profile.edit_profile')}
                       </p>
                     </button>
                   </Link>
@@ -125,7 +131,7 @@ const DetailProfile = () => {
                   <div className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                     <span className="font-medium text-gray-700 dark:text-gray-200">
-                      Supporters
+                      {t('main.supporters')}
                     </span>
                   </div>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -137,7 +143,7 @@ const DetailProfile = () => {
                   <div className="flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                     <span className="font-medium text-gray-700 dark:text-gray-200">
-                      Campaigns
+                      {t('profile.campaigns')}
                     </span>
                   </div>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -158,19 +164,22 @@ const DetailProfile = () => {
             {/* Tabs */}
             <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex space-x-8">
-                {availableTabs.map((tab) => (
+                {availableTabs.map((tab, index) => {
+                  const tabKey = role === "contributor" ? "Campaign" : "Posts";
+                  return (
                   <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
+                      key={index}
+                      onClick={() => setActiveTab(tabKey)}
                     className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-                      activeTab === tab
+                        activeTab === tabKey
                         ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
                         : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                     }`}
                   >
                     {tab}
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -191,7 +200,7 @@ const DetailProfile = () => {
                       key={twibon.id}
                       twibon={{
                         id: twibon.id,
-                        title: twibon.title || "Tanpa Judul",
+                        title: twibon.title || t('main.no_title'),
                         author: userFullname || "Gypem",
                         User: 0,
                         slug: twibon.slug_event_twibbon,
@@ -215,10 +224,10 @@ const DetailProfile = () => {
                   <Edit className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                 </div>
                 <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-                  No Posts Yet
+                  {t('main.no_posts_yet')}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400">
-                  Posts you create will appear here
+                  {t('profile.posts_will_appear')}
                 </p>
               </div>
             )}

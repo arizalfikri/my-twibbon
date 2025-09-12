@@ -1,42 +1,41 @@
 // components/buttons/DownloadButton.jsx
-import React from 'react';
-import { Loader2 } from 'lucide-react';
-import useUIStore from '../../helper/store/uiStore';
+import React from "react";
+import { Loader2 } from "lucide-react";
+import useUIStore from "../../helper/store/uiStore";
+import { useTranslation } from "react-i18next";
 
-const DownloadButton = ({ 
+const DownloadButton = ({
   onClick,
-  className = '',
+  className = "",
   disabled = false,
   children,
-  fullWidth = false
+  fullWidth = false,
 }) => {
+  const { t } = useTranslation();
   const { isDownloading } = useUIStore();
-  
-  const baseClasses = "px-6 py-3 font-medium text-white transition-colors rounded-lg flex items-center justify-center gap-2";
-  
+
+  const baseClasses =
+    "px-6 py-3 font-medium text-white transition-colors rounded-lg flex items-center justify-center gap-2";
+
   const isDisabled = disabled || isDownloading;
-  
-  const widthClass = fullWidth ? 'w-full col-span-3' : '';
-  
+
+  const widthClass = fullWidth ? "w-full col-span-3" : "";
+
   const finalClasses = `${baseClasses} ${widthClass} ${className} ${
-    isDisabled 
-      ? 'bg-gray-400 cursor-not-allowed hover:bg-gray-400' 
-      : 'bg-purple-600 hover:bg-purple-700'
+    isDisabled
+      ? "bg-gray-400 cursor-not-allowed hover:bg-gray-400"
+      : "bg-purple-600 hover:bg-purple-700"
   }`;
-  
+
   return (
-    <button
-      onClick={onClick}
-      disabled={isDisabled}
-      className={finalClasses}
-    >
+    <button onClick={onClick} disabled={isDisabled} className={finalClasses}>
       {isDownloading ? (
         <>
           <Loader2 size={20} className="animate-spin" />
-          Processing...
+          {t("downloadbutton.Processing")}..
         </>
       ) : (
-        children || 'Download'
+        children || t("downloadbutton.title")
       )}
     </button>
   );

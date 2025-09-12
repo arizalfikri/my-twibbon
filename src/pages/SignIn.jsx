@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import LoginImage from "../assets/images/login_image.png";
 import LogoGypem from "../assets/images/gypem_logo.png";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +14,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { signInSchema } from "../helper/yup/index";
 
 const SignIn = () => {
+  const { t } = useTranslation();
   const [selectedRole, setSelectedRole] = useState(null);
   const { openToast } = useModalStore();
   const token = localStorage.getItem("token");
@@ -64,18 +66,18 @@ const SignIn = () => {
     } catch (error) {
       switch (error?.response.status) {
         case 401:
-          openToast("toast", true, "Invalid email or password", "info");
+          openToast("toast", true, t('auth.invalid_credentials'), "info");
           break;
         case 400:
           openToast(
             "toast",
             true,
-            "Anda belum terdaftar. Silakan daftar terlebih dahulu.",
+            t('auth.not_registered'),
             "warning"
           );
           break;
         default:
-          openToast("toast", true, "Kesalahan Server");
+          openToast("toast", true, t('auth.server_error'));
           break;
       }
     }
@@ -91,21 +93,21 @@ const SignIn = () => {
           <img
             className="hidden object-cover w-full h-full col-span-1 lg:block"
             src={LoginImage}
-            alt="Login"
+            alt={t('auth.login')}
           />
 
           <div className="flex flex-col justify-center col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
             <a href="/">
               <img
                 src={LogoGypem}
-                alt="Logo"
+                alt={t('common.logo')}
                 className="block w-20 h-full mx-auto md:w-28 md:h-28"
               />
             </a>
 
             <div className="mt-10 md:mt-5">
               <h2 className="mb-8 text-2xl font-bold text-center text-gray-800 dark:text-gray-200">
-                Pilih Role Login
+                {t('auth.select_login_role')}
               </h2>
 
               <div className="flex flex-col gap-4">
@@ -114,7 +116,7 @@ const SignIn = () => {
                   onClick={() => setSelectedRole("contributor")}
                   className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-purple-700 gap-x-1 transition-smooth rounded-xl hover:bg-purple-900"
                 >
-                  Login sebagai Kontributor
+                  {t('auth.login_as_contributor')}
                 </button>
 
                 <button
@@ -122,7 +124,7 @@ const SignIn = () => {
                   onClick={() => setSelectedRole("participant")}
                   className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-yellow-400 gap-x-1 transition-smooth rounded-xl hover:bg-yellow-600"
                 >
-                  Login sebagai Peserta
+                  {t('auth.login_as_participant')}
                 </button>
               </div>
             </div>
@@ -139,22 +141,25 @@ const SignIn = () => {
         <img
           className="hidden object-cover w-full h-full col-span-1 lg:block"
           src={LoginImage}
-          alt="Login"
+          alt={t('auth.login')}
         />
 
         <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
           <a href="/">
             <img
               src={LogoGypem}
-              alt="Logo"
+              alt={t('common.logo')}
               className="block w-20 h-full mx-auto md:w-28 md:h-28"
             />
           </a>
 
           <div className="mt-4 mb-6 text-center">
             <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-              Login sebagai{" "}
-              {selectedRole === "contributor" ? "Kontributor" : "Peserta"}
+              {t('auth.login_as')} {" "}
+              {selectedRole === "contributor" 
+                ? t('auth.contributor') 
+                : t('auth.participant')
+              }
             </h2>
           </div>
 
@@ -162,9 +167,9 @@ const SignIn = () => {
             <div className="flex flex-col gap-5">
               <InputWithLabel
                 htmlFor="email"
-                label={<span className="capitalize">Email</span>}
+                label={<span className="capitalize">{t('auth.email')}</span>}
                 type={InputType.TEXT}
-                placeholder="Masukkan email"
+                placeholder={t('auth.enter_email')}
                 name="email"
                 id="email"
                 style="rounded-xl"
@@ -176,7 +181,7 @@ const SignIn = () => {
               <div className="relative">
                 <InputPassword
                   htmlFor="password"
-                  label="Password"
+                  label={t('auth.password')}
                   type={InputType.PASSWORD}
                   placeholder={"******"}
                   name="password"
@@ -192,7 +197,7 @@ const SignIn = () => {
                 href="#"
                 className="text-sm text-purple-700 hover:underline dark:text-purple-400"
               >
-                Lupa kata sandi?
+                {t('auth.forgot_password')}
               </a>
             </div>
 
@@ -202,7 +207,7 @@ const SignIn = () => {
                 disabled={isPending}
                 className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold bg-purple-700 text-white px-4 py-2.5 w-full rounded-xl hover:bg-purple-900 disabled:opacity-50"
               >
-                {isPending ? "Loading..." : "Masuk"}
+                {isPending ? t('common.loading') : t('login')}
               </button>
             </div>
 
@@ -217,7 +222,7 @@ const SignIn = () => {
           </form>
 
           <div className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400 md:text-md ">
-            Belum memiliki akun?{" "}
+            {t('auth.no_account')} {" "}
             <a
               href={
                 selectedRole === "participant"
@@ -226,7 +231,7 @@ const SignIn = () => {
               }
               className="font-semibold text-purple-700 hover:underline dark:text-purple-400"
             >
-              Klik di sini
+              {t('auth.click_here')}
             </a>
           </div>
         </div>

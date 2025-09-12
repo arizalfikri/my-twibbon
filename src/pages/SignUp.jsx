@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import LogoGypem from "../assets/images/gypem_logo.png";
 import LoginImage from "../assets/images/login_image.png";
@@ -14,6 +15,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { signUpSchema } from "../helper/yup";
 
 function SignUp() {
+  const { t } = useTranslation();
   const [provinces, setProvinces] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,33 +26,35 @@ function SignUp() {
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: yupResolver(signUpSchema) });
+
   const forms = [
     {
       id: "fullname",
-      label: "fullname",
+      label: t('auth.full_name'),
       type: InputType.TEXT,
-      placeholder: "fullname",
+      placeholder: t('auth.enter_full_name'),
     },
     {
       id: "email",
-      label: "email",
+      label: t('auth.email'),
       type: InputType.EMAIL,
-      placeholder: "email",
+      placeholder: t('auth.enter_email'),
     },
     {
       id: "password",
-      label: "Password",
+      label: t('auth.password'),
       type: InputType.PASSWORD,
       placeholder: "*******",
     },
     {
       id: "confirm_password",
-      label: "Konfirmasi Password",
+      label: t('auth.confirm_password'),
       type: InputType.PASSWORD,
       placeholder: "*******",
     },
@@ -67,13 +71,13 @@ function SignUp() {
       .catch((error) => {
         switch (error.status) {
           case 401:
-            openToast("toast", true, "Email sudah terdaftar");
+            openToast("toast", true, t('auth.email_already_registered'));
             break;
           case 409:
-            openToast("toast", true, "Email sudah terdaftar");
+            openToast("toast", true, t('auth.email_already_registered'));
             break;
           default:
-            openToast("toast", true, "Kesalahan Server");
+            openToast("toast", true, t('auth.server_error'));
             break;
         }
       });
@@ -85,13 +89,13 @@ function SignUp() {
         <img
           className="hidden object-cover w-full h-full col-span-1 lg:block"
           src={LoginImage}
-          alt="Login"
+          alt={t('auth.login_image')}
         />
         <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto text-gray-800 bg-white dark:bg-gray-900 dark:text-gray-100 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
           <a href="/">
             <img
               src={LogoGypem}
-              alt="Logo"
+              alt={t('common.logo')}
               className="block w-20 h-full mx-auto md:w-28 md:h-28"
             />
           </a>
@@ -139,23 +143,24 @@ function SignUp() {
             <div className="flex flex-col gap-2 mt-8 md:flex-row">
               <button
                 type="submit"
+                disabled={isPending}
                 className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold 
                        bg-purple-700 text-white px-4 py-2.5 w-full rounded-xl 
                        hover:bg-purple-900 disabled:opacity-50"
               >
-                Daftar
+                {isPending ? t('auth.registering') : t('auth.register')}
               </button>
             </div>
           </form>
 
           <div className="mt-3 text-sm text-center">
             <p className="text-gray-600 dark:text-gray-400">
-              Sudah punya akun?{" "}
+              {t('auth.already_have_account')}{" "}
               <a
                 href="/SignIn"
                 className="font-medium text-purple-700 underline dark:text-purple-400"
               >
-                Masuk
+                {t('auth.login')}
               </a>
             </p>
           </div>

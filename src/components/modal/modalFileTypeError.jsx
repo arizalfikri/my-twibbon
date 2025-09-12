@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import ModalAlert from "../../layout/ModalAlert";
 import { useModalStore } from "../../helper/store/modal.store";
 
 export default function ModalFileTypeError() {
+  const { t } = useTranslation();
   const { modalFileError, openModal } = useModalStore();
 
   const handleClose = () => {
@@ -71,30 +73,28 @@ export default function ModalFileTypeError() {
 
         {/* Content */}
         <div className="mb-8 text-center text-white">
-          <h3 className="mb-3 text-xl font-medium">Gambar Harus Transparan</h3>
+          <h3 className="mb-3 text-xl font-medium">{t('modalerror.transparent_image_required')}</h3>
           <p className="text-sm leading-relaxed text-purple-200">
-            File gambar yang Anda pilih tidak memiliki latar belakang transparan. 
-            Harap pilih gambar dengan format <span className="font-semibold">PNG transparan </span> 
-            atau edit gambar Anda untuk menghilangkan latar belakang.
+            {t('modalerror.transparent_image_message')} <span className="font-semibold">{t('modalerror.png_transparent_format')}</span> {t('modalerror.or_edit_background')}
           </p>
         </div>
 
         {/* Transparency requirements info */}
         <div className="p-4 mb-6 rounded-lg bg-white/10">
           <div className="text-sm text-white">
-            <div className="mb-2 font-medium">Persyaratan gambar:</div>
+            <div className="mb-2 font-medium">{t('modalerror.image_requirements')}:</div>
             <div className="space-y-1 text-xs">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>Format PNG dengan background transparan</span>
+                <span>{t('modalerror.png_transparent_format_requirement')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>Tidak ada latar belakang putih atau warna solid</span>
+                <span>{t('modalerror.no_solid_background')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                <span>Ukuran maksimal 10MB</span>
+                <span>{t('modalerror.max_file_size')}</span>
               </div>
             </div>
           </div>
@@ -103,8 +103,7 @@ export default function ModalFileTypeError() {
         {/* Help text */}
         <div className="p-3 mb-6 rounded-lg bg-blue-500/20">
           <div className="text-xs text-blue-200">
-            <span className="font-medium">💡 Tips:</span> Gunakan tools seperti Remove.bg atau editor foto 
-            untuk menghilangkan background gambar Anda.
+            <span className="font-medium">💡 {t('modalerror.tips')}:</span> {t('modalerror.tools_suggestion')}
           </div>
         </div>
 
@@ -114,7 +113,7 @@ export default function ModalFileTypeError() {
             className="bg-[#E8121F] hover:bg-[#d43c46] text-white text-sm font-medium px-8 py-3 rounded-lg transition-colors duration-200 w-full"
             onClick={handleClose}
           >
-            Pilih Gambar Transparan
+            {t('modalerror.choose_transparent_image')}
           </button>
         </div>
       </div>

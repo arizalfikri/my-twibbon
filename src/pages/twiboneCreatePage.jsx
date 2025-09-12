@@ -14,9 +14,11 @@ import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import ModalLogin from "../components/modal/modalLogin";
 import { useDebounce } from "use-debounce";
+import { useTranslation } from "react-i18next";
 
 function TwiboneCreatePage() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -65,13 +67,12 @@ function TwiboneCreatePage() {
 
     if (debouncedTitle) {
       const isDuplicateTitle = twibbonsData.data.some(
-        (item) =>
-          item.title.toLowerCase() === debouncedTitle.toLowerCase()
+        (item) => item.title.toLowerCase() === debouncedTitle.toLowerCase()
       );
       if (isDuplicateTitle) {
         setError("title", {
           type: "manual",
-          message: "Judul sudah digunakan oleh kampanye lain",
+          message: t("create.errors.duplicate_title"),
         });
       } else {
         clearErrors("title");
@@ -86,27 +87,19 @@ function TwiboneCreatePage() {
       if (isDuplicateSlug) {
         setError("link", {
           type: "manual",
-          message: "Link kampanye sudah digunakan",
+          message: t("create.errors.duplicate_link"),
         });
       } else {
         clearErrors("link");
       }
     }
-  }, [
-    debouncedTitle,
-    debouncedLink,
-    twibbonsData,
-    setError,
-    clearErrors,
-  ]);
+  }, [debouncedTitle, debouncedLink, twibbonsData, setError, clearErrors, t]);
 
   const steps = isDesktop
-    ? [
-        { title: "Rincian Kampanye" },
-      ]
+    ? [{ title: t("create.steps.campaign_details") }]
     : [
-        { title: "Gambar" },
-        { title: "Rincian Kampanye" },
+        { title: t("create.steps.image") },
+        { title: t("create.steps.campaign_details") },
       ];
 
   const totalSteps = steps.length;
@@ -136,21 +129,31 @@ function TwiboneCreatePage() {
     } catch (error) {
       switch (error?.response.status) {
         case 401:
-          openToast("toast", true, "Anda Harus Menjadi Kontributor.", "info");
+          openToast(
+            "toast",
+            true,
+            t("create.errors.contributor_required"),
+            "info"
+          );
           setShowLoginModal(true);
           break;
         case 400:
           openToast("toast", true, error?.response.message);
           break;
         case 403:
-          openToast("toast", true, "Anda Harus Menjadi Kontributor.", "info");
+          openToast(
+            "toast",
+            true,
+            t("create.errors.contributor_required"),
+            "info"
+          );
           setShowLoginModal(true);
           break;
         case 409:
-          openToast("toast", true, "Data sudah digunakan");
+          openToast("toast", true, t("create.errors.data_already_used"));
           break;
         default:
-          openToast("toast", true, "Kesalahan Server");
+          openToast("toast", true, t("create.errors.server_error"));
           break;
       }
     }
@@ -167,7 +170,12 @@ function TwiboneCreatePage() {
             key={`${currentStep}-${key}`}
             className="w-full border-r border-gray-200 bg-gray-50 dark:bg-gray-800 md:hidden"
           >
-            <ImageUploadArea name="image" setValue={setValue} error={errors} value={imageValue} />
+            <ImageUploadArea
+              name="image"
+              setValue={setValue}
+              error={errors}
+              value={imageValue}
+            />
           </div>
         );
 
@@ -180,10 +188,11 @@ function TwiboneCreatePage() {
               htmlFor="title"
               label={
                 <>
-                  Judul Kampanye <span className="ml-1 text-red-500">*</span>
+                  {t("create.form.campaign_title")}{" "}
+                  <span className="ml-1 text-red-500">*</span>
                 </>
               }
-              placeholder="Dapat berupa angka, alfabet atau karakter spesial"
+              placeholder={t("create.form.title_placeholder")}
               error={errors}
             />
 
@@ -191,9 +200,9 @@ function TwiboneCreatePage() {
               control={control}
               name="caption"
               htmlFor="caption"
-              label="caption "
+              label={t("create.form.caption")}
               type="textarea"
-              placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
+              placeholder={t("create.form.caption_placeholder")}
               error={errors}
               className="h-50"
               maxLength={500}
@@ -203,9 +212,9 @@ function TwiboneCreatePage() {
               control={control}
               name="link"
               htmlFor="link"
-              label="Link Kampanye"
+              label={t("create.form.campaign_link")}
               prefix="twibbo.nz/"
-              placeholder="link-kampanye"
+              placeholder={t("create.form.link_placeholder")}
               error={errors}
             />
           </div>
@@ -220,7 +229,7 @@ function TwiboneCreatePage() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
-      <NavbarEditor title="Create Twibone" />
+      <NavbarEditor title={t("create.page_title")} />
 
       <div className="flex flex-col flex-1 md:flex-row md:overflow-hidden">
         {/* Sidebar Gambar (desktop) */}
@@ -242,20 +251,25 @@ function TwiboneCreatePage() {
                 {steps[currentStep]?.title}
               </h3>
               <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Lengkapi informasi kampanye Anda
+                {t("create.step_description")}
               </p>
               <div className="flex items-center mt-4 space-x-2">
                 {steps.map((_, idx) => (
                   <div
                     key={idx}
                     className={`h-2 flex-1 rounded-full ${
-                      idx <= currentStep ? "bg-purple-600" : "bg-gray-200 dark:bg-gray-700"
+                      idx <= currentStep
+                        ? "bg-purple-600"
+                        : "bg-gray-200 dark:bg-gray-700"
                     }`}
                   />
                 ))}
               </div>
               <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                Langkah {currentStep + 1} dari {totalSteps}
+                {t("create.step_counter", {
+                  current: currentStep + 1,
+                  total: totalSteps,
+                })}
               </div>
             </div>
 
@@ -274,7 +288,7 @@ function TwiboneCreatePage() {
                       className="flex items-center justify-center px-4 py-3 text-gray-700 bg-gray-200 rounded-lg dark:text-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
                     >
                       <ChevronLeft size={20} className="mr-2" />
-                      Kembali
+                      {t("create.buttons.back")}
                     </button>
                   )}
 
@@ -314,13 +328,13 @@ function TwiboneCreatePage() {
                             d="M4 12a8 8 0 018-8v4l3.5-3.5L12 0v4a8 8 0 018 8z"
                           ></path>
                         </svg>
-                        Menyimpan...
+                        {t("create.buttons.saving")}
                       </span>
                     ) : currentStep === totalSteps - 1 ? (
-                      "Simpan"
+                      t("create.buttons.save")
                     ) : (
                       <>
-                        Selanjutnya
+                        {t("create.buttons.next")}
                         <ChevronRight size={20} className="ml-2" />
                       </>
                     )}

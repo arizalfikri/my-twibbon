@@ -32,6 +32,7 @@ import "swiper/css/autoplay";
 
 import { Autoplay, FreeMode } from "swiper/modules";
 import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
+import { useTranslation } from "react-i18next";
 
 // Sample photos for the scrolling gallery
 
@@ -53,6 +54,7 @@ function TwiboneHomepage() {
     Language,
     IYPES,
   ];
+  const { t } = useTranslation();
 
   // 🔹 Set default: mobile list, laptop grid
   useEffect(() => {
@@ -90,24 +92,24 @@ function TwiboneHomepage() {
               <div className="flex items-center justify-center mb-4 lg:justify-start">
                 <Sparkles className="w-6 h-6 mr-2 text-yellow-400 sm:w-7 sm:h-7 md:w-8 md:h-8" />
                 <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl">
-                  Gypem Twibone
+                  {t("title")}
                 </h1>
               </div>
               <p className="flex items-center justify-center text-lg text-purple-100 dark:text-purple-200 sm:text-xl md:text-2xl ">
-                Buat dan bagikan foto twibon untuk momen spesial Anda
+                {t("homepage.hero_subtitle")}
               </p>
               <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row md:items-start lg:justify-start lg:ms-10">
                 <Link to="/create">
                   <button className="bg-yellow-400 dark:bg-yellow-500 text-[#4C0D68] dark:text-[#3A0A51] px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:bg-yellow-300 dark:hover:bg-yellow-400 transition-colors flex items-center gap-2">
                     <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                    Mulai Membuat
+                    {t("homepage.start_creating")}
                   </button>
                 </Link>
                 <Link
                   to="/explore"
                   className="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold text-base sm:text-lg hover:bg-white hover:text-[#4C0D68] dark:hover:bg-gray-100 dark:hover:text-[#3A0A51] transition-colors inline-flex items-center gap-2"
                 >
-                  Jelajahi Twibone
+                  {t("homepage.explore_twibone")}
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Link>
               </div>
@@ -226,12 +228,15 @@ function TwiboneHomepage() {
           <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-2">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Twibone Populer
+                {t("homepage.popular_twibone")}
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
                 {isLoading
-                  ? "Memuat twibone terbaru..."
-                  : `Menampilkan ${filteredTwibbons.length} dari ${twibbonData.length} twibone tersedia`}
+                  ? t("homepage.loading_latest")
+                  : t("homepage.showing_count", {
+                      filtered: filteredTwibbons.length,
+                      total: twibbonData.length,
+                    })}
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -262,7 +267,9 @@ function TwiboneHomepage() {
                 className="flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 <Search className="w-4 h-4" />
-                <span className="hidden sm:inline">Lihat Semua</span>
+                <span className="hidden sm:inline">
+                  {t("homepage.view_all")}
+                </span>
               </Link>
             </div>
           </div>
@@ -279,7 +286,7 @@ function TwiboneHomepage() {
                     : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                 }`}
               >
-                {category}
+                {t("homepage.category_all")}
               </button>
             ))}
           </div>
@@ -294,7 +301,7 @@ function TwiboneHomepage() {
           }`}
         >
           {isLoading ? (
-            <p className="text-center col-span-full">Memuat...</p>
+            <p className="text-center col-span-full">{t("homepage.loading")}</p>
           ) : filteredTwibbons.length === 0 ? (
             <EmptyTwibbon />
           ) : (
@@ -303,7 +310,7 @@ function TwiboneHomepage() {
                 key={twibon.id}
                 twibon={{
                   id: twibon.id,
-                  title: twibon.title || "Tanpa Judul",
+                  title: twibon.title || t("homepage.untitled"),
                   author: twibon?.contributor?.fullname || "Gypem",
                   User: 0,
                   slug: twibon.slug_event_twibbon,
@@ -322,17 +329,18 @@ function TwiboneHomepage() {
           <div className="mt-12 text-center">
             <div className="p-8 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-2xl">
               <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-                Masih ada {twibbonData.length - 8} twibone lainnya!
+                {t("homepage.more_twibone_available", {
+                  count: twibbonData.length - 8,
+                })}
               </h3>
               <p className="mb-6 text-gray-600 dark:text-gray-400">
-                Jelajahi koleksi lengkap twibone dengan berbagai tema dan
-                kategori menarik.
+                {t("homepage.explore_collection")}
               </p>
               <Link
                 to="/explore"
                 className="bg-[#4C0D68] dark:bg-[#6B1E7A] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#6B1E7A] dark:hover:bg-[#7B2D8A] transition-colors inline-flex items-center gap-2"
               >
-                Jelajahi Semua Twibone
+                {t("homepage.explore_all_twibone")}
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
@@ -344,11 +352,10 @@ function TwiboneHomepage() {
           <div className="max-w-screen-xl px-6 mx-auto">
             <div className="mb-16 text-center">
               <h2 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white">
-                Cara Mudah Membuat Twibone
+                {t("homepage.tutorial_title")}
               </h2>
               <p className="max-w-2xl mx-auto text-xl text-gray-600 dark:text-gray-400">
-                Ikuti langkah sederhana ini untuk menciptakan twibon yang
-                memukau dalam waktu singkat
+                {t("homepage.tutorial_subtitle")}
               </p>
             </div>
 
@@ -361,18 +368,17 @@ function TwiboneHomepage() {
                     <Search className="w-8 h-8" />
                   </div>
                   <div className="absolute top-4 right-4 bg-yellow-400 dark:bg-yellow-500 text-[#4C0D68] dark:text-[#3A0A51] px-3 py-1 rounded-full text-sm font-bold">
-                    Langkah 1
+                    {t("homepage.step")} 1
                   </div>
                   <h3 className="mb-4 text-xl font-bold text-gray-800 dark:text-gray-200">
-                    Pilih Template Favorit
+                    {t("homepage.step1_title")}
                   </h3>
                   <p className="mb-6 leading-relaxed text-gray-600 dark:text-gray-400">
-                    Jelajahi ribuan template menarik dari berbagai kategori
-                    seperti olimpiade dan event spesial lainnya.
+                    {t("homepage.step1_description")}
                   </p>
                   <div className="flex items-center gap-2 text-sm text-[#4C0D68] dark:text-[#8B3A9C] font-medium">
                     <CheckCircle className="w-4 h-4" />
-                    1000+ Template tersedia
+                    {t("homepage.step1_feature")}
                   </div>
                 </div>
               </div>
@@ -385,18 +391,17 @@ function TwiboneHomepage() {
                     <Upload className="w-8 h-8" />
                   </div>
                   <div className="absolute top-4 right-4 bg-yellow-400 dark:bg-yellow-500 text-[#4C0D68] dark:text-[#3A0A51] px-3 py-1 rounded-full text-sm font-bold">
-                    Langkah 2
+                    {t("homepage.step")} 2
                   </div>
                   <h3 className="mb-4 text-xl font-bold text-gray-800 dark:text-gray-200">
-                    Upload & Edit Foto
+                    {t("homepage.step2_title")}
                   </h3>
                   <p className="mb-6 leading-relaxed text-gray-600 dark:text-gray-400">
-                    Unggah foto terbaik Anda, lalu sesuaikan posisi, ukuran, dan
-                    rotasi dengan editor yang user-friendly.
+                    {t("homepage.step2_description")}
                   </p>
                   <div className="flex items-center gap-2 text-sm text-[#4C0D68] dark:text-[#8B3A9C] font-medium">
                     <CheckCircle className="w-4 h-4" />
-                    Editor drag & drop
+                    {t("homepage.step2_feature")}
                   </div>
                 </div>
               </div>
@@ -409,18 +414,17 @@ function TwiboneHomepage() {
                     <Share2 className="w-8 h-8" />
                   </div>
                   <div className="absolute top-4 right-4 bg-yellow-400 dark:bg-yellow-500 text-[#4C0D68] dark:text-[#3A0A51] px-3 py-1 rounded-full text-sm font-bold">
-                    Langkah 3
+                    {t("homepage.step")} 3
                   </div>
                   <h3 className="mb-4 text-xl font-bold text-gray-800 dark:text-gray-200">
-                    Download & Bagikan
+                    {t("homepage.step3_title")}
                   </h3>
                   <p className="mb-6 leading-relaxed text-gray-600 dark:text-gray-400">
-                    Simpan hasil dalam kualitas HD dan bagikan langsung ke media
-                    sosial atau kirim ke teman-teman.
+                    {t("homepage.step3_description")}
                   </p>
                   <div className="flex items-center gap-2 text-sm text-[#4C0D68] dark:text-[#8B3A9C] font-medium">
                     <CheckCircle className="w-4 h-4" />
-                    Kualitas HD tersedia
+                    {t("homepage.step3_feature")}
                   </div>
                 </div>
               </div>
@@ -436,23 +440,22 @@ function TwiboneHomepage() {
             <div className="p-12 bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] dark:from-[#6B1E7A] dark:to-[#8B3A9C] rounded-3xl text-white">
               <Sparkles className="w-16 h-16 mx-auto mb-6 text-yellow-400" />
               <h2 className="mb-4 text-3xl font-bold">
-                Siap Membuat Twibone Pertama Anda?
+                {t("homepage.cta_title")}
               </h2>
               <p className="mb-8 text-xl text-purple-100 dark:text-purple-200">
-                Bergabunglah dengan ribuan pengguna yang telah menciptakan momen
-                berkesan
+                {t("homepage.cta_subtitle")}
               </p>
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                 <Link to="/create">
                   <button className="bg-yellow-400 dark:bg-yellow-500 text-[#4C0D68] dark:text-[#3A0A51] px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 dark:hover:bg-yellow-400 transition-colors flex items-center gap-2 justify-center">
                     <Plus className="w-5 h-5" />
-                    Mulai Sekarang
+                    {t("homepage.start_now")}
                   </button>
                 </Link>
                 <Link to="/explore">
                   <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-[#4C0D68] dark:hover:bg-gray-100 dark:hover:text-[#3A0A51] transition-colors flex items-center gap-2 justify-center">
                     <Search className="w-5 h-5" />
-                    Lihat Template
+                    {t("homepage.view_templates")}
                   </button>
                 </Link>
               </div>

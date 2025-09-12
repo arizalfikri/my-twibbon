@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import CardEditor from "../components/cards/CardEditor";
 import useImageStore from "../helper/store/imagestore";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ const queryClient = new QueryClient({
 });
 
 function EditorPage() {
+  const { t } = useTranslation();
   const { image, frameImage } = useImageStore();
   const navigate = useNavigate();
   const { twibbonData } = useTwibbonStore();
@@ -96,7 +98,7 @@ function EditorPage() {
                     : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
-                ⚙️ Dasar
+                ⚙️ {t('editor.basic')}
               </button>
               <button
                 onClick={() => setActiveTab("effects")}
@@ -106,7 +108,7 @@ function EditorPage() {
                     : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
-                ✨ Efek
+                ✨ {t('editor.effects')}
               </button>
             </div>
 
@@ -116,13 +118,13 @@ function EditorPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-medium text-gray-900 dark:text-gray-200">
-                      Filter Preset
+                      {t('editor.filter_preset')}
                     </h3>
                     <button
                       onClick={resetFilters}
                       className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                     >
-                      Reset
+                      {t('editor.reset')}
                     </button>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -142,7 +144,7 @@ function EditorPage() {
                     >
                       <span>☀️</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                        Cerah
+                        {t('editor.bright')}
                       </span>
                     </button>
                     <button
@@ -161,7 +163,7 @@ function EditorPage() {
                     >
                       <span>📷</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                        Vintage
+                        {t('editor.vintage')}
                       </span>
                     </button>
                     <button
@@ -180,7 +182,7 @@ function EditorPage() {
                     >
                       <span>🌈</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                        Vivid
+                        {t('editor.vivid')}
                       </span>
                     </button>
                     <button
@@ -199,7 +201,7 @@ function EditorPage() {
                     >
                       <span>⚫</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                        B&W
+                        {t('editor.bw')}
                       </span>
                     </button>
                   </div>
@@ -213,7 +215,7 @@ function EditorPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          ☀️ Kecerahan
+                          ☀️ {t('editor.brightness')}
                         </span>
                         <span className="px-2 py-1 text-sm font-bold text-yellow-700 bg-yellow-200 rounded dark:text-yellow-300 dark:bg-yellow-800/50">
                           {filters.brightness}%
@@ -237,7 +239,7 @@ function EditorPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          🔳 Kontras
+                          🔳 {t('editor.contrast')}
                         </span>
                         <span className="px-2 py-1 text-sm font-bold text-purple-700 bg-purple-200 rounded dark:text-purple-300 dark:bg-purple-800/50">
                           {filters.contrast}%
@@ -261,7 +263,7 @@ function EditorPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          🎨 Saturasi
+                          🎨 {t('editor.saturation')}
                         </span>
                         <span className="px-2 py-1 text-sm font-bold text-pink-700 bg-pink-200 rounded dark:text-pink-300 dark:bg-pink-800/50">
                           {filters.saturation}%
@@ -289,7 +291,7 @@ function EditorPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          🌀 Rona Warna
+                          🌀 {t('editor.hue')}
                         </span>
                         <span className="px-2 py-1 text-sm font-bold text-indigo-700 bg-indigo-200 rounded dark:text-indigo-300 dark:bg-indigo-800/50">
                           {filters.hue}°
@@ -313,7 +315,7 @@ function EditorPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          🍂 Sepia
+                          🍂 {t('editor.sepia')}
                         </span>
                         <span className="px-2 py-1 text-sm font-bold rounded text-amber-700 dark:text-amber-300 bg-amber-200 dark:bg-amber-800/50">
                           {filters.sepia}%
@@ -337,7 +339,7 @@ function EditorPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          ⬜ Grayscale
+                          ⬜ {t('editor.grayscale')}
                         </span>
                         <span className="px-2 py-1 text-sm font-bold rounded text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700/50">
                           {filters.grayscale}%
@@ -371,13 +373,13 @@ function EditorPage() {
           <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl">
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
-                🎨 Filter & Pengaturan
+                🎨 {t('editor.filter_settings')}
               </h2>
               <button
                 onClick={resetFilters}
                 className="px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
               >
-                Reset
+                {t('editor.reset')}
               </button>
             </div>
 
@@ -385,7 +387,7 @@ function EditorPage() {
               {/* Preset Filters - Light/Dark */}
               <div>
                 <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
-                  Filter Preset
+                  {t('editor.filter_preset')}
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <button
@@ -404,7 +406,7 @@ function EditorPage() {
                   >
                     <span className="text-2xl">☀️</span>
                     <span className="font-medium text-gray-900 dark:text-gray-200">
-                      Cerah
+                      {t('editor.bright')}
                     </span>
                   </button>
                   <button
@@ -423,7 +425,7 @@ function EditorPage() {
                   >
                     <span className="text-2xl">📷</span>
                     <span className="font-medium text-gray-900 dark:text-gray-200">
-                      Vintage
+                      {t('editor.vintage')}
                     </span>
                   </button>
                   <button
@@ -442,7 +444,7 @@ function EditorPage() {
                   >
                     <span className="text-2xl">🌈</span>
                     <span className="font-medium text-gray-900 dark:text-gray-200">
-                      Vivid
+                      {t('editor.vivid')}
                     </span>
                   </button>
                   <button
@@ -461,7 +463,7 @@ function EditorPage() {
                   >
                     <span className="text-2xl">⚫</span>
                     <span className="font-medium text-gray-900 dark:text-gray-200">
-                      B&W
+                      {t('editor.bw')}
                     </span>
                   </button>
                 </div>
@@ -470,18 +472,18 @@ function EditorPage() {
               {/* Basic Controls - Light/Dark */}
               <div>
                 <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
-                  Kontrol Dasar
+                  {t('editor.basic_controls')}
                 </h3>
                 <div className="space-y-4">
                   {/* Brightness Control - Light/Dark */}
                   <div className="p-4 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
-                      ☀️ Brightness
+                      ☀️ {t('editor.brightness')}
                     </h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-300">
-                          Kecerahan
+                          {t('editor.brightness_desc')}
                         </span>
                         <span className="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-200 rounded dark:text-yellow-300 dark:bg-yellow-800/50">
                           {filters.brightness}%
@@ -503,12 +505,12 @@ function EditorPage() {
                   {/* Contrast Control - Light/Dark */}
                   <div className="p-4 border border-purple-200 rounded-lg dark:border-purple-600/30 bg-purple-50 dark:bg-purple-900/20">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
-                      🔳 Contrast
+                      🔳 {t('editor.contrast')}
                     </h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-300">
-                          Kontras
+                          {t('editor.contrast_desc')}
                         </span>
                         <span className="px-2 py-1 text-sm font-medium text-purple-700 bg-purple-200 rounded dark:text-purple-300 dark:bg-purple-800/50">
                           {filters.contrast}%
@@ -530,12 +532,12 @@ function EditorPage() {
                   {/* Saturation Control - Light/Dark */}
                   <div className="p-4 border border-pink-200 rounded-lg dark:border-pink-600/30 bg-pink-50 dark:bg-pink-900/20">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
-                      🎨 Saturation
+                      🎨 {t('editor.saturation')}
                     </h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-300">
-                          Saturasi
+                          {t('editor.saturation_desc')}
                         </span>
                         <span className="px-2 py-1 text-sm font-medium text-pink-700 bg-pink-200 rounded dark:text-pink-300 dark:bg-pink-800/50">
                           {filters.saturation}%
@@ -559,18 +561,18 @@ function EditorPage() {
               {/* Advanced Controls - Light/Dark */}
               <div>
                 <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
-                  Kontrol Lanjut
+                  {t('editor.advanced_controls')}
                 </h3>
                 <div className="space-y-4">
                   {/* Hue Control - Light/Dark */}
                   <div className="p-4 border border-indigo-200 rounded-lg dark:border-indigo-600/30 bg-indigo-50 dark:bg-indigo-900/20">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
-                      🌀 Hue
+                      🌀 {t('editor.hue')}
                     </h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-300">
-                          Rona Warna
+                          {t('editor.hue_desc')}
                         </span>
                         <span className="px-2 py-1 text-sm font-medium text-indigo-700 bg-indigo-200 rounded dark:text-indigo-300 dark:bg-indigo-800/50">
                           {filters.hue}°
@@ -592,14 +594,14 @@ function EditorPage() {
                   {/* Effect Controls - Light/Dark */}
                   <div className="p-4 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-600/30">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
-                      ✨ Efek
+                      ✨ {t('editor.effects')}
                     </h4>
 
                     {/* Sepia - Light/Dark */}
                     <div className="mb-3 space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-300">
-                          🍂 Sepia
+                          🍂 {t('editor.sepia')}
                         </span>
                         <span className="px-2 py-1 text-sm font-medium rounded text-amber-700 dark:text-amber-300 bg-amber-200 dark:bg-amber-800/50">
                           {filters.sepia}%
@@ -621,7 +623,7 @@ function EditorPage() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-300">
-                          ⬜ Grayscale
+                          ⬜ {t('editor.grayscale')}
                         </span>
                         <span className="px-2 py-1 text-sm font-medium rounded text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700/50">
                           {filters.grayscale}%

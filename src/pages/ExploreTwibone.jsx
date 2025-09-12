@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from "react";
-import {
-  Grid,
-  List,
-  Search,
-  X,
-} from "lucide-react";
+import { Grid, List, Search, X } from "lucide-react";
 import Navbar from "../components/layoutpage/Navbar";
 import Footer from "../components/layoutpage/Footer";
 import CardHome from "../components/cards/CardHome";
 import { useGET } from "../services/api.js";
 import { useLocation, useSearchParams } from "react-router-dom";
 import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
+import { useTranslation } from "react-i18next";
 
 function ExploreTwibone() {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [viewMode, setViewMode] = useState("grid");
@@ -82,10 +79,10 @@ function ExploreTwibone() {
             </div>
             <div className="space-y-3">
               <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                Memuat Twibone...
+                {t("explore.loading_twibone")}
               </h3>
               <p className="leading-relaxed text-gray-600 dark:text-gray-400">
-                Sedang mengambil koleksi twibone untuk Anda.
+                {t("explore.loading_collection")}
               </p>
             </div>
           </div>
@@ -105,18 +102,17 @@ function ExploreTwibone() {
             </div>
             <div className="space-y-3">
               <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                Tidak Ditemukan
+                {t("explore.not_found")}
               </h3>
               <p className="leading-relaxed text-gray-600 dark:text-gray-400">
-                Tidak ada twibone yang cocok dengan pencarian "
-                {displaySearchQuery}". Coba kata kunci lain atau hapus filter.
+                {t("explore.no_results", { query: displaySearchQuery })}
               </p>
             </div>
             <button
               onClick={clearSearch}
               className="px-6 py-3 font-semibold text-purple-700 transition-all duration-300 border-2 border-purple-200 rounded-full dark:text-purple-400 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20"
             >
-              Hapus Pencarian
+              {t("explore.clear_search")}
             </button>
           </div>
         </div>
@@ -140,7 +136,7 @@ function ExploreTwibone() {
                 <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-3 top-1/2" />
                 <input
                   type="text"
-                  placeholder="Cari twibone..."
+                  placeholder={t("search_placeholder")}
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#4C0D68] dark:focus:ring-[#8B3A9C] focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
@@ -159,17 +155,22 @@ function ExploreTwibone() {
               <div className="items-center hidden gap-8 mb-4 md:flex">
                 <p className="text-xl font-bold text-gray-600 dark:text-gray-300">
                   {isLoading
-                    ? "Memuat..."
+                    ? t("explore.loading")
                     : searchFromUrl
-                    ? `Menampilkan ${twibbonData.length} hasil untuk "${displaySearchQuery}"`
-                    : `Menampilkan ${twibbonData.length} twibone`}
+                    ? t("explore.showing_search_results", {
+                        count: twibbonData.length,
+                        query: displaySearchQuery,
+                      })
+                    : t("explore.showing_twibone", {
+                        count: twibbonData.length,
+                      })}
                 </p>
                 {searchFromUrl && (
                   <button
                     onClick={clearSearch}
                     className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300"
                   >
-                    Hapus pencarian
+                    {t("explore.clear_search")}
                   </button>
                 )}
               </div>
@@ -206,17 +207,20 @@ function ExploreTwibone() {
           <div className="flex items-center justify-between mb-4 md:hidden ">
             <p className="text-gray-600 dark:text-gray-300">
               {isLoading
-                ? "Memuat..."
+                ? t("explore.loading")
                 : searchFromUrl
-                ? `Menampilkan ${twibbonData.length} hasil untuk "${displaySearchQuery}"`
-                : `Menampilkan ${twibbonData.length} twibone`}
+                ? t("explore.showing_search_results", {
+                    count: twibbonData.length,
+                    query: displaySearchQuery,
+                  })
+                : t("explore.showing_twibone", { count: twibbonData.length })}
             </p>
             {searchFromUrl && (
               <button
                 onClick={clearSearch}
                 className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300"
               >
-                Hapus pencarian
+                {t("explore.clear_search")}
               </button>
             )}
           </div>
@@ -237,7 +241,7 @@ function ExploreTwibone() {
                   key={twibon.id}
                   twibon={{
                     id: twibon.id,
-                    title: twibon.title || "Tanpa Judul",
+                    title: twibon.title || t("explore.untitled"),
                     author: twibon?.contributor?.fullname || "Gypem",
                     User: 0,
                     slug: twibon.slug_event_twibbon,
@@ -257,7 +261,7 @@ function ExploreTwibone() {
               onClick={() => refetch()}
               className="bg-[#4C0D68] dark:bg-[#6B1E7A] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#6B1E7A] dark:hover:bg-[#8B3A9C] transition-colors"
             >
-              Muat Lebih Banyak
+              {t("explore.load_more")}
             </button>
           </div>
         )}

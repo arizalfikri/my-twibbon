@@ -8,8 +8,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { editTwiboneSchema } from "../../helper/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDebounce } from "use-debounce";
+import { useTranslation } from "react-i18next";
 
 function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = usePATCH(`/event-twibbon/${itemData?.id}`);
   const { openToast } = useModalStore();
@@ -64,7 +66,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
       if (isDuplicateTitle) {
         setError("title", {
           type: "manual",
-          message: "Judul sudah digunakan oleh kampanye lain",
+          message: t("modaledit.messages.duplicate_title"),
         });
       } else {
         clearErrors("title");
@@ -79,7 +81,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
       if (isDuplicateSlug) {
         setError("link", {
           type: "manual",
-          message: "Link kampanye sudah digunakan",
+          message: t("modaledit.messages.duplicate_link"),
         });
       } else {
         clearErrors("link");
@@ -94,6 +96,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
     itemData,
     setError,
     clearErrors,
+    t,
   ]);
 
   const handleSubmitWithValidation = async () => {
@@ -101,7 +104,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
       openToast(
         "toast",
         true,
-        "Tunggu sebentar, sedang memeriksa data...",
+        t("modaledit.messages.wait_checking"),
         "warning"
       );
       return;
@@ -109,7 +112,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
 
     const isValid = await trigger();
     if (!isValid || errors.title || errors.link) {
-      openToast("toast", true, "Perbaiki error sebelum menyimpan", "warning");
+      openToast("toast", true, t("modaledit.messages.fix_errors"), "warning");
       return;
     }
 
@@ -135,7 +138,12 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
           };
         });
 
-        openToast("toast", true, "Twibbon berhasil diperbarui!", "success");
+        openToast(
+          "toast",
+          true,
+          t("modaledit.messages.update_success"),
+          "success"
+        );
 
         if (onEditSuccess) {
           onEditSuccess();
@@ -148,28 +156,28 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
           openToast(
             "toast",
             true,
-            error?.response?.data?.message || "Data tidak valid"
+            error?.response?.data?.message || t("modaledit.errors.invalid_data")
           );
           break;
         case 401:
+          openToast("toast", true, t("modaledit.errors.no_access"), "info");
+          break;
+        case 403:
           openToast(
             "toast",
             true,
-            "Anda tidak memiliki akses untuk mengedit twibbon ini",
-            "info"
+            t("modaledit.errors.access_denied"),
+            "warning"
           );
           break;
-        case 403:
-          openToast("toast", true, "Akses ditolak", "warning");
-          break;
         case 404:
-          openToast("toast", true, "Twibbon tidak ditemukan");
+          openToast("toast", true, t("modaledit.errors.twibbon_not_found"));
           break;
         case 409:
-          openToast("toast", true, "Link sudah digunakan ");
+          openToast("toast", true, t("modaledit.errors.link_already_used"));
           break;
         default:
-          openToast("toast", true, "Kesalahan Server");
+          openToast("toast", true, t("modaledit.errors.server_error"));
           break;
       }
     }
@@ -202,10 +210,10 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-                    Edit Twibbon
+                    {t("modaledit.title")}
                   </h2>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-                    Update informasi twibbon Anda
+                    {t("modaledit.subtitle")}
                   </p>
                 </div>
               </div>
@@ -224,7 +232,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
               {/* Image Section */}
               <div className="flex flex-col items-center space-y-3">
                 <h3 className="self-start text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Preview Gambar
+                  {t("modaledit.preview_image")}
                 </h3>
                 <div className="w-full max-w-sm">
                   <div className="w-full overflow-hidden border-2 border-gray-200 border-dashed dark:border-gray-700 aspect-square bg-gray-50 dark:bg-gray-800 rounded-2xl">
@@ -238,7 +246,9 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                       <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500">
                         <div className="space-y-3 text-center">
                           <Image className="w-12 h-12 mx-auto opacity-60" />
-                          <p className="text-sm font-medium">Tidak ada gambar</p>
+                          <p className="text-sm font-medium">
+                            {t("modaledit.no_image")}
+                          </p>
                         </div>
                       </div>
                     )}
@@ -255,10 +265,11 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
                     <Type className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                    Judul Kampanye<span className="text-red-500">*</span>
+                    {t("modaledit.form.campaign_title")}
+                    <span className="text-red-500">*</span>
                     {isCheckingDuplicates && (
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        (Memeriksa...)
+                        {t("modaledit.form.checking_status")}
                       </span>
                     )}
                   </label>
@@ -271,7 +282,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                         ? "border-red-300 bg-red-50 dark:bg-red-900/30"
                         : "border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
                     }`}
-                    placeholder="Masukkan judul kampanye..."
+                    placeholder={t("modaledit.form.title_placeholder")}
                   />
                   {errors.title && (
                     <p className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400">
@@ -288,18 +299,18 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
                     <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                    Caption
+                    {t("modaledit.form.caption")}
                   </label>
                   <textarea
                     id="caption"
                     {...register("caption")}
                     rows={4}
                     className="w-full px-4 py-3 text-sm text-gray-900 transition-all duration-200 bg-white border border-gray-300 resize-none rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
-                    placeholder="Tulis caption untuk twibbon ini..."
+                    placeholder={t("modaledit.form.caption_placeholder")}
                   />
                   <p className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                     <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-                    Caption akan ditampilkan sebagai deskripsi twibbon
+                    {t("modaledit.form.caption_description")}
                   </p>
                 </div>
 
@@ -310,10 +321,11 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
                     <Link className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                    Link Kampanye<span className="text-red-500">*</span>
+                    {t("modaledit.form.campaign_link")}
+                    <span className="text-red-500">*</span>
                     {isCheckingDuplicates && (
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        (Memeriksa...)
+                        {t("modaledit.form.checking_status")}
                       </span>
                     )}
                   </label>
@@ -332,7 +344,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                           ? "border-red-300 bg-red-50 dark:bg-red-900/30"
                           : "border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
                       }`}
-                      placeholder="link-kampanye"
+                      placeholder={t("modaledit.form.link_placeholder")}
                     />
                     <Link className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none dark:text-gray-500 top-1/2 right-4" />
                   </div>
@@ -344,7 +356,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                   )}
                   <p className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                     <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-                    Link yang akan digunakan untuk mengakses twibbon
+                    {t("modaledit.form.link_description")}
                   </p>
                 </div>
               </form>
@@ -360,7 +372,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                 disabled={isPending}
                 className="flex-1 px-6 py-3 text-sm font-semibold text-gray-700 transition-all duration-200 bg-white border border-gray-300 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Batal
+                {t("modaledit.buttons.cancel")}
               </button>
               <button
                 type="submit"
@@ -372,7 +384,11 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     : "bg-purple-600 hover:bg-purple-700"
                 }`}
               >
-                {isPending ? "Menyimpan..." : isCheckingDuplicates ? "Memeriksa..." : "Simpan Perubahan"}
+                {isPending
+                  ? t("modaledit.buttons.saving")
+                  : isCheckingDuplicates
+                  ? t("modaledit.buttons.checking")
+                  : t("modaledit.buttons.save_changes")}
               </button>
             </div>
           </div>

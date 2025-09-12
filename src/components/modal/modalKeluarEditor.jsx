@@ -1,10 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import ModalAlert from "../../layout/ModalAlert";
 import { useModalStore } from "../../helper/store/modal.store";
 import { useNavigate } from "react-router-dom";
 import useImageStore from "../../helper/store/imagestore";
 
 export default function ModalKeluarEditor() {
+  const { t } = useTranslation();
   const { modalLogout, openModal } = useModalStore();
   const { setImage } = useImageStore();
   const navigate = useNavigate();
@@ -67,10 +69,9 @@ export default function ModalKeluarEditor() {
 
         {/* Content */}
         <div className="mb-8 text-center text-white">
-          <h3 className="mb-3 text-xl font-medium">Yakin akan keluar?</h3>
+          <h3 className="mb-3 text-xl font-medium">{t('modaleditor.confirm_exit')}</h3>
           <p className="text-sm leading-relaxed text-purple-200">
-            Kamu akan meninggalkan editor dan semua perubahan yang belum
-            disimpan akan hilang. Apakah kamu yakin ingin keluar?
+            {t('modaleditor.exit_warning')}
           </p>
         </div>
 
@@ -80,13 +81,13 @@ export default function ModalKeluarEditor() {
             className="bg-[#E8121F] hover:bg-[#d43c46] text-white text-sm font-medium px-6 py-3 rounded-lg transition-colors duration-200"
             onClick={handleExit}
           >
-            Ya, Keluar dari Editor
+            {t('modaleditor.yes_exit')}
           </button>
           <button
             className="px-6 py-3 text-sm font-medium text-white transition-colors duration-200 bg-transparent border rounded-lg border-white/30 hover:bg-white/10"
             onClick={handleCancel}
           >
-            Batal, Lanjutkan Edit
+            {t('modaleditor.cancel_continue')}
           </button>
         </div>
       </div>

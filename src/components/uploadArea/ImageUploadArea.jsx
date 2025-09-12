@@ -6,13 +6,16 @@ import {
   Camera,
 } from "lucide-react";
 import { useModalStore } from "../../helper/store/modal.store";
+import { useTranslation } from "react-i18next";
 
 function ImageUploadArea({ name = "image", setValue, error, value }) {
+  const { t } = useTranslation();
+
   const [dragActive, setDragActive] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const { openModal } = useModalStore();
 
-  const allowedTypes = ["image/png"]; // ✅ PNG saja, karena transparansi
+  const allowedTypes = ["image/png"];
 
   // ✅ Restore preview image when component mounts with existing value
   useEffect(() => {
@@ -103,7 +106,7 @@ function ImageUploadArea({ name = "image", setValue, error, value }) {
     <div className="h-full p-6">
       <div className="flex flex-col h-full">
         <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">
-          Upload Gambar
+          {t("imageUpload.title")}{" "}
         </h3>
 
         <div
@@ -132,14 +135,14 @@ function ImageUploadArea({ name = "image", setValue, error, value }) {
                   className="flex items-center px-4 py-2 space-x-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
                 >
                   <X size={16} />
-                  <span>Hapus</span>
+                  <span>{t("imageUpload.delete")}</span>
                 </button>
                 <label className="flex items-center px-4 py-2 space-x-2 text-black transition-colors bg-yellow-400 rounded-lg cursor-pointer hover:bg-yellow-600 dark:text-gray-900">
                   <Camera size={16} />
-                  <span>Ganti</span>
+                  <span>{t("imageUpload.change")}</span>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/png"
                     onChange={handleFileSelect}
                     className="hidden"
                   />
@@ -150,23 +153,23 @@ function ImageUploadArea({ name = "image", setValue, error, value }) {
             <div className="text-center">
               <Upload size={48} className="mx-auto mb-4 text-gray-400" />
               <p className="mb-2 text-lg font-medium text-gray-600 dark:text-gray-300">
-                Drag & drop gambar di sini
+                {t("imageUpload.dragDrop")}
               </p>
               <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                atau klik untuk memilih file
+                {t("imageUpload.orClick")}
               </p>
               <label className="inline-flex items-center px-6 py-3 space-x-2 text-black transition-colors bg-yellow-400 rounded-lg cursor-pointer hover:bg-yellow-600 dark:text-gray-900">
                 <ImageIcon size={20} />
-                <span>Pilih Gambar</span>
+                <span>{t("imageUpload.choose")}</span>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/png"
                   onChange={handleFileSelect}
                   className="hidden"
                 />
               </label>
               <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">
-                Format yang didukung: JPG, PNG (Max 10MB)
+                {t("imageUpload.supported")}
               </p>
               {error && (
                 <p className="mt-2 text-sm text-red-500">{error.message}</p>

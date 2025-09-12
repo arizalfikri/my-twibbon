@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import NavbarEditor from "../components/layoutpage/NavbarEditor";
 import CardEditor from "../components/cards/CardEditor";
 import useImageStore from "../helper/store/imagestore";
@@ -14,12 +15,13 @@ import { setCaptionSchema } from "../helper/yup";
 import { useModalStore } from "../helper/store/modal.store";
 
 function Result() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { resultImage, image } = useImageStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // State untuk status login
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [caption, setCaption] = useState("");
-  const [isPosted, setIsPosted] = useState(false); // State untuk status berhasil post
+  const [isPosted, setIsPosted] = useState(false);
   const { twibbonData } = useTwibbonStore();
   const { mutateAsync, isPending } = usePOST("/event-user-twibbon");
   const { openToast } = useModalStore();
@@ -80,20 +82,20 @@ function Result() {
         },
       });
       if (response.status === 201) {
-        setIsPosted(true); // Set status berhasil post
-        openToast("toast", true, "Berhasil membuat", "success");
+        setIsPosted(true);
+        openToast("toast", true, t('result.post_success'), "success");
       }
     } catch (error) {
       switch (error?.response.status) {
         case 401:
-          openToast("toast", true, "kurang data", "error");
+          openToast("toast", true, t('result.insufficient_data'), "error");
           break;
         case 403:
-          openToast("toast", true, "Anda Harus Menjadi Peserta.", "info");
+          openToast("toast", true, t('create.errors.contributor_required'), "info");
           setShowLoginModal(true);
           break;
         default:
-          openToast("toast", true, "Kesalahan Server", "error");
+          openToast("toast", true, t('auth.server_error'), "error");
           break;
       }
     }
@@ -107,8 +109,17 @@ function Result() {
 
   const handleSwitchToRegister = () => {
     setShowLoginModal(false);
-    // Logic untuk buka modal register atau navigate ke halaman register
     console.log("Switch to register modal");
+  };
+
+  const handleCopyCaption = async () => {
+    const captionValue = document.querySelector("textarea[name='caption']")?.value;
+    if (captionValue) {
+      await navigator.clipboard.writeText(captionValue);
+      openToast("toast", true, t('result.caption_copied'), "success");
+    } else {
+      openToast("toast", true, t('result.caption_empty'), "info");
+    }
   };
 
   return (
@@ -122,7 +133,7 @@ function Result() {
             <div className="relative w-fit">
               <img
                 src={resultImage}
-                alt="Hasil Twibbon"
+                alt={t('result.twibbon_result')}
                 className="object-contain h-auto rounded-lg shadow w-fit"
               />
             </div>
@@ -131,13 +142,13 @@ function Result() {
           {/* Download link */}
           <div className="mt-4 text-center">
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              Foto belum terunduh?{" "}
+              {t('result.photo_not_downloaded')}{" "}
               <a
                 href={resultImage}
                 download="twibbon-result.png"
                 className="font-semibold text-purple-600 dark:text-purple-400 hover:underline"
               >
-                Unduh Ulang
+                {t('result.redownload')}
               </a>
             </span>
           </div>
@@ -148,22 +159,22 @@ function Result() {
           {isPosted ? (
             <div className="text-center">
               <h2 className="mb-4 text-xl font-semibold text-green-600 dark:text-green-400">
-                Berhasil Diposting!
+                {t('result.posted_successfully')}
               </h2>
               <p className="mb-6 text-gray-600 dark:text-gray-400">
-                Foto Anda telah berhasil diposting ke Gypem.
+                {t('result.photo_posted_to_gypem')}
               </p>
               <button
                 onClick={handleRestart}
                 className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg dark:text-gray-200 hover:bg-yellow-600"
               >
-                Buat Twibbon Lagi
+                {t('result.create_twibbon_again')}
               </button>
             </div>
           ) : (
             <>
               <h2 className="mb-4 text-xl font-semibold text-center text-gray-800 dark:text-gray-100">
-                Posting Foto ini Ke Gypem
+                {t('result.post_photo_to_gypem')}
               </h2>
               <form action="" onSubmit={handleSubmit(onSubmit)}>
                 <div className="space-y-4">
@@ -174,26 +185,11 @@ function Result() {
                         htmlFor="caption"
                         className="text-sm font-medium text-gray-700 dark:text-gray-300"
                       >
-                        Caption
+                        {t('create.form.caption')}
                       </label>
                       <button
                         type="button"
-                        onClick={async () => {
-                          const captionValue = document.querySelector(
-                            "textarea[name='caption']"
-                          )?.value;
-                          if (captionValue) {
-                            await navigator.clipboard.writeText(captionValue);
-                            openToast(
-                              "toast",
-                              true,
-                              "Berhasil menyalin caption",
-                              "success"
-                            );
-                          } else {
-                            openToast("toast", true, "Caption kosong", "info");
-                          }
-                        }}
+                        onClick={handleCopyCaption}
                         className="px-2 py-1 text-xs text-purple-600 border rounded dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-gray-700"
                       >
                         <Copy className="w-5 h-5" />
@@ -205,7 +201,7 @@ function Result() {
                       name="caption"
                       htmlFor="caption"
                       type="textarea"
-                      placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
+                      placeholder={t('create.form.caption_placeholder')}
                       error={errors}
                       disabled={isPending}
                     />
@@ -218,17 +214,17 @@ function Result() {
                     className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-purple-500 dark:hover:bg-purple-600"
                   >
                     {isPending
-                      ? "Sedang Posting..."
+                      ? t('result.posting')
                       : isLoggedIn
-                      ? "Post ke Gypem"
-                      : "Masuk & Post ke Gypem"}
+                      ? t('result.post_to_gypem')
+                      : t('result.login_and_post_to_gypem')}
                   </button>
 
                   <button
                     onClick={handleRestart}
                     className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900"
                   >
-                    Buat Lagi
+                    {t('result.create_again')}
                   </button>
                 </div>
               </form>
@@ -241,23 +237,23 @@ function Result() {
           {isPosted ? (
             <div className="text-center">
               <h3 className="mb-4 text-lg font-semibold text-green-600 dark:text-green-400">
-                Berhasil Diposting!
+                {t('result.posted_successfully')}
               </h3>
               <p className="mb-6 text-gray-600 dark:text-gray-400">
-                Foto Anda telah berhasil diposting ke Gypem.
+                {t('result.photo_posted_to_gypem')}
               </p>
               <button
                 onClick={handleRestart}
                 className="flex items-center justify-center w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg dark:text-gray-200 hover:bg-yellow-600"
               >
-                Buat Twibbon Lagi
+                {t('result.create_twibbon_again')}
               </button>
             </div>
           ) : (
             <form action="" onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4">
                 <h3 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-gray-100">
-                  Posting Foto ini Ke Gypem
+                  {t('result.post_photo_to_gypem')}
                 </h3>
                 {/* Caption + Copy */}
                 <div>
@@ -266,26 +262,11 @@ function Result() {
                       htmlFor="caption"
                       className="text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Caption
+                      {t('create.form.caption')}
                     </label>
                     <button
                       type="button"
-                      onClick={async () => {
-                        const captionValue = document.querySelector(
-                          "textarea[name='caption']"
-                        )?.value;
-                        if (captionValue) {
-                          await navigator.clipboard.writeText(captionValue);
-                          openToast(
-                            "toast",
-                            true,
-                            "Berhasil menyalin caption",
-                            "success"
-                          );
-                        } else {
-                          openToast("toast", true, "Caption kosong", "info");
-                        }
-                      }}
+                      onClick={handleCopyCaption}
                       className="px-2 py-1 text-xs text-purple-600 border rounded dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-gray-700"
                     >
                       <Copy className="w-5" />
@@ -298,7 +279,7 @@ function Result() {
                     name="caption"
                     htmlFor="caption"
                     type="textarea"
-                    placeholder="Bagikan rincian tentang kampanyemu untuk menarik dukungan"
+                    placeholder={t('create.form.caption_placeholder')}
                     error={errors}
                     maxLength={500}
                     disabled={isPending}
@@ -312,17 +293,17 @@ function Result() {
                 className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-purple-500 dark:hover:bg-purple-600"
               >
                 {isPending
-                  ? "Sedang Posting..."
+                  ? t('result.posting')
                   : isLoggedIn
-                  ? "Post ke Gypem"
-                  : "Masuk & Post ke Gypem"}
+                  ? t('result.post_to_gypem')
+                  : t('result.login_and_post_to_gypem')}
               </button>
 
               <button
                 onClick={handleRestart}
                 className="w-full px-4 py-3 mt-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900"
               >
-                Buat Lagi
+                {t('result.create_again')}
               </button>
             </form>
           )}

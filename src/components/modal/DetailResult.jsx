@@ -14,8 +14,10 @@ import { useGET, usePOST, usePATCH, useDELETE } from "../../services/api";
 import { useForm } from "react-hook-form";
 import ModalLogin from "./modalLogin";
 import ModalDeleteComment from "./ModalDeleteComment";
+import { useTranslation } from "react-i18next"; // Add this import
 
 function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
+  const { t } = useTranslation(); // Add translation hook
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [komentars, setKomentars] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -68,16 +70,16 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     const commentDate = new Date(dateString);
     const diffInMs = now - commentDate;
 
-    if (diffInMs < 0) return "baru saja";
+    if (diffInMs < 0) return t("detailresult.just_now");
 
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-    if (diffInMinutes === 0) return "baru saja";
-    if (diffInMinutes < 60) return `${diffInMinutes} menit yang lalu`;
-    if (diffInHours < 24) return `${diffInHours} jam yang lalu`;
-    return `${diffInDays} hari yang lalu`;
+    if (diffInMinutes === 0) return t("detailresult.just_now");
+    if (diffInMinutes < 60) return t("detailresult.minutes_ago", { count: diffInMinutes });
+    if (diffInHours < 24) return t("detailresult.hours_ago", { count: diffInHours });
+    return t("detailresult.days_ago", { count: diffInDays });
   };
 
   // Helper function to get user initials
@@ -286,12 +288,14 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                   <button
                     onClick={() => handleEditComment(c)}
                     className="p-1 text-gray-500 rounded dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                    title={t("detailresult.edit")}
                   >
                     <Edit3 className="w-3 h-3" />
                   </button>
                   <button
                     onClick={() => showDeleteConfirmation(c.id)}
                     className="p-1 text-gray-500 rounded dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    title={t("detailresult.delete")}
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>
@@ -306,7 +310,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                   onChange={(e) => setEditContent(e.target.value)}
                   className="w-full px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded resize-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
                   rows="3"
-                  placeholder="Edit komentar..."
+                  placeholder={t("detailresult.edit_comment")}
                   autoFocus
                   onFocus={(e) => {
                     // Set cursor to end of text
@@ -320,14 +324,14 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                     className="flex items-center px-2 py-1 text-xs text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
                   >
                     <XIcon className="w-3 h-3 mr-1" />
-                    Batal
+                    {t("detailresult.cancel")}
                   </button>
                   <button
                     onClick={() => handleSaveEdit(c.id)}
                     className="flex items-center px-2 py-1 text-xs text-white bg-blue-500 rounded dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700"
                   >
                     <Check className="w-3 h-3 mr-1" />
-                    Simpan
+                    {t("detailresult.save")}
                   </button>
                 </div>
               </div>
@@ -339,7 +343,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                     onClick={() => toggleCommentExpansion(c.id)}
                     className="inline-block ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus:outline-none"
                   >
-                    {isExpanded ? "Sembunyikan" : "Selengkapnya"}
+                    {isExpanded ? t("detailresult.show_less") : t("detailresult.show_more")}
                   </button>
                 )}
               </div>
@@ -363,7 +367,9 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
           >
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-lg font-semibold text-gray-800 dark:text-white">Detail</h1>
+          <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
+            {t("detailresult.title")}
+          </h1>
           <div className="w-10" />
         </div>
 
@@ -397,7 +403,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   className="mt-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus:outline-none"
                 >
-                  {showFullDescription ? "Sembunyikan" : "Selengkapnya"}
+                  {showFullDescription ? t("detailresult.show_less") : t("detailresult.show_more")}
                 </button>
               )}
             </div>
@@ -408,21 +414,21 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                 <span className="text-sm font-bold text-white">
                   {getUserInitials(
-                    infoUser?.data?.author?.user_firstname || "Unknown User"
+                    infoUser?.data?.author?.user_firstname || t("detailresult.unknown_user")
                   )}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-gray-700 truncate dark:text-gray-300">
                   {truncateText(
-                    infoUser?.data?.author?.user_firstname || "Unknown User",
+                    infoUser?.data?.author?.user_firstname || t("detailresult.unknown_user"),
                     20
                   )}
                 </div>
                 <div className="text-sm truncate">
                   @
                   {truncateText(
-                    infoUser?.data?.author?.user_email || "unknown@email.com",
+                    infoUser?.data?.author?.user_email || t("detailresult.unknown_email"),
                     25
                   )}
                 </div>
@@ -433,7 +439,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
             <div className="border-t border-gray-200 dark:border-gray-700">
               <div className="py-4">
                 <h3 className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-800 dark:text-white">
-                  <MessageCircle className="w-5 h-5" /> Komentar
+                  <MessageCircle className="w-5 h-5" /> {t("detailresult.comments")}
                 </h3>
 
                 {/* Form input komentar */}
@@ -445,7 +451,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                     <input
                       {...register("comment", { required: true })}
                       type="text"
-                      placeholder="Bagikan pesan kamu..."
+                      placeholder={t("detailresult.comment_input_placeholder")}
                       className="flex-1 px-4 py-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-full dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
                       disabled={isPending || !id_user_twibbons}
                       onFocus={() => {
@@ -472,7 +478,9 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 {/* Loading state for comments */}
                 {isLoading && (
                   <div className="py-4 text-center">
-                    <p className="text-gray-500 dark:text-gray-400">Memuat komentar...</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      {t("detailresult.loading_comments")}
+                    </p>
                   </div>
                 )}
 
@@ -480,8 +488,12 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 <div className="space-y-4">
                   {!isLoading && komentars.length === 0 ? (
                     <div className="py-8 text-center">
-                      <p className="text-gray-500 dark:text-gray-400">Belum ada komentar</p>
-                      <p className="text-sm text-gray-400 dark:text-gray-500">Mulai percakapan</p>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        {t("detailresult.no_comments_yet")}
+                      </p>
+                      <p className="text-sm text-gray-400 dark:text-gray-500">
+                        {t("detailresult.start_conversation")}
+                      </p>
                     </div>
                   ) : (
                     komentars.map((c) => renderComment(c))
@@ -539,7 +551,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                     onClick={() => setShowFullDescription(!showFullDescription)}
                     className="mt-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus:outline-none"
                   >
-                    {showFullDescription ? "Sembunyikan" : "Selengkapnya"}
+                    {showFullDescription ? t("detailresult.show_less") : t("detailresult.show_more")}
                   </button>
                 )}
               </div>
@@ -548,21 +560,21 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                   <span className="text-xs font-bold text-white">
                     {getUserInitials(
-                      infoUser?.data?.author?.user_firstname || "Unknown User"
+                      infoUser?.data?.author?.user_firstname || t("detailresult.unknown_user")
                     )}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-gray-700 truncate dark:text-gray-300">
                     {truncateText(
-                      infoUser?.data?.author?.user_firstname || "Unknown User",
+                      infoUser?.data?.author?.user_firstname || t("detailresult.unknown_user"),
                       20
                     )}
                   </div>
                   <div className="text-xs truncate">
                     @
                     {truncateText(
-                      infoUser?.data?.author?.user_email || "unknown@email.com",
+                      infoUser?.data?.author?.user_email || t("detailresult.unknown_email"),
                       25
                     )}
                   </div>
@@ -574,7 +586,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
             <div className="flex flex-col flex-1 min-h-0">
               <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="flex items-center gap-2 font-semibold text-gray-800 dark:text-white">
-                  <MessageCircle className="w-5 h-5" /> Komentar
+                  <MessageCircle className="w-5 h-5" /> {t("detailresult.comments")}
                 </h3>
               </div>
 
@@ -588,7 +600,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                     <input
                       {...register("comment", { required: true })}
                       type="text"
-                      placeholder="Bagikan pesan kamu..."
+                      placeholder={t("detailresult.comment_input_placeholder")}
                       className="flex-1 px-4 py-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-full dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
                       disabled={isPending || !id_user_twibbons}
                       onFocus={() => {
@@ -615,7 +627,9 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
 
               {isLoading && (
                 <div className="flex items-center justify-center flex-1">
-                  <p className="text-gray-500 dark:text-gray-400">Memuat komentar...</p>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    {t("detailresult.loading_comments")}
+                  </p>
                 </div>
               )}
 
@@ -624,8 +638,12 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 <div className="flex-1 min-h-0 px-6 py-4 space-y-4 overflow-y-auto">
                   {komentars.length === 0 ? (
                     <div className="py-8 text-center">
-                      <p className="text-gray-500 dark:text-gray-400">Belum ada komentar</p>
-                      <p className="text-sm text-gray-400 dark:text-gray-500">Mulai percakapan</p>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        {t("detailresult.no_comments_yet")}
+                      </p>
+                      <p className="text-sm text-gray-400 dark:text-gray-500">
+                        {t("detailresult.start_conversation")}
+                      </p>
                     </div>
                   ) : (
                     komentars.map((c) => renderComment(c))

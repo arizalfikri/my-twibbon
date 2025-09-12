@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import {
   User,
   Mail,
@@ -21,6 +22,7 @@ import { usePATCH } from "../services/api.js";
 import { useModalStore } from "../helper/store/modal.store.js";
 
 const EditProfile = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { openToast } = useModalStore();
@@ -74,7 +76,7 @@ const EditProfile = () => {
       });
 
       if (response.status === 200 || response.status === 201) {
-        openToast("toast", true, "Profil berhasil diperbarui!", "success");
+        openToast("toast", true, t('edit_profile.profile_updated'), "success");
         localStorage.setItem("fullname", response.data.fullname);
         setFullName(response.data.fullname);
 
@@ -86,25 +88,25 @@ const EditProfile = () => {
           openToast(
             "toast",
             true,
-            error?.response?.data?.message || "Data tidak valid"
+            error?.response?.data?.message || t('edit_profile.invalid_data')
           );
           break;
         case 401:
           openToast(
             "toast",
             true,
-            "Anda tidak memiliki akses untuk mengedit profil",
+            t('edit_profile.no_access'),
             "info"
           );
           break;
         case 403:
-          openToast("toast", true, "Akses ditolak", "warning");
+          openToast("toast", true, t('edit_profile.access_denied'), "warning");
           break;
         case 404:
-          openToast("toast", true, "Profil tidak ditemukan");
+          openToast("toast", true, t('edit_profile.profile_not_found'));
           break;
         default:
-          openToast("toast", true, "Kesalahan Server");
+          openToast("toast", true, t('auth.server_error'));
           break;
       }
     }
@@ -124,7 +126,7 @@ const EditProfile = () => {
 
   const handleGoogleLogin = () => {
     // Implement Google OAuth login logic here
-    alert("Fitur Google Login akan segera tersedia!");
+    alert(t('edit_profile.google_login_coming_soon'));
   };
 
   return (
@@ -139,7 +141,7 @@ const EditProfile = () => {
             className="inline-flex items-center gap-2 mb-4 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
           >
             <ArrowLeft className="w-4 h-4" />
-            Kembali ke Profil
+            {t('edit_profile.back_to_profile')}
           </Link>
 
           <div className="flex items-center gap-3 mb-2">
@@ -147,11 +149,11 @@ const EditProfile = () => {
               <User className="w-5 h-5 text-purple-600" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Edit Profil
+              {t('profile.edit_profile')}
             </h1>
           </div>
           <p className="text-gray-600 dark:text-gray-400">
-            Kelola informasi akun dan preferensi Anda
+            {t('edit_profile.manage_account')}
           </p>
         </div>
 
@@ -172,10 +174,10 @@ const EditProfile = () => {
               <div className="bg-white border border-gray-200 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
                 <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Informasi Pribadi
+                    {t('edit_profile.personal_info')}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Perbarui informasi dasar akun Anda
+                    {t('edit_profile.update_basic_info')}
                   </p>
                 </div>
 
@@ -186,7 +188,7 @@ const EditProfile = () => {
                       htmlFor="fullname"
                       className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Nama Lengkap
+                      {t('edit_profile.full_name')}
                     </label>
                     <div className="relative">
                       <User className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
@@ -199,7 +201,7 @@ const EditProfile = () => {
                             ? "border-red-300 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
                         }`}
-                        placeholder="Masukkan nama lengkap"
+                        placeholder={t('edit_profile.enter_full_name')}
                       />
                     </div>
                     {errors.fullname && (
@@ -215,7 +217,7 @@ const EditProfile = () => {
                       htmlFor="email"
                       className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      Email
+                      {t('auth.email')}
                     </label>
                     <div className="relative">
                       <Mail className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
@@ -225,11 +227,11 @@ const EditProfile = () => {
                         {...register("email")}
                         disabled
                         className="w-full py-3 pl-10 pr-4 text-gray-600 transition-all border border-gray-300 rounded-lg cursor-not-allowed bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400"
-                        placeholder="Email tidak dapat diubah"
+                        placeholder={t('edit_profile.email_readonly')}
                       />
                     </div>
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      Email tidak dapat diubah saat ini
+                      {t('edit_profile.email_cannot_change')}
                     </p>
                   </div>
 
@@ -245,7 +247,7 @@ const EditProfile = () => {
                       ) : (
                         <Save className="w-5 h-5" />
                       )}
-                      {isPending ? "Menyimpan..." : "Simpan Perubahan"}
+                      {isPending ? t('edit_profile.saving') : t('edit_profile.save_changes')}
                     </button>
 
                     <Link
@@ -253,7 +255,7 @@ const EditProfile = () => {
                       className="flex items-center justify-center gap-2 px-6 py-3 font-semibold text-gray-700 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                     >
                       <X className="w-5 h-5" />
-                      Batal
+                      {t('cancel')}
                     </Link>
                   </div>
                 </div>
@@ -273,28 +275,27 @@ const EditProfile = () => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Hapus Akun
+                  {t('edit_profile.delete_account')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Tindakan ini tidak dapat dibatalkan
+                  {t('edit_profile.action_cannot_undone')}
                 </p>
               </div>
             </div>
 
             <div className="mb-6">
               <p className="mb-3 text-gray-700 dark:text-gray-300">
-                Anda yakin ingin menghapus akun? Semua data dan twibone yang
-                Anda buat akan hilang permanen.
+                {t('edit_profile.delete_confirmation')}
               </p>
               <div className="p-4 border border-red-200 rounded-lg bg-red-50 dark:bg-red-900/30 dark:border-red-700">
                 <p className="text-sm font-medium text-red-800 dark:text-red-400">
-                  ⚠️ Data yang akan dihapus:
+                  ⚠️ {t('edit_profile.data_to_delete')}
                 </p>
                 <ul className="mt-2 text-sm text-red-700 list-disc list-inside dark:text-red-300">
-                  <li>Semua twibone yang dibuat</li>
-                  <li>Riwayat aktivitas</li>
-                  <li>Informasi profil</li>
-                  <li>Koneksi dengan akun Google</li>
+                  <li>{t('edit_profile.created_twibbon')}</li>
+                  <li>{t('edit_profile.activity_history')}</li>
+                  <li>{t('edit_profile.profile_info')}</li>
+                  <li>{t('edit_profile.google_connection')}</li>
                 </ul>
               </div>
             </div>
@@ -310,7 +311,7 @@ const EditProfile = () => {
                 ) : (
                   <Trash2 className="w-5 h-5 text-white" />
                 )}
-                {isLoading ? "Menghapus..." : "Ya, Hapus Akun"}
+                {isLoading ? t('edit_profile.deleting') : t('edit_profile.yes_delete_account')}
               </button>
 
               <button
@@ -318,7 +319,7 @@ const EditProfile = () => {
                 disabled={isLoading}
                 className="flex-1 px-4 py-3 font-semibold text-gray-700 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
               >
-                Batal
+                {t('cancel')}
               </button>
             </div>
           </div>

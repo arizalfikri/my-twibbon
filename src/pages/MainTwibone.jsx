@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Navbar from "../components/layoutpage/Navbar";
 import NavbarEditor from "../components/layoutpage/NavbarEditor";
 import {
@@ -23,6 +24,7 @@ import useTwibbonStore from "../helper/store/TwiboneUser";
 import { useModalStore } from "../helper/store/modal.store";
 
 function MainTwibone() {
+  const { t } = useTranslation();
   const { image, setImage, setFrameImage, frameImage } = useImageStore();
   const navigate = useNavigate();
   const { slug } = useParams();
@@ -116,7 +118,7 @@ function MainTwibone() {
       await navigator.clipboard.writeText(shareUrl);
 
       // Bisa ditambahkan toast notification di sini
-      alert("Link berhasil disalin ke clipboard!");
+      alert(t('main.link_copied'));
 
       // Atau bisa membuka dialog share manual
       // showShareDialog(card);
@@ -131,7 +133,7 @@ function MainTwibone() {
   const openSocialShare = (card) => {
     const shareUrl = window.location.href;
     const shareText = encodeURIComponent(
-      card.description || `Lihat twibbon ${card.title} yang saya buat!`
+      card.description || t('main.share_text', { title: card.title })
     );
 
     // Contoh share ke WhatsApp
@@ -195,11 +197,10 @@ function MainTwibone() {
           {/* Text Content */}
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              Belum Ada Yang Di Post
+              {t('main.no_posts_yet')}
             </h3>
             <p className="max-w-sm text-sm text-gray-500 dark:text-gray-400">
-              Jadilah yang pertama untuk membuat dan membagikan twibbon Anda!
-              Upload foto dan buat karya yang menarik.
+              {t('main.be_first_to_post')}
             </p>
           </div>
 
@@ -220,7 +221,7 @@ function MainTwibone() {
     return (
       <div className="fixed inset-0 z-40 bg-white dark:bg-gray-900">
         <NavbarEditor
-          title={twibbon?.data?.title || "Belum Ada Title"}
+          title={twibbon?.data?.title || t('main.no_title')}
           disableModalExit={true}
           onExit={() => setIsFullscreen(false)}
         />
@@ -244,7 +245,7 @@ function MainTwibone() {
         <div className="grid items-center grid-cols-1 lg:grid-cols-3">
           <div className="flex flex-col min-w-0">
             <h1 className="text-lg font-medium capitalize truncate">
-              {twibbon?.data?.title || "Belum Ada Title"}
+              {twibbon?.data?.title || t('main.no_title')}
             </h1>
             <p className="text-sm text-gray-400 dark:text-gray-400">
               {twibbon?.data?.contributor?.fullname}
@@ -253,7 +254,7 @@ function MainTwibone() {
           <div className="flex items-center justify-start mt-2 space-x-2 lg:justify-center">
             <User className="w-5 h-5 dark:text-gray-300" />
             <div>
-              <span className="text-sm">Pendukung</span>
+              <span className="text-sm">{t('main.supporters')}</span>
               <div className="text-xs text-gray-400 dark:text-gray-500">
                 {cards.length}
               </div>
@@ -270,7 +271,7 @@ function MainTwibone() {
                 value={twibbon?.data?.link?.replace(/^https?:\/\/[^/]+\//, "")}
                 onClick={() => {
                   navigator.clipboard.writeText(twibbon?.data?.link);
-                  openToast("toast", true, "Berhasil disalin!", "success");
+                  openToast("toast", true, t('main.copy_success'), "success");
                 }}
                 className="px-3 py-2 text-sm text-gray-800 bg-transparent dark:text-gray-200 focus:outline-none w-[160px] truncate cursor-pointer"
                 title={twibbon?.data?.link}
@@ -303,8 +304,8 @@ function MainTwibone() {
             <button
               onClick={toggleFullscreen}
               className="absolute z-10 flex items-center justify-center p-3 text-white transition-colors duration-200 bg-purple-600 rounded-full shadow-lg opacity-85 top-4 right-4 hover:bg-purple-700 hover:opacity-100"
-              aria-label="View all images"
-              title="Lihat semua gambar"
+              aria-label={t('main.view_all_images')}
+              title={t('main.view_all_images')}
             >
               <Maximize2 size={20} />
             </button>
