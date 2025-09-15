@@ -11,6 +11,7 @@ import SignUp from "../pages/SignUp.jsx";
 import DetailProfile from "../pages/DetailProfile.jsx";
 import ExploreTwibone from "../pages/ExploreTwibone.jsx";
 import EditProfile from "../pages/EditProfile.jsx";
+import NotFound from "../pages/NotfoundPage.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -52,9 +53,18 @@ export const router = createBrowserRouter([
       {
         path: "DetailProfile",
         element: <DetailProfile />,
-      },{
+      },
+      {
         path: "EditProfile",
         element: <EditProfile />,
+      },
+      {
+        path: "404",
+        element: <NotFound />,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },
