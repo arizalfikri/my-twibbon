@@ -38,10 +38,10 @@ function Result() {
   }, [showLoginModal]);
 
   useEffect(() => {
-    if (!image) {
+    if (!resultImage) {
       navigate("/");
     }
-  }, [image, navigate]);
+  }, [resultImage, navigate]);
 
   const handlePostClick = () => {
     if (!isLoggedIn) {
@@ -71,7 +71,7 @@ function Result() {
 
   const onSubmit = async (data) => {
     try {
-      const file = await convertBlobUrlToFile(image, "twibbon-result.png");
+      const file = await convertBlobUrlToFile(resultImage, "twibbon-result.png");
 
       const response = await mutateAsync({
         url: "/event-user-twibbon",

@@ -7,12 +7,12 @@ const CardHome = ({ twibon, isGrid = true }) => {
   return (
     <Link
       to={`/${twibon.slug}`}
-      className={`block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all duration-300 cursor-pointer group ${
+      className={`block bg-white dark:bg-gray-800 rounded-xl shadow-md border-2  border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all duration-300 cursor-pointer group  ${
         isGrid ? "" : "flex"
       }`}
     >
       <div
-        className={`relative ${isGrid ? "aspect-[1/1]" : "w-48 flex-shrink-0"}`}
+        className={`relative ${isGrid ? "aspect-[1/1] " : "w-48 flex-shrink-0"}`}
       >
         {console.log(`https://api-twibbon-dev.digiduindo.com${twibon.image}`)}
 
@@ -37,7 +37,7 @@ const CardHome = ({ twibon, isGrid = true }) => {
       </div>
 
       <div className={`p-4 ${isGrid ? "" : "flex-1"}`}>
-        <div className="flex items-start justify-between mb-2">
+        <div className="flex items-start justify-between mb-2 h-[48px]">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-[#4C0D68] dark:group-hover:text-[#8B3A9C] transition-colors">
             {twibon.title}
           </h3>
@@ -51,7 +51,7 @@ const CardHome = ({ twibon, isGrid = true }) => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               <User className="w-4 h-4" />
-              <span>{twibon.User}</span>
+              <span>{twibon?.supports}</span>
             </div>
           </div>
         </div>

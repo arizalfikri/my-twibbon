@@ -389,5 +389,20 @@
     "image_format_unsupported": "Image format is not supported",
     "link_required": "Link is required",
     "link_no_spaces": "Link cannot contain spaces"
+  },
+  "notfound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for could not be found. It may have been moved, deleted, or the URL you entered is incorrect.",
+    "back_home": "Back to Home",
+    "explore": "Explore Twibbons",
+    "helpful_links": "Helpful Links",
+    "home_title": "Home",
+    "home_desc": "Return to the main page",
+    "explore_title": "Explore",
+    "explore_desc": "Discover interesting twibbons",
+    "create_title": "Create Twibbon",
+    "create_desc": "Start creating a new twibbon",
+    "help_text": "If you believe this is a mistake, please",
+    "contact_support": "contact support"
   }
 }

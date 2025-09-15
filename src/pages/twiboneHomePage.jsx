@@ -146,7 +146,7 @@ function TwiboneHomepage() {
                 <SwiperSlide key={`row1-${index}`} className="!w-auto">
                   <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
-                      className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover hover:scale-110"
+                      className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover border-[6px] border-white hover:scale-110 rounded-xl"
                       style={{ backgroundImage: `url(${photo})` }}
                     />
                   </div>
@@ -178,7 +178,7 @@ function TwiboneHomepage() {
                 <SwiperSlide key={`row2-${index}`} className="!w-auto">
                   <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
-                      className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover hover:scale-110"
+                      className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover border-[6px] border-white hover:scale-110 rounded-xl"
                       style={{ backgroundImage: `url(${photo})` }}
                     />
                   </div>
@@ -210,7 +210,7 @@ function TwiboneHomepage() {
                 <SwiperSlide key={`row3-${index}`} className="!w-auto">
                   <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
-                      className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover hover:scale-110"
+                      className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover border-[6px] border-white hover:scale-110 rounded-xl"
                       style={{ backgroundImage: `url(${photo})` }}
                     />
                   </div>
@@ -220,7 +220,8 @@ function TwiboneHomepage() {
           </div>
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-b from-[#4C0D68]/100 via-[#4C0D68]/95 to-transparent lg:from-[#4C0D68]/60 lg:via-transparent lg:to-transparent dark:from-[#3A0A51]/100 dark:via-[#3A0A51]/95 dark:lg:from-[#3A0A51]/60 pointer-events-none z-10"></div>
+        <div className="absolute md:hidden inset-0 bg-gradient-to-b from-[#4C0D68]/100 via-[#4C0D68]/95 to-transparent lg:from-[#4C0D68]/60 lg:via-transparent lg:to-transparent dark:from-[#3A0A51]/100 dark:via-[#3A0A51]/95 dark:lg:from-[#3A0A51]/60 pointer-events-none z-10"></div>
+        <div className="absolute hidden  md:block inset-0 bg-gradient-to-b from-[#4C0D68]/100 via-[#4C0D68]/95 to-transparent lg:from-[#4C0D68]/40 lg:via-transparent lg:to-transparent dark:from-[#3A0A51]/100 dark:via-[#3A0A51]/95 dark:lg:from-[#3A0A51]/40 pointer-events-none z-10"></div>
       </section>
 
       <main className="px-4 py-8 mx-auto max-w-screen-2xl">
@@ -312,7 +313,7 @@ function TwiboneHomepage() {
                   id: twibon.id,
                   title: twibon.title || t("homepage.untitled"),
                   author: twibon?.contributor?.fullname || "Gypem",
-                  User: 0,
+                  supports: twibon.supports || 0,
                   slug: twibon.slug_event_twibbon,
                   image: twibon.template_twibbon,
                   isNew: false,

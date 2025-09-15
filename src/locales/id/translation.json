@@ -390,5 +390,21 @@
     "image_format_unsupported": "Format gambar tidak didukung",
     "link_required": "Link harus diisi",
     "link_no_spaces": "Link tidak boleh mengandung spasi"
+  },
+
+  "notfound": {
+    "title": "Halaman Tidak Ditemukan",
+    "description": "Maaf, halaman yang Anda cari tidak dapat ditemukan...",
+    "back_home": "Kembali ke Beranda",
+    "explore": "Jelajahi Twibbon",
+    "helpful_links": "Tautan Berguna",
+    "home_title": "Beranda",
+    "home_desc": "Kembali ke halaman utama",
+    "explore_title": "Jelajahi",
+    "explore_desc": "Temukan twibbon menarik",
+    "create_title": "Buat Twibbon",
+    "create_desc": "Mulai membuat twibbon baru",
+    "help_text": "Jika Anda yakin ini adalah kesalahan, silakan",
+    "contact_support": "hubungi dukungan"
   }
 }

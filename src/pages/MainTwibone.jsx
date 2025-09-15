@@ -22,6 +22,7 @@ import { useGET } from "../services/api";
 import LoadingPage from "../components/layoutpage/LoadingPage";
 import useTwibbonStore from "../helper/store/TwiboneUser";
 import { useModalStore } from "../helper/store/modal.store";
+import NotFound from "./NotfoundPage";
 
 function MainTwibone() {
   const { t } = useTranslation();
@@ -118,7 +119,7 @@ function MainTwibone() {
       await navigator.clipboard.writeText(shareUrl);
 
       // Bisa ditambahkan toast notification di sini
-      alert(t('main.link_copied'));
+      alert(t("main.link_copied"));
 
       // Atau bisa membuka dialog share manual
       // showShareDialog(card);
@@ -133,7 +134,7 @@ function MainTwibone() {
   const openSocialShare = (card) => {
     const shareUrl = window.location.href;
     const shareText = encodeURIComponent(
-      card.description || t('main.share_text', { title: card.title })
+      card.description || t("main.share_text", { title: card.title })
     );
 
     // Contoh share ke WhatsApp
@@ -148,7 +149,9 @@ function MainTwibone() {
   };
 
   if (isLoading) return <LoadingPage />;
-
+  if (!isLoading && !twibbon?.data) {
+    return <NotFound />;
+  }
   const renderCards = (showAll = false) => {
     const slots = [];
     const displayCards = showAll ? cards : cards.slice(0, 9);
@@ -197,10 +200,10 @@ function MainTwibone() {
           {/* Text Content */}
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              {t('main.no_posts_yet')}
+              {t("main.no_posts_yet")}
             </h3>
             <p className="max-w-sm text-sm text-gray-500 dark:text-gray-400">
-              {t('main.be_first_to_post')}
+              {t("main.be_first_to_post")}
             </p>
           </div>
 
@@ -221,7 +224,7 @@ function MainTwibone() {
     return (
       <div className="fixed inset-0 z-40 bg-white dark:bg-gray-900">
         <NavbarEditor
-          title={twibbon?.data?.title || t('main.no_title')}
+          title={twibbon?.data?.title || t("main.no_title")}
           disableModalExit={true}
           onExit={() => setIsFullscreen(false)}
         />
@@ -245,7 +248,7 @@ function MainTwibone() {
         <div className="grid items-center grid-cols-1 lg:grid-cols-3">
           <div className="flex flex-col min-w-0">
             <h1 className="text-lg font-medium capitalize truncate">
-              {twibbon?.data?.title || t('main.no_title')}
+              {twibbon?.data?.title || t("main.no_title")}
             </h1>
             <p className="text-sm text-gray-400 dark:text-gray-400">
               {twibbon?.data?.contributor?.fullname}
@@ -254,9 +257,9 @@ function MainTwibone() {
           <div className="flex items-center justify-start mt-2 space-x-2 lg:justify-center">
             <User className="w-5 h-5 dark:text-gray-300" />
             <div>
-              <span className="text-sm">{t('main.supporters')}</span>
+              <span className="text-sm">{t("main.supporters")}</span>
               <div className="text-xs text-gray-400 dark:text-gray-500">
-                {cards.length}
+                {twibbon?.data?.supports}
               </div>
             </div>
           </div>
@@ -271,7 +274,7 @@ function MainTwibone() {
                 value={twibbon?.data?.link?.replace(/^https?:\/\/[^/]+\//, "")}
                 onClick={() => {
                   navigator.clipboard.writeText(twibbon?.data?.link);
-                  openToast("toast", true, t('main.copy_success'), "success");
+                  openToast("toast", true, t("main.copy_success"), "success");
                 }}
                 className="px-3 py-2 text-sm text-gray-800 bg-transparent dark:text-gray-200 focus:outline-none w-[160px] truncate cursor-pointer"
                 title={twibbon?.data?.link}
@@ -304,8 +307,8 @@ function MainTwibone() {
             <button
               onClick={toggleFullscreen}
               className="absolute z-10 flex items-center justify-center p-3 text-white transition-colors duration-200 bg-purple-600 rounded-full shadow-lg opacity-85 top-4 right-4 hover:bg-purple-700 hover:opacity-100"
-              aria-label={t('main.view_all_images')}
-              title={t('main.view_all_images')}
+              aria-label={t("main.view_all_images")}
+              title={t("main.view_all_images")}
             >
               <Maximize2 size={20} />
             </button>

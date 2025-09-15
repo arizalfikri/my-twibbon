@@ -243,7 +243,7 @@ function ExploreTwibone() {
                     id: twibon.id,
                     title: twibon.title || t("explore.untitled"),
                     author: twibon?.contributor?.fullname || "Gypem",
-                    User: 0,
+                    supports:twibon?.supports||0,
                     slug: twibon.slug_event_twibbon,
                     image: twibon.template_twibbon,
                     isNew: false,
