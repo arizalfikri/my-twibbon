@@ -212,7 +212,7 @@ const DetailProfile = () => {
                         id: twibon.id,
                         title: twibon.title || t("main.no_title"),
                         author: userFullname || "Gypem",
-                        User: 0,
+                        supports: twibon?.supports??0,
                         slug: twibon.slug_event_twibbon,
                         image: twibon.template_twibbon,
                         caption: twibon.caption,

@@ -64,7 +64,7 @@ const CardProfile = ({ twibon, isGrid = true, onEdit, onDelete }) => {
         <div className="flex items-center justify-between mb-3 text-xs text-gray-600 dark:text-gray-300 sm:text-sm">
           <div className="flex items-center gap-1">
             <User className="w-3 h-3 sm:w-4 sm:h-4" />
-            <span>{twibon.User}</span>
+            <span>{twibon.supports}</span>
           </div>
         </div>
 

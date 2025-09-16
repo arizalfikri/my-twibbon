@@ -19,11 +19,25 @@ import { useGET } from "../services/api.js";
 const categories = ["Semua"]; // sementara cuma ada 'Semua'
 
 import ASOE from "../assets/images/ASOE-Scroll.png";
+import Earth from "../assets/images/Earth-Scroll.png";
+import Fk from "../assets/images/fk-Scroll.png";
 import IIS from "../assets/images/IIS-Scroll.png";
-import S2O from "../assets/images/S2O-Scroll.png";
-import Language from "../assets/images/Language-scroll.png";
 import IYPES from "../assets/images/IYPES-Scroll.png";
+import Kartini from "../assets/images/Kartini-Scroll.png";
+import Language from "../assets/images/Language-scroll.png";
 import LOF6 from "../assets/images/LOF6-Scroll.png";
+import Pahlawan from "../assets/images/Pahlawan-Scroll.png";
+import Pelajar from "../assets/images/Pelajar-Scroll.png";
+import Pelajar2 from "../assets/images/Pelajar2-Scroll.png";
+import PMI from "../assets/images/PMI-Scroll.png";
+import Reading from "../assets/images/Reading-Scroll.png";
+import S2O from "../assets/images/S2O-Scroll.png";
+
+const samplePhotos = [
+  [ASOE, Earth, Fk, IIS, IYPES,ASOE, Earth, Fk, IIS, IYPES],
+  [Kartini, Language, LOF6, Pahlawan, Pelajar,Kartini, Language, LOF6, Pahlawan, Pelajar],
+  [Pelajar2, PMI, Reading, S2O, ASOE,Pelajar2, PMI, Reading, S2O, ASOE],
+];
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -41,19 +55,7 @@ function TwiboneHomepage() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [viewMode, setViewMode] = useState("grid");
-  const samplePhotos = [
-    ASOE,
-    IIS,
-    S2O,
-    Language,
-    IYPES,
-    LOF6,
-    ASOE,
-    IIS,
-    S2O,
-    Language,
-    IYPES,
-  ];
+
   const { t } = useTranslation();
 
   // 🔹 Set default: mobile list, laptop grid
@@ -142,7 +144,7 @@ function TwiboneHomepage() {
               speed={6000}
               className="w-full mb-10"
             >
-              {[...samplePhotos, ...samplePhotos].map((photo, index) => (
+              {[...samplePhotos[0], ...samplePhotos[0]].map((photo, index) => (
                 <SwiperSlide key={`row1-${index}`} className="!w-auto">
                   <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
@@ -174,7 +176,7 @@ function TwiboneHomepage() {
               speed={7000}
               className="w-full mb-10"
             >
-              {[...samplePhotos, ...samplePhotos].map((photo, index) => (
+              {[...samplePhotos[1], ...samplePhotos[1]].map((photo, index) => (
                 <SwiperSlide key={`row2-${index}`} className="!w-auto">
                   <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
@@ -206,7 +208,7 @@ function TwiboneHomepage() {
               speed={5000}
               className="w-full"
             >
-              {[...samplePhotos, ...samplePhotos].map((photo, index) => (
+              {[...samplePhotos[2], ...samplePhotos[2]].map((photo, index) => (
                 <SwiperSlide key={`row3-${index}`} className="!w-auto">
                   <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
