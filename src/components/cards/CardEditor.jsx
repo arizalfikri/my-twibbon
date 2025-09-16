@@ -8,6 +8,7 @@ import CameraCapture from "../modal/CameraCapture";
 import ControlPanel from "../ui/ControlPanel";
 import { toPng } from "html-to-image";
 import gypemLogo from "../../assets/images/Gypem_Watermark.png";
+import { usePOST } from "../../services/api";
 
 function CardEditor({
   frameImage,
@@ -20,7 +21,10 @@ function CardEditor({
     sepia: 0,
     grayscale: 0,
   },
+  event_twibbon_id,
+  user_id,
 }) {
+  const { mutateAsync } = usePOST("/support");
   const containerRef = useRef(null);
   const navigate = useNavigate();
   const { image, setImage, setResultImage } = useImageStore();
@@ -41,9 +45,7 @@ function CardEditor({
   const [frameAspectRatio, setFrameAspectRatio] = useState("1/1");
   const [frameSize, setFrameSize] = useState({ width: 1080, height: 1080 }); // default 1080
 
-  useEffect(() => {
-    setIsLoaded(false); // reset kalau ada image baru
-  }, [image, frameImage]);
+
 
   const handleImageLoad = () => {
     setIsLoaded(true);
@@ -88,6 +90,8 @@ function CardEditor({
 
     try {
       setIsExporting(true); // aktifkan logo khusus export
+      
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const scale = frameSize.width / containerRef.current.offsetWidth;
 
@@ -132,7 +136,18 @@ function CardEditor({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
+      try {
+        const response = await mutateAsync({
+          url: "/support",
+          data: { event_twibbon_id, user_id },
+        });
+        if (response.status === 201) {
+          alert("Berhasil posting dukungan!");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Gagal posting dukungan.");
+      }
       // Simpan ke zustand
       setResultImage(dataUrl);
       navigate("/result");
@@ -215,12 +230,12 @@ function CardEditor({
             />
             {/* WATERMARK */}
             {isExporting && (
-              <div className="absolute flex items-center px-2 py-1 text-gray-600 rounded-2xl bottom-2 right-2 bg-white/95">
+              <div className="absolute flex items-center px-2 py-1 text-gray-600 shadow-md shadow-gray-800 rounded-2xl bottom-2 right-2 bg-white/95">
                 <span className="text-[8px] font-medium ">Made with</span>
                 <img
                   src={gypemLogo}
                   alt="Logo"
-                  className="object-contain h-5 w-fit"
+                  className="object-contain h-4 w-fit"
                   crossOrigin="anonymous"
                 />
               </div>

@@ -36,25 +36,25 @@ function SignUp() {
   const forms = [
     {
       id: "fullname",
-      label: t('auth.full_name'),
+      label: t("auth.full_name"),
       type: InputType.TEXT,
-      placeholder: t('auth.enter_full_name'),
+      placeholder: t("auth.enter_full_name"),
     },
     {
       id: "email",
-      label: t('auth.email'),
+      label: t("auth.email"),
       type: InputType.EMAIL,
-      placeholder: t('auth.enter_email'),
+      placeholder: t("auth.enter_email"),
     },
     {
       id: "password",
-      label: t('auth.password'),
+      label: t("auth.password"),
       type: InputType.PASSWORD,
       placeholder: "*******",
     },
     {
       id: "confirm_password",
-      label: t('auth.confirm_password'),
+      label: t("auth.confirm_password"),
       type: InputType.PASSWORD,
       placeholder: "*******",
     },
@@ -67,17 +67,20 @@ function SignUp() {
       url: "/auth/register",
       data: { ...rest, role: "contributor" },
     })
-      .then(() => navigate("/signin"))
+      .then(
+        () => openToast("toast", true, t("auth.register_success"), "success"),
+        navigate("/signin")
+      )
       .catch((error) => {
         switch (error.status) {
           case 401:
-            openToast("toast", true, t('auth.email_already_registered'));
+            openToast("toast", true, t("auth.email_already_registered"));
             break;
           case 409:
-            openToast("toast", true, t('auth.email_already_registered'));
+            openToast("toast", true, t("auth.email_already_registered"));
             break;
           default:
-            openToast("toast", true, t('auth.server_error'));
+            openToast("toast", true, t("auth.server_error"));
             break;
         }
       });
@@ -89,13 +92,13 @@ function SignUp() {
         <img
           className="hidden object-cover w-full h-full col-span-1 lg:block"
           src={LoginImage}
-          alt={t('auth.login_image')}
+          alt={t("auth.login_image")}
         />
         <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto text-gray-800 bg-white dark:bg-gray-900 dark:text-gray-100 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
           <a href="/">
             <img
               src={LogoGypem}
-              alt={t('common.logo')}
+              alt={t("common.logo")}
               className="block w-20 h-full mx-auto md:w-28 md:h-28"
             />
           </a>
@@ -148,19 +151,19 @@ function SignUp() {
                        bg-purple-700 text-white px-4 py-2.5 w-full rounded-xl 
                        hover:bg-purple-900 disabled:opacity-50"
               >
-                {isPending ? t('auth.registering') : t('auth.register')}
+                {isPending ? t("auth.registering") : t("auth.register")}
               </button>
             </div>
           </form>
 
           <div className="mt-3 text-sm text-center">
             <p className="text-gray-600 dark:text-gray-400">
-              {t('auth.already_have_account')}{" "}
+              {t("auth.already_have_account")}{" "}
               <a
                 href="/SignIn"
                 className="font-medium text-purple-700 underline dark:text-purple-400"
               >
-                {t('auth.login')}
+                {t("auth.login")}
               </a>
             </p>
           </div>

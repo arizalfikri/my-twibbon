@@ -259,7 +259,7 @@ function MainTwibone() {
             <div>
               <span className="text-sm">{t("main.supporters")}</span>
               <div className="text-xs text-gray-400 dark:text-gray-500">
-                {twibbon?.data?.supports}
+                {twibbon?.data?.supports ?? 0}
               </div>
             </div>
           </div>

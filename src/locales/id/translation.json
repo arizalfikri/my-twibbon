@@ -121,6 +121,8 @@
     "registering": "Registering...",
     "already_have_account": "Already have an account?",
     "email_already_registered": "Email already registered",
+    "register_success": "Pendaftaran berhasil! Silakan masuk dengan akun Anda.",
+    "login_success": "Login berhasil! Selamat datang kembali.",
     "login_image": "Login Image",
     "welcome_back": "Selamat Datang Kembali!",
     "email_address": "Alamat Email",

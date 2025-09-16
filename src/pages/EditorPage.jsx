@@ -79,7 +79,8 @@ function EditorPage() {
           {/* CardEditor Area - Fixed Height with padding for fixed ControlPanel */}
           <div className="flex-1 min-h-0 ">
             <div ref={editorRef}>
-              <CardEditor frameImage={frameImage} filters={filters} />
+              <CardEditor frameImage={frameImage} filters={filters} event_twibbon_id={twibbonData?.id}
+    user_id={twibbonData?.user_id} />
             </div>
           </div>
 

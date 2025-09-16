@@ -12,7 +12,9 @@ const CardHome = ({ twibon, isGrid = true }) => {
       }`}
     >
       <div
-        className={`relative ${isGrid ? "aspect-[1/1] " : "w-48 flex-shrink-0"}`}
+        className={`relative ${
+          isGrid ? "aspect-[1/1] " : "w-48 flex-shrink-0"
+        }`}
       >
         {console.log(`https://api-twibbon-dev.digiduindo.com${twibon.image}`)}
 
@@ -51,7 +53,7 @@ const CardHome = ({ twibon, isGrid = true }) => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               <User className="w-4 h-4" />
-              <span>{twibon?.supports}</span>
+              <span>{twibon?.supports} Supporters</span>
             </div>
           </div>
         </div>

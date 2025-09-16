@@ -121,6 +121,8 @@
     "registering": "Mendaftar...",
     "already_have_account": "Sudah punya akun?",
     "email_already_registered": "Email sudah terdaftar",
+    "register_success": "Registration successful! Please sign in with your account.",
+    "login_success": "Login successful! Welcome back.",
     "login_image": "Gambar Login",
     "welcome_back": "Welcome Back!",
     "email_address": "Email Address",

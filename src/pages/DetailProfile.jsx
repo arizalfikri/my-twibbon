@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { Edit, Users, Trophy } from "lucide-react";
 import { useGET, useDELETE } from "../services/api.js";
 import Navbar from "../components/layoutpage/Navbar.jsx";
@@ -25,7 +25,7 @@ const DetailProfile = () => {
     role === "contributor" ? "Campaign" : "Posts"
   );
   const navigate = useNavigate();
-  
+
   // Updated data extraction based on new API structure
   const userData = profileData?.data || {};
   const twibbonData = userData.my_event_twibbons || [];
@@ -39,7 +39,11 @@ const DetailProfile = () => {
 
   // Tentukan tabs berdasarkan role
   const availableTabs =
-    role === "contributor" ? [t('profile.campaign')] : role === "user" ? [t('profile.posts')] : [];
+    role === "contributor"
+      ? [t("profile.campaign"), "Collections"]
+      : role === "user"
+      ? [t("profile.posts"), "Collections"]
+      : [];
 
   useEffect(() => {
     if (!role) {
@@ -51,18 +55,18 @@ const DetailProfile = () => {
     setSelectedItemId(itemId);
     setShowDeleteModal(true);
   };
-  
+
   const handleEditClick = (itemData) => {
     setSelectedItemData(itemData);
     setShowEditModal(true);
   };
-  
+
   const handleDeleteSuccess = () => {
     setShowDeleteModal(false);
     setSelectedItemId(null);
     refetch();
   };
-  
+
   const handleEditSuccess = () => {
     setShowEditModal(false);
     setSelectedItemData(null);
@@ -116,7 +120,7 @@ const DetailProfile = () => {
                     <button className="flex items-center gap-2 px-4 py-2 transition-colors bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
                       <Edit className="w-4 h-4 dark:text-white" />
                       <p className="text-gray-700 dark:text-gray-300">
-                        {t('profile.edit_profile')}
+                        {t("profile.edit_profile")}
                       </p>
                     </button>
                   </Link>
@@ -131,7 +135,7 @@ const DetailProfile = () => {
                   <div className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                     <span className="font-medium text-gray-700 dark:text-gray-200">
-                      {t('main.supporters')}
+                      {t("main.supporters")}
                     </span>
                   </div>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -143,7 +147,7 @@ const DetailProfile = () => {
                   <div className="flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                     <span className="font-medium text-gray-700 dark:text-gray-200">
-                      {t('profile.campaigns')}
+                      {t("profile.campaigns")}
                     </span>
                   </div>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -165,19 +169,25 @@ const DetailProfile = () => {
             <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex space-x-8">
                 {availableTabs.map((tab, index) => {
-                  const tabKey = role === "contributor" ? "Campaign" : "Posts";
+                  const tabKey =
+                    tab === t("profile.campaign")
+                      ? "Campaign"
+                      : tab === t("profile.posts")
+                      ? "Posts"
+                      : "Collections";
+
                   return (
-                  <button
+                    <button
                       key={index}
                       onClick={() => setActiveTab(tabKey)}
-                    className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                         activeTab === tabKey
-                        ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                        : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                    }`}
-                  >
-                    {tab}
-                  </button>
+                          ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                          : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                      }`}
+                    >
+                      {tab}
+                    </button>
                   );
                 })}
               </div>
@@ -200,7 +210,7 @@ const DetailProfile = () => {
                       key={twibon.id}
                       twibon={{
                         id: twibon.id,
-                        title: twibon.title || t('main.no_title'),
+                        title: twibon.title || t("main.no_title"),
                         author: userFullname || "Gypem",
                         User: 0,
                         slug: twibon.slug_event_twibbon,
@@ -224,14 +234,28 @@ const DetailProfile = () => {
                   <Edit className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                 </div>
                 <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-                  {t('main.no_posts_yet')}
+                  {t("main.no_posts_yet")}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400">
-                  {t('profile.posts_will_appear')}
+                  {t("profile.posts_will_appear")}
                 </p>
               </div>
             )}
           </div>
+          {/* Collections Content */}
+          {activeTab === "Collections" && (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
+                <Trophy className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+              </div>
+              <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
+                {t("profile.no_collections")}
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400">
+                {t("profile.collections_will_appear")}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
