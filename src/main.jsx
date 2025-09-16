@@ -6,6 +6,8 @@ import { router } from "./routes/index";
 import "./index.css";
 import { ModalToast } from "./components/modal/ModalToast";
 import "./i18n";
+import "aos/dist/aos.css";
+
 const theme = localStorage.getItem("theme") || "light";
 if (theme === "dark") {
   document.documentElement.classList.add("dark");

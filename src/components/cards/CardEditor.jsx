@@ -215,15 +215,14 @@ function CardEditor({
             />
             {/* WATERMARK */}
             {isExporting && (
-              <div className="absolute flex items-center gap-1 px-2 text-gray-600 rounded-2xl bottom-2 right-2 bg-white/95">
+              <div className="absolute flex items-center px-2 py-1 text-gray-600 rounded-2xl bottom-2 right-2 bg-white/95">
                 <span className="text-[8px] font-medium ">Made with</span>
                 <img
                   src={gypemLogo}
                   alt="Logo"
-                  className="object-contain w-6 h-6"
+                  className="object-contain h-5 w-fit"
                   crossOrigin="anonymous"
                 />
-                <span className="text-[8px] font-medium ">GYPEM TWIBBONE</span>
               </div>
             )}
           </div>

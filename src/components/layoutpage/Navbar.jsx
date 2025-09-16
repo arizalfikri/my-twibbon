@@ -1,4 +1,13 @@
-import { Search, Plus, Menu, X, User, Moon } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Menu,
+  X,
+  User,
+  Moon,
+  Compass,
+  Crown,
+} from "lucide-react";
 import React, { useState, useEffect } from "react";
 import LogoGypem from "../../assets/images/gypem_logo_putih.png";
 import {
@@ -19,7 +28,6 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isMobileSearchMode, setIsMobileSearchMode] = useState(false);
@@ -43,7 +51,6 @@ function Navbar() {
   // Handle logout button click - show modal instead of direct logout
   const handleLogoutClick = () => {
     setIsLogoutModalOpen(true);
-    setIsMobileMenuOpen(false);
     setIsSidebarOpen(false);
   };
 
@@ -71,11 +78,9 @@ function Navbar() {
       // Use simpler encoding for mobile to avoid %20
       const cleanQuery = searchQuery.trim().replace(/\s+/g, " ");
       navigate(`/explore?search=${cleanQuery}`);
-      setIsMobileMenuOpen(false);
       setIsMobileSearchMode(false);
     } else if (location.pathname === "/explore") {
       setSearchParams({});
-      setIsMobileMenuOpen(false);
       setIsMobileSearchMode(false);
     }
   };
@@ -127,9 +132,10 @@ function Navbar() {
     const newLang = i18n.language === "id" ? "en" : "id";
     i18n.changeLanguage(newLang);
   };
+
   return (
     <>
-      <nav className="bg-[#4C0D68] text-white py-3 relative z-40 dark:bg-gray-900">
+      <nav className="bg-[#4C0D68] text-white py-5 relative z-40 dark:bg-gray-900 dark:border-b dark:border-gray-600">
         <div className="px-4 mx-auto max-w-screen-2xl">
           <div className="flex items-center justify-between">
             {/* Mobile Search Mode */}
@@ -232,6 +238,7 @@ function Navbar() {
                   </button>
                 </div>
 
+                {/* Mobile Right Section */}
                 <div className="flex items-center space-x-2 md:hidden">
                   <button
                     onClick={handleMobileSearchToggle}
@@ -247,7 +254,7 @@ function Navbar() {
                     />
                   </button>
                   <button
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                     className="p-2 hover:bg-[#6B1E7A] rounded-full transition-colors"
                   >
                     <Menu className="w-5 h-5" />
@@ -256,91 +263,6 @@ function Navbar() {
               </>
             )}
           </div>
-
-          {/* Mobile Menu */}
-          {isMobileMenuOpen && !isMobileSearchMode && (
-            <div className="mt-4 space-y-4 md:hidden">
-              {/* Mobile Menu Items */}
-              <div className="flex flex-col space-y-2">
-                <Link
-                  to="/create"
-                  className="bg-yellow-400 text-[#4C0D68] px-4 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="capitalize"> {t("add_twibone")}</span>
-                </Link>
-              </div>
-
-              {/* Mobile Theme Toggle */}
-              <div className="space-y-2 pt-4 border-t border-[#6B1E7A]">
-                <h4 className="mb-3 text-sm font-medium text-gray-300">{t("theme")}</h4>
-                <button
-                  onClick={toggleTheme}
-                  className="w-full flex items-center justify-between p-3 rounded-lg bg-[#6B1E7A] hover:bg-[#8B2E9B] transition-colors"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Moon className="w-5 h-5 text-gray-300" />
-                    <span className="font-medium text-white">
-                      {t("dark_mode")}
-                    </span>
-                  </div>
-                  <div
-                    className={`w-12 h-6 rounded-full p-1 transition-colors ${
-                      theme === "dark" ? "bg-yellow-400" : "bg-gray-400"
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${
-                        theme === "dark" ? "translate-x-6" : "translate-x-0"
-                      }`}
-                    ></div>
-                  </div>
-                </button>
-              </div>
-
-              {/* Mobile Auth Buttons - Directly in mobile menu */}
-              <div className="space-y-2 pt-4 border-t border-[#6B1E7A] text-center">
-                <h4 className="mb-2 text-sm font-medium text-gray-300">
-                  {t("account")}
-                </h4>
-
-                {/* Mobile Login Button */}
-                {token ? (
-                  <div className="px-4 space-y-3">
-                    <Link
-                      to="/DetailProfile"
-                      className="grid grid-cols-[auto_1fr] gap-3 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg"
-                    >
-                      <div className="bg-[#4C0D68] p-2 rounded-full w-10 h-10 flex items-center justify-center">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm font-semibold text-[#4C0D68]">
-                          {fullname}
-                        </p>
-                        <p className="text-xs text-gray-600">{email}</p>
-                      </div>
-                    </Link>
-
-                    <button
-                      onClick={handleLogoutClick}
-                      className="w-full px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
-                    >
-                      {t("logout_label")}
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => navigate("/SignIn")}
-                    className="w-full bg-white text-[#4C0D68] px-4 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-gray-100 transition-colors"
-                  >
-                    <User className="w-5 h-5" />
-                    <span>Login</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </nav>
 
@@ -352,9 +274,9 @@ function Navbar() {
         ></div>
       )}
 
-      {/* Sidebar */}
+      {/* Unified Sidebar for both Desktop and Mobile */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 dark:bg-gray-800 ${
+        className={`fixed top-0 right-0 h-full md:w-80 w-screen bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 dark:bg-gray-800 ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -382,6 +304,7 @@ function Navbar() {
               <Link
                 to="/DetailProfile"
                 className="grid grid-cols-[auto_1fr] gap-4 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg dark:bg-gray-700"
+                onClick={() => setIsSidebarOpen(false)}
               >
                 <div className="bg-[#4C0D68] p-2 rounded-full w-10 h-10 flex items-center justify-center">
                   <User className="w-5 h-5 text-white" />
@@ -399,14 +322,20 @@ function Navbar() {
               <>
                 <button
                   className="w-full bg-[#4C0D68] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-[#6B1E7A] transition-colors"
-                  onClick={() => navigate("/SignIn")}
+                  onClick={() => {
+                    navigate("/SignIn");
+                    setIsSidebarOpen(false);
+                  }}
                 >
                   <User className="w-5 h-5" />
                   <span>Login</span>
                 </button>
                 <button
                   className="w-full bg-yellow-400  text-[#4C0D68] px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors"
-                  onClick={() => navigate("/SignUp")}
+                  onClick={() => {
+                    navigate("/SignUp");
+                    setIsSidebarOpen(false);
+                  }}
                 >
                   <User className="w-5 h-5" />
                   <span>Daftar Kontributor</span>
@@ -417,6 +346,40 @@ function Navbar() {
 
           {/* Divider */}
           <div className="mb-6 border-t border-gray-200 dark:border-gray-600"></div>
+
+          {/* Navigation List */}
+          <ul className="space-y-3 ">
+            <li>
+              <Link
+                to="/explore"
+                className="flex gap-2 px-4 py-2 text-gray-700 transition rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <Compass className="w-5 h-5" /> Explore
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/membership"
+                className="flex gap-2 px-4 py-2 text-gray-700 transition rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <Crown className="w-5 h-5" /> Membership
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/create"
+                className="bg-yellow-400 text-[#4C0D68] px-4 py-2 rounded-full font-semibold flex items-center space-x-2 hover:bg-yellow-300 transition-colors md:hidden mb-5"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden capitalize lg:inline">
+                  {t("add_twibone")}
+                </span>
+                <span className="lg:hidden ">{t("add")}</span>
+              </Link>
+            </li>
+          </ul>
         </div>
 
         {/* Sidebar Footer */}

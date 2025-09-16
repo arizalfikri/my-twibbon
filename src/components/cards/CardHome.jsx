@@ -7,7 +7,7 @@ const CardHome = ({ twibon, isGrid = true }) => {
   return (
     <Link
       to={`/${twibon.slug}`}
-      className={`block bg-white dark:bg-gray-800 rounded-xl shadow-md border-2  border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all duration-300 cursor-pointer group  ${
+      className={`block bg-white dark:bg-gray-800 rounded-xl shadow-md\ border-2  border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all duration-300 cursor-pointer group  ${
         isGrid ? "" : "flex"
       }`}
     >
@@ -38,7 +38,7 @@ const CardHome = ({ twibon, isGrid = true }) => {
 
       <div className={`p-4 ${isGrid ? "" : "flex-1"}`}>
         <div className="flex items-start justify-between mb-2 h-[48px]">
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-[#4C0D68] dark:group-hover:text-[#8B3A9C] transition-colors">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-[#4C0D68] dark:group-hover:text-[#f2b0ff] transition-colors">
             {twibon.title}
           </h3>
         </div>
