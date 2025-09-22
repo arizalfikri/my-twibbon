@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LoginImage from "../assets/images/login_image.png";
 import LogoGypem from "../assets/images/gypem_logo.png";
-import { useNavigate } from "react-router-dom";
+import LogoGypemPutih from "../assets/images/gypem_logo_putih.png";
+import { Link, useNavigate } from "react-router-dom";
 import { usePOST } from "../services/api";
 import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
@@ -91,6 +92,7 @@ const SignIn = () => {
             src={LoginImage}
             alt={t("auth.login")}
           />
+          
 
           <div className="flex flex-col justify-center col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
             <a href="/">
@@ -133,7 +135,7 @@ const SignIn = () => {
   // Form login
   return (
     <div id="root">
-      <div className="grid items-center justify-center h-screen grid-cols-1 overflow-x-hidden bg-white dark:bg-gray-900 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid justify-center h-screen grid-cols-1 overflow-x-hidden bg-white dark:bg-gray-900 md:grid-cols-2 lg:grid-cols-3">
         <img
           className="hidden object-cover w-full h-full col-span-1 lg:block"
           src={LoginImage}
@@ -188,12 +190,26 @@ const SignIn = () => {
             </div>
 
             <div className="flex justify-end my-5">
-              <a
-                href="#"
-                className="text-sm text-purple-700 hover:underline dark:text-purple-400"
-              >
-                {t("auth.forgot_password")}
-              </a>
+              <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
+                {t("auth.forgot_password")}{" "}
+                {selectedRole === "contributor" ? (
+                  <Link
+                    to="/Forgot-Password"
+                    className="font-medium text-purple-700 hover:underline"
+                  >
+                    {t("auth.reset_here")}
+                  </Link>
+                ) : (
+                  <a
+                    href="https://gypem.com/forgot-password"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-purple-700 hover:underline"
+                  >
+                    {t("auth.reset_here")}
+                  </a>
+                )}
+              </p>
             </div>
 
             <div className="flex flex-col gap-2 md:flex-row">

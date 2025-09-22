@@ -32,7 +32,7 @@ function Navbar() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isMobileSearchMode, setIsMobileSearchMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { email, token, fullname } = useGlobalStore();
+  const { email, token, fullname, role } = useGlobalStore();
   const { theme, toggleTheme } = useThemeStore();
   const { t, i18n } = useTranslation();
 
@@ -300,7 +300,7 @@ function Navbar() {
             </h3>
 
             {/* Login Button */}
-            {token ? (
+            {token && fullname && role ? (
               <Link
                 to="/DetailProfile"
                 className="grid grid-cols-[auto_1fr] gap-4 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg dark:bg-gray-700"
@@ -429,7 +429,7 @@ function Navbar() {
           </div>
 
           {/* Logout Button in Sidebar Footer */}
-          {token && (
+          {token && fullname && role     && (
             <button
               onClick={handleLogoutClick}
               className="w-full px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"

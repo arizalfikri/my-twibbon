@@ -10,6 +10,7 @@ import {
   Users,
   Maximize2,
   X,
+  Bookmark,
 } from "lucide-react";
 import CardEditor from "../components/cards/CardEditor";
 import CardResult from "../components/cards/CardResult";
@@ -36,6 +37,7 @@ function MainTwibone() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
     refetch();
@@ -114,18 +116,12 @@ function MainTwibone() {
   // Fallback share method
   const handleFallbackShare = async (card) => {
     try {
-      // Copy link ke clipboard
       const shareUrl = window.location.href;
       await navigator.clipboard.writeText(shareUrl);
 
-      // Bisa ditambahkan toast notification di sini
       alert(t("main.link_copied"));
-
-      // Atau bisa membuka dialog share manual
-      // showShareDialog(card);
     } catch (error) {
       console.log("Error copying to clipboard:", error);
-      // Last fallback - buka dialog share social media
       openSocialShare(card);
     }
   };
@@ -146,6 +142,15 @@ function MainTwibone() {
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
+  };
+  const toggleBookmark = () => {
+    setBookmarked(!bookmarked);
+    openToast(
+      "toast",
+      true,
+      bookmarked ? t("main.bookmark_removed") : t("main.bookmark_added"),
+      "success"
+    );
   };
 
   if (isLoading) return <LoadingPage />;
@@ -244,7 +249,7 @@ function MainTwibone() {
   return (
     <div className="bg-white dark:bg-gray-900 dark:text-white">
       <Navbar />
-      <header className="px-4 py-3 m-5 bg-white dark:bg-gray-900 dark:text-white">
+      <header className="px-3 py-3 m-5 mx-auto bg-white dark:bg-gray-900 dark:text-white max-w-screen-2xl">
         <div className="grid items-center grid-cols-1 lg:grid-cols-3">
           <div className="flex flex-col min-w-0">
             <h1 className="text-lg font-medium capitalize truncate">
@@ -254,6 +259,7 @@ function MainTwibone() {
               {twibbon?.data?.contributor?.fullname}
             </p>
           </div>
+
           <div className="flex items-center justify-start mt-2 space-x-2 lg:justify-center">
             <User className="w-5 h-5 dark:text-gray-300" />
             <div>
@@ -280,6 +286,20 @@ function MainTwibone() {
                 title={twibbon?.data?.link}
               />
             </div>
+            <button
+              onClick={toggleBookmark}
+              className="flex items-center justify-center w-10 h-10 transition bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
+              aria-label="Bookmark"
+            >
+              <Bookmark
+                size={18}
+                className={
+                  bookmarked
+                    ? "fill-purple-500 text-purple-500"
+                    : "text-gray-500 dark:text-gray-300"
+                }
+              />
+            </button>
           </div>
         </div>
       </header>
@@ -332,6 +352,50 @@ function MainTwibone() {
       {/* Fullscreen Modal */}
       {renderFullscreenModal()}
 
+      {/* HPSHARE */}
+      <div className="mb-6 border-t border-gray-200 dark:border-gray-600 lg:hidden"></div>
+      <div className="lg:hidden">
+        <div className="flex flex-col min-w-0 mx-3">
+          <h3 className="font-medium capitalize truncate text-md">
+            {twibbon?.data?.title || t("main.no_title")}
+          </h3>
+        </div>
+        <div className="flex items-center mx-3 my-10 mt-2 space-x-2">
+          {/* Box Link */}
+          <div className="flex flex-1 overflow-hidden bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600">
+            <span className="px-3 py-2 text-sm text-gray-500 bg-gray-200 select-none dark:bg-gray-700 dark:text-gray-300">
+              TwibbonGypem/
+            </span>
+            <input
+              type="text"
+              readOnly
+              value={twibbon?.data?.link?.replace(/^https?:\/\/[^/]+\//, "")}
+              onClick={() => {
+                navigator.clipboard.writeText(twibbon?.data?.link);
+                openToast("toast", true, t("main.copy_success"), "success");
+              }}
+              className="px-3 py-2 text-sm text-gray-800 bg-transparent dark:text-gray-200 focus:outline-none w-[160px] truncate cursor-pointer"
+              title={twibbon?.data?.link}
+            />
+          </div>
+
+          {/* Tombol Bookmark */}
+          <button
+            onClick={toggleBookmark}
+            className="flex items-center justify-center w-10 h-10 transition bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
+            aria-label="Bookmark"
+          >
+            <Bookmark
+              size={18}
+              className={
+                bookmarked
+                  ? "fill-purple-500 text-purple-500"
+                  : "text-gray-500 dark:text-gray-300"
+              }
+            />
+          </button>
+        </div>
+      </div>
       <Footer />
     </div>
   );
