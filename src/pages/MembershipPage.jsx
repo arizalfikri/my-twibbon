@@ -3,34 +3,86 @@ import Navbar from "../components/layoutpage/Navbar";
 import NoWatermark from "../assets/vidios/Vidio_Remove_Watermark.mp4";
 import Footer from "../components/layoutpage/Footer";
 import AOS from "aos";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useGET, usePOST } from "../services/api";
+import { useGlobalStore } from "../helper/store/global.store";
+import { useModalStore } from "../helper/store/modal.store";
+import ModalLogin from "../components/modal/modalLogin";
 
 export default function MembershipPage() {
-  const [plan, setPlan] = useState("6months");
+  const { data } = useGET("/plans");
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const navigate = useNavigate();
+  const CheckoutMutation = usePOST("/subscribe");
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // data plan
-  const plans = {
-    monthly: { oldPrice: "Rp16.000", price: "Rp 10.000", label: "per Month" },
-    "6months": { oldPrice: "Rp96.000", price: "Rp 35.000", label: "per 6 Months" },
-    annual: { oldPrice: "Rp192.000", price: "Rp 60.000", label: "per Year" },
-  };
+  // ambil auth
+  const { token, role } = useGlobalStore();
+  const { openToast } = useModalStore();
+
+  // modal login
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // default pilih plan pertama
+  useEffect(() => {
+    if (data?.data?.length > 0 && !selectedPlan) {
+      setSelectedPlan(data.data[0]);
+    }
+  }, [data, selectedPlan]);
 
   useEffect(() => {
     AOS.init({
       duration: 800,
-      once: true,
+      offset: 100,
+      easing: "ease-in-out",
     });
+    AOS.refresh();
   }, []);
+
+  const handleSubscribe = async () => {
+    if (!selectedPlan) return;
+
+    // cek login dulu
+    if (!token || role !== "user") {
+      openToast("toast", true, "Login Peserta Terlebih dahulu","warning");
+      setShowLoginModal(true);
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const res = await CheckoutMutation.mutateAsync({
+        url: "/subscribe",
+        data: { plan_id: selectedPlan.id.toString() },
+      });
+
+      if (res.status === 201 || res.status === 200) {
+        openToast("toast", true, "Redirecting to checkout...", "success");
+        navigate("/checkout");
+      }
+    } catch (error) {
+      console.error("Subscription failed:", error);
+      openToast("toast", true, "Subscription failed", "error");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleLoginSuccess = async () => {
+    setShowLoginModal(false);
+    // langsung lanjut subscribe setelah login
+    await handleSubscribe();
+  };
 
   return (
     <>
       <Navbar />
 
       <main className="flex flex-col items-center min-h-screen overflow-x-hidden bg-gray-900 ">
+        {/* Hero */}
         <section
           className="flex flex-col items-center max-w-2xl mb-1 text-center text-white"
           data-aos="fade-up"
-          data-aos-anchor-placement="top-bottom"
         >
           <span className="mt-16 text-sm">PRICING</span>
           <span className="font-bold md:text-[72px] text-[32px] leading-none ">
@@ -38,8 +90,8 @@ export default function MembershipPage() {
           </span>
         </section>
 
+        {/* Card */}
         <div className="w-screen md:w-[450px] bg-white dark:bg-gradient-to-b dark:from-[#1a2734] dark:to-[#0d1217] md:dark:shadow-white dark:border-0 md:rounded-3xl shadow-md text-gray-900 dark:text-white overflow-hidden m-8 z-30">
-          {/* Card */}
           <div className="bg-gradient-to-br from-[#11cefe] to-[#7ecd67] text-white">
             <div className="p-6 text-center">
               <p className="text-xs tracking-widest uppercase opacity-90">
@@ -52,34 +104,36 @@ export default function MembershipPage() {
             </div>
 
             {/* Toggle plan */}
-            <div className="flex justify-center gap-2 pb-4">
-              {["Monthly", "6 Months", "Annual"].map((item) => (
+            <div className="flex flex-wrap justify-center gap-2 pb-4">
+              {data?.data?.map((plan) => (
                 <button
-                  key={item}
-                  onClick={() => setPlan(item.toLowerCase().replace(" ", ""))}
+                  key={plan.id}
+                  onClick={() => setSelectedPlan(plan)}
                   className={`px-4 py-1 rounded-full text-sm font-medium transition ${
-                    plan === item.toLowerCase().replace(" ", "")
+                    selectedPlan?.id === plan.id
                       ? "bg-white text-black shadow"
                       : "bg-black/30 text-white hover:bg-black/50"
                   }`}
                 >
-                  {item}
+                  {plan.name} ({plan.duration_days}d)
                 </button>
               ))}
             </div>
 
             {/* Price */}
-            <div className="py-6 text-center bg-white dark:bg-[#0f171f]">
-              <p className="text-sm text-gray-500 line-through">
-                {plans[plan].oldPrice}
-              </p>
-              <p className="text-4xl font-bold text-black dark:text-white">
-                {plans[plan].price}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {plans[plan].label}
-              </p>
-            </div>
+            {selectedPlan && (
+              <div className="py-6 text-center bg-white dark:bg-[#0f171f]">
+                <p className="text-sm text-gray-500 line-through">
+                  Rp{selectedPlan.price * 1.5}
+                </p>
+                <p className="text-4xl font-bold text-black dark:text-white">
+                  Rp {selectedPlan.price.toLocaleString("id-ID")}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  for {selectedPlan.duration_days} days
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Features */}
@@ -109,12 +163,13 @@ export default function MembershipPage() {
 
           {/* Footer */}
           <div className="p-6 space-y-3 border-t border-gray-200 dark:border-gray-700">
-            <Link
-              to="/checkout"
-              className="block w-full py-3 font-semibold text-center text-white transition bg-black rounded-full hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            <button
+              onClick={handleSubscribe}
+              disabled={isProcessing}
+              className="block w-full py-3 font-semibold text-center text-white transition bg-black rounded-full hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 disabled:opacity-50"
             >
-              Upgrade →
-            </Link>
+              {isProcessing ? "Processing..." : "Upgrade →"}
+            </button>
             <button className="w-full py-3 text-gray-700 transition border border-gray-300 rounded-full hover:bg-gray-100 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800">
               Learn More
             </button>
@@ -123,6 +178,15 @@ export default function MembershipPage() {
       </main>
 
       <Footer />
+
+      {/* Modal login muncul kalau belum login */}
+      {showLoginModal && (
+        <ModalLogin
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
     </>
   );
 }

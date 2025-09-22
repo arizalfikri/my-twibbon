@@ -9,6 +9,7 @@ import ControlPanel from "../ui/ControlPanel";
 import { toPng } from "html-to-image";
 import gypemLogo from "../../assets/images/Gypem_Watermark.png";
 import { usePOST } from "../../services/api";
+import ModalMembership from "../modal/ModalMembership";
 
 function CardEditor({
   frameImage,
@@ -17,18 +18,20 @@ function CardEditor({
     contrast: 100,
     saturation: 100,
     hue: 0,
-    blur: 0,
     sepia: 0,
     grayscale: 0,
   },
   event_twibbon_id,
-  user_id,
+  SubscribeData,
 }) {
   const { mutateAsync } = usePOST("/support");
   const containerRef = useRef(null);
   const navigate = useNavigate();
   const { image, setImage, setResultImage } = useImageStore();
   const [isExporting, setIsExporting] = useState(false);
+  const [showMembershipModal, setShowMembershipModal] = useState(false);
+  const [downloadWithWatermark, setDownloadWithWatermark] = useState(false);
+  const [isMember, setIsMember] = useState(false);
 
   const {
     showUploadModal,
@@ -44,8 +47,6 @@ function CardEditor({
   const [isLoaded, setIsLoaded] = useState(false);
   const [frameAspectRatio, setFrameAspectRatio] = useState("1/1");
   const [frameSize, setFrameSize] = useState({ width: 1080, height: 1080 }); // default 1080
-
-
 
   const handleImageLoad = () => {
     setIsLoaded(true);
@@ -90,7 +91,7 @@ function CardEditor({
 
     try {
       setIsExporting(true); // aktifkan logo khusus export
-      
+
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const scale = frameSize.width / containerRef.current.offsetWidth;
@@ -119,7 +120,7 @@ function CardEditor({
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = async (withWatermark = false) => {
     try {
       if (!isLoaded) {
         alert("Tunggu gambar selesai dimuat...");
@@ -127,35 +128,34 @@ function CardEditor({
       }
 
       setIsDownloading(true);
+
+      // bedakan state watermark
+      setDownloadWithWatermark(withWatermark);
+      setIsExporting(true);
+
       const dataUrl = await generateFinalImage();
 
-      // Download file
       const link = document.createElement("a");
       link.href = dataUrl;
       link.download = `twibbon_${Date.now()}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      try {
-        const response = await mutateAsync({
-          url: "/support",
-          data: { event_twibbon_id, user_id },
-        });
-        if (response.status === 201) {
-          alert("Berhasil posting dukungan!");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Gagal posting dukungan.");
-      }
-      // Simpan ke zustand
+
       setResultImage(dataUrl);
       navigate("/result");
+
+      await mutateAsync({
+        url: "/support",
+        data: { event_twibbon_id },
+      });
     } catch (err) {
       console.error(err);
       alert("Download gagal. Silakan coba lagi.");
     } finally {
       setIsDownloading(false);
+      setIsExporting(false);
+      setDownloadWithWatermark(false); // reset biar ga kebawa ke next download
     }
   };
 
@@ -229,7 +229,7 @@ function CardEditor({
               style={{ maxWidth: "none", maxHeight: "none" }}
             />
             {/* WATERMARK */}
-            {isExporting && (
+            {isExporting && downloadWithWatermark && (
               <div className="absolute flex items-center px-2 py-1 text-gray-600 shadow-md shadow-gray-800 rounded-2xl bottom-2 right-2 bg-white/95">
                 <span className="text-[8px] font-medium ">Made with</span>
                 <img
@@ -242,7 +242,16 @@ function CardEditor({
             )}
           </div>
 
-          <ControlPanel onDownload={handleDownload} hasImage={!!image} />
+          <ControlPanel
+            onDownload={() => {
+              if (SubscribeData?.status === "active") {
+                handleDownload(false);
+              } else {
+                setShowMembershipModal(true);
+              }
+            }}
+            hasImage={!!image}
+          />
         </div>
       </div>
 
@@ -268,6 +277,12 @@ function CardEditor({
           onClose={closeCamera}
         />
       )}
+      <ModalMembership
+        isOpen={showMembershipModal}
+        onClose={() => setShowMembershipModal(false)}
+        onDownloadMember={() => handleDownload(false)} // no watermark
+        onDownloadWatermark={() => handleDownload(true)} // dengan watermark
+      />
     </>
   );
 }

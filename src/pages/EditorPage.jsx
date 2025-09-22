@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useTwibbonStore from "../helper/store/TwiboneUser";
 import ControlPanel from "../components/ui/ControlPanel"; // ✅ tambahin
 import * as htmlToImage from "html-to-image"; //
+import { useGET } from "../services/api";
 // Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,10 +27,9 @@ function EditorPage() {
   const { image, frameImage } = useImageStore();
   const navigate = useNavigate();
   const { twibbonData } = useTwibbonStore();
-
+  const { data } = useGET("/subscription");
+  const SubscribeData = data?.data;
   const editorRef = useRef(null);
-
-  
 
   // Enhanced filter states
   const [filters, setFilters] = useState({
@@ -71,16 +71,21 @@ function EditorPage() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex flex-col h-full bg-white dark:bg-gray-900 md:h-screen">
-        <NavbarEditor title={twibbonData?.title} />
+              <NavbarEditor title={twibbonData?.title} />
+
+      <div className="flex flex-col items-center justify-between h-full bg-white dark:bg-gray-900 md:h-screen">
 
         {/* Mobile Layout */}
         <div className="flex flex-col flex-1 md:hidden">
           {/* CardEditor Area - Fixed Height with padding for fixed ControlPanel */}
           <div className="flex-1 min-h-0 ">
             <div ref={editorRef}>
-              <CardEditor frameImage={frameImage} filters={filters} event_twibbon_id={twibbonData?.id}
-    user_id={twibbonData?.user_id} />
+              <CardEditor
+                frameImage={frameImage}
+                filters={filters}
+                event_twibbon_id={twibbonData?.id}
+                SubscribeData={SubscribeData}
+              />
             </div>
           </div>
 
@@ -372,17 +377,17 @@ function EditorPage() {
         </div>
 
         {/* Desktop Layout  */}
-       
-        <div className="hidden md:grid md:grid-cols-[2fr_1fr] max-w-screen-2xl  p-6 gap-12 justify-between">
-          <div ref={editorRef}>
+
+        <div className="hidden md:grid md:grid-cols-[2fr_1fr] max-w-screen-2xl p-6 gap-12 justify-between">
+          <div ref={editorRef} className="flex items-start">
             <CardEditor
               frameImage={frameImage}
               filters={filters}
               event_twibbon_id={twibbonData?.id}
-              user_id={twibbonData?.user_id}
+              SubscribeData={SubscribeData}
             />
           </div>
-          
+
           {/* Enhanced Settings Panel - Light/Dark */}
           <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl">
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">

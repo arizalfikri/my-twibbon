@@ -5,20 +5,23 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import id from "./locales/id/translation.json";
 import en from "./locales/en/translation.json";
 
+const userLang = navigator.language || navigator.userLanguage;
+const fallbackLanguage = userLang.startsWith("id") ? "id" : "en";
+
 i18n
-    .use(LanguageDetector) // Tambahkan plugin ini
+    .use(LanguageDetector)
     .use(initReactI18next)
     .init({
         resources: {
             id: { translation: id },
             en: { translation: en },
         },
-        fallbackLng: "id",
+        fallbackLng: fallbackLanguage,
         interpolation: {
             escapeValue: false,
         },
         detection: {
-            order: ["localStorage", "navigator"], 
+            order: ["localStorage", "navigator"],
             caches: ["localStorage"],
         },
     });
