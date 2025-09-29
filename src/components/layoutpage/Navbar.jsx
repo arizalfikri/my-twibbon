@@ -225,7 +225,7 @@ function Navbar() {
                   </Link>
                   <button onClick={() => toggleLanguage()}>
                     <img
-                      src={i18n.language === "id" ? FLAGID : FLAGEN}
+                      src={i18n.language.startsWith("id") ? FLAGID : FLAGEN}
                       alt={i18n.language}
                       className="w-8 h-8 rounded-full"
                     />
@@ -248,7 +248,7 @@ function Navbar() {
                   </button>
                   <button onClick={() => toggleLanguage()}>
                     <img
-                      src={i18n.language === "id" ? FLAGID : FLAGEN}
+                      src={i18n.language.startsWith("id") ? FLAGID : FLAGEN}
                       alt={i18n.language}
                       className="w-6 h-6 rounded-full"
                     />
@@ -429,7 +429,7 @@ function Navbar() {
           </div>
 
           {/* Logout Button in Sidebar Footer */}
-          {token && fullname && role     && (
+          {token && fullname && role && (
             <button
               onClick={handleLogoutClick}
               className="w-full px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"

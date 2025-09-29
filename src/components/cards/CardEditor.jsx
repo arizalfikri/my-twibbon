@@ -92,7 +92,7 @@ function CardEditor({
     try {
       setIsExporting(true); // aktifkan logo khusus export
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const scale = frameSize.width / containerRef.current.offsetWidth;
 

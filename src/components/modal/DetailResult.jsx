@@ -40,13 +40,23 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const { data: infoUser } = useGET(`event-user-twibbon/${id_user_twibbons}`);
+  const { data: infoUser } = useGET(
+    id_user_twibbons ? `event-user-twibbon/${id_user_twibbons}` : null,
+    {
+      enabled: isOpen && !!id_user_twibbons, // fetch hanya kalau modal kebuka
+    }
+  );
 
   const {
     data: KomentarData,
     isLoading,
     refetch,
-  } = useGET(`twibbon/user/${id_user_twibbons}/comments`);
+  } = useGET(
+    id_user_twibbons ? `twibbon/user/${id_user_twibbons}/comments` : null,
+    {
+      enabled: isOpen && !!id_user_twibbons, // fetch hanya kalau modal kebuka
+    }
+  );
 
   const { mutateAsync: postComment, isPending } = usePOST(
     `twibbon/user/${id_user_twibbons}/comments`
@@ -77,8 +87,10 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
     if (diffInMinutes === 0) return t("detailresult.just_now");
-    if (diffInMinutes < 60) return t("detailresult.minutes_ago", { count: diffInMinutes });
-    if (diffInHours < 24) return t("detailresult.hours_ago", { count: diffInHours });
+    if (diffInMinutes < 60)
+      return t("detailresult.minutes_ago", { count: diffInMinutes });
+    if (diffInHours < 24)
+      return t("detailresult.hours_ago", { count: diffInHours });
     return t("detailresult.days_ago", { count: diffInDays });
   };
 
@@ -343,13 +355,17 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                     onClick={() => toggleCommentExpansion(c.id)}
                     className="inline-block ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus:outline-none"
                   >
-                    {isExpanded ? t("detailresult.show_less") : t("detailresult.show_more")}
+                    {isExpanded
+                      ? t("detailresult.show_less")
+                      : t("detailresult.show_more")}
                   </button>
                 )}
               </div>
             )}
           </div>
-          <div className="mt-1 ml-3 text-xs text-gray-500 dark:text-gray-400">{c.time}</div>
+          <div className="mt-1 ml-3 text-xs text-gray-500 dark:text-gray-400">
+            {c.time}
+          </div>
         </div>
       </div>
     );
@@ -403,32 +419,39 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   className="mt-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus:outline-none"
                 >
-                  {showFullDescription ? t("detailresult.show_less") : t("detailresult.show_more")}
+                  {showFullDescription
+                    ? t("detailresult.show_less")
+                    : t("detailresult.show_more")}
                 </button>
               )}
             </div>
 
-            <div className="mb-4 text-sm text-blue-600 dark:text-blue-400">{data.status}</div>
+            <div className="mb-4 text-sm text-blue-600 dark:text-blue-400">
+              {data.status}
+            </div>
 
             <div className="flex items-center mb-6 space-x-3 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                 <span className="text-sm font-bold text-white">
                   {getUserInitials(
-                    infoUser?.data?.author?.user_firstname || t("detailresult.unknown_user")
+                    infoUser?.data?.author?.user_firstname ||
+                      t("detailresult.unknown_user")
                   )}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-gray-700 truncate dark:text-gray-300">
                   {truncateText(
-                    infoUser?.data?.author?.user_firstname || t("detailresult.unknown_user"),
+                    infoUser?.data?.author?.user_firstname ||
+                      t("detailresult.unknown_user"),
                     20
                   )}
                 </div>
                 <div className="text-sm truncate">
                   @
                   {truncateText(
-                    infoUser?.data?.author?.user_email || t("detailresult.unknown_email"),
+                    infoUser?.data?.author?.user_email ||
+                      t("detailresult.unknown_email"),
                     25
                   )}
                 </div>
@@ -439,7 +462,8 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
             <div className="border-t border-gray-200 dark:border-gray-700">
               <div className="py-4">
                 <h3 className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-800 dark:text-white">
-                  <MessageCircle className="w-5 h-5" /> {t("detailresult.comments")}
+                  <MessageCircle className="w-5 h-5" />{" "}
+                  {t("detailresult.comments")}
                 </h3>
 
                 {/* Form input komentar */}
@@ -551,7 +575,9 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                     onClick={() => setShowFullDescription(!showFullDescription)}
                     className="mt-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus:outline-none"
                   >
-                    {showFullDescription ? t("detailresult.show_less") : t("detailresult.show_more")}
+                    {showFullDescription
+                      ? t("detailresult.show_less")
+                      : t("detailresult.show_more")}
                   </button>
                 )}
               </div>
@@ -560,21 +586,24 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                   <span className="text-xs font-bold text-white">
                     {getUserInitials(
-                      infoUser?.data?.author?.user_firstname || t("detailresult.unknown_user")
+                      infoUser?.data?.author?.user_firstname ||
+                        t("detailresult.unknown_user")
                     )}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-gray-700 truncate dark:text-gray-300">
                     {truncateText(
-                      infoUser?.data?.author?.user_firstname || t("detailresult.unknown_user"),
+                      infoUser?.data?.author?.user_firstname ||
+                        t("detailresult.unknown_user"),
                       20
                     )}
                   </div>
                   <div className="text-xs truncate">
                     @
                     {truncateText(
-                      infoUser?.data?.author?.user_email || t("detailresult.unknown_email"),
+                      infoUser?.data?.author?.user_email ||
+                        t("detailresult.unknown_email"),
                       25
                     )}
                   </div>
@@ -586,7 +615,8 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
             <div className="flex flex-col flex-1 min-h-0">
               <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="flex items-center gap-2 font-semibold text-gray-800 dark:text-white">
-                  <MessageCircle className="w-5 h-5" /> {t("detailresult.comments")}
+                  <MessageCircle className="w-5 h-5" />{" "}
+                  {t("detailresult.comments")}
                 </h3>
               </div>
 
