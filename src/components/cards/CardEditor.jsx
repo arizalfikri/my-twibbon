@@ -132,6 +132,7 @@ function CardEditor({
       // bedakan state watermark
       setDownloadWithWatermark(withWatermark);
       setIsExporting(true);
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       const dataUrl = await generateFinalImage();
 

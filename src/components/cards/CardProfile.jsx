@@ -113,7 +113,11 @@ const CardProfile = ({ twibon, isGrid = true, onEdit, onDelete }) => {
       {showDeleteMenu && (
         <div
           className="fixed inset-0 z-5"
-          onClick={() => setShowDeleteMenu(false)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowDeleteMenu(false);
+          }}
         />
       )}
     </Link>

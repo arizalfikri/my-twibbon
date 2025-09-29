@@ -61,12 +61,11 @@ const DetailProfile = () => {
 
   // Extract posts data
   const userPosts = userPostsData?.data || [];
-
+  
   useEffect(() => {
-    // Kalau API balikin object { status: 403 }
     if (
-      profileData?.status === 403 ||
-      userPostsData?.status === 403 ||
+      profileData?.status === 403 &&
+      userPostsData?.status === 403 &&
       userCollectionsData?.status === 403
     ) {
       localStorage.clear();
