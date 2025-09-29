@@ -8,9 +8,12 @@ import { useGET, usePOST } from "../services/api";
 import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
 import ModalLogin from "../components/modal/modalLogin";
+import LoadingPage from "../components/layoutpage/LoadingPage";
 
 export default function MembershipPage() {
-  const { data } = useGET("/plans");
+  const { data, isLoading } = useGET("/plans");
+  const { data: dataSubscription, refetch: refetchSubscription } =
+    useGET("/subscription");
   const [selectedPlan, setSelectedPlan] = useState(null);
   const navigate = useNavigate();
   const CheckoutMutation = usePOST("/subscribe");
@@ -44,8 +47,19 @@ export default function MembershipPage() {
 
     // cek login dulu
     if (!token || role !== "user") {
-      openToast("toast", true, "Login Peserta Terlebih dahulu","warning");
+      openToast("toast", true, "Login Peserta Terlebih dahulu", "warning");
       setShowLoginModal(true);
+      return;
+    }
+    const { data: newSub } = await refetchSubscription();
+
+    // cek subscription status terbaru
+    if (newSub?.data?.status === "active") {
+      openToast("toast", true, "Kamu sudah memiliki langganan aktif", "info");
+      return;
+    }
+    if (newSub?.data?.status === "pending") {
+      openToast("toast", true, "Langganan kamu sedang diproses", "warning");
       return;
     }
 
@@ -70,10 +84,13 @@ export default function MembershipPage() {
 
   const handleLoginSuccess = async () => {
     setShowLoginModal(false);
-    // langsung lanjut subscribe setelah login
+
     await handleSubscribe();
   };
 
+  if (isLoading) {
+    return <LoadingPage />;
+  }
   return (
     <>
       <Navbar />
@@ -169,9 +186,6 @@ export default function MembershipPage() {
               className="block w-full py-3 font-semibold text-center text-white transition bg-black rounded-full hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 disabled:opacity-50"
             >
               {isProcessing ? "Processing..." : "Upgrade →"}
-            </button>
-            <button className="w-full py-3 text-gray-700 transition border border-gray-300 rounded-full hover:bg-gray-100 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800">
-              Learn More
             </button>
           </div>
         </div>

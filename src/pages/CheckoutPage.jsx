@@ -3,10 +3,11 @@ import Navbar from "../components/layoutpage/Navbar";
 import { useGET, usePOST } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { useModalStore } from "../helper/store/modal.store";
+import LoadingPage from "../components/layoutpage/LoadingPage";
 
 function CheckoutPage() {
   const [file, setFile] = useState(null);
-  const { data: payment, isLoading } = useGET("/payment");
+  const { data: payment, isLoading, refetch } = useGET("/payment");
   const uploadProof = usePOST();
   const navigate = useNavigate();
   const { openToast } = useModalStore();
@@ -15,7 +16,8 @@ function CheckoutPage() {
   useEffect(() => {
     if (!isLoading && (!payment || !payment.data)) {
       openToast({
-        message: "Kamu belum punya pembayaran aktif, silakan pilih membership dulu.",
+        message:
+          "Kamu belum punya pembayaran aktif, silakan pilih membership dulu.",
         type: "error",
       });
       navigate("/membership");
@@ -30,8 +32,12 @@ function CheckoutPage() {
         url: `/pay-subscription`,
         data: { image: file },
       });
-      openToast({ message: "Bukti transfer berhasil diupload!", type: "success" });
+      openToast({
+        message: "Bukti transfer berhasil diupload!",
+        type: "success",
+      });
       setFile(null);
+      refetch();
     } catch (error) {
       console.error("Upload error:", error);
       openToast({ message: "Upload gagal, coba lagi.", type: "error" });
@@ -39,6 +45,38 @@ function CheckoutPage() {
   };
 
   const detail = payment?.data;
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
+
+  // Jika status waiting_verification, tampilkan pesan khusus
+  if (detail?.status === "waiting_verification") {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white">
+        <Navbar />
+        <main className="px-6 py-10 mx-auto max-w-screen-2xl">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <div className="max-w-md p-8 text-center bg-white shadow-lg dark:bg-gray-800 rounded-xl">
+              <div className="mb-4 text-6xl">⏳</div>
+              <h1 className="mb-4 text-2xl font-bold text-green-600 dark:text-green-400">
+                Pembayaran Berhasil!
+              </h1>
+              <p className="mb-6 text-gray-600 dark:text-gray-300">
+                Harap tunggu, pembayaran Anda sedang dalam proses verifikasi.
+              </p>
+              <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                  Tim kami akan memverifikasi pembayaran Anda dalam 1x24 jam.
+                  Anda akan mendapatkan notifikasi setelah verifikasi selesai.
+                </p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore } from "../../helper/store/global.store";
 import { useNavigate } from "react-router-dom";
@@ -18,8 +18,16 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const { data: dataSubscription } = useGET("/subscription");
 
   const plans = plansData?.data || [];
+
+  useEffect(() => {
+
+    if (dataSubscription?.data?.status === "expired") {
+      openToast("toast", true, "Langganan kamu sudah berakhir", "info");
+    }
+  }, [dataSubscription, openToast]);
 
   const handleSubscribe = async (planId) => {
     setIsProcessing(true);
@@ -31,11 +39,19 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
         return;
       }
 
+      // ✅ cek status subscription
+      if (dataSubscription?.data?.status === "active") {
+        openToast("toast", true, "Kamu sudah memiliki langganan aktif", "info");
+        return;
+      }
+      if (dataSubscription?.data?.status === "pending") {
+        openToast("toast", true, "Langganan kamu sedang diproses", "warning");
+        return;
+      }
+
       const res = await CheckoutMutation.mutateAsync({
         url: "/subscribe",
-        data: {
-          plan_id: planId.toString(),
-        },
+        data: { plan_id: planId.toString() },
       });
 
       if (res.status === 201 || res.status === 200) {
