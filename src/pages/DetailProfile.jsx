@@ -15,18 +15,24 @@ import ModalEditTwibonne from "../components/modal/ModalEditTwibonne.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
 import { useModalStore } from "../helper/store/modal.store.js";
+import CardCollections from "../components/cards/CardCollection.jsx";
 
 const DetailProfile = () => {
   const { t } = useTranslation();
   const { openToast } = useModalStore();
   const { data: profileData, isLoading, refetch } = useGET("my-profile");
 
-  // Fetch user posts data - ganti endpoint sesuai API Anda
   const {
     data: userPostsData,
     isLoading: postsLoading,
     refetch: refetchPosts,
-  } = useGET("/event-user-twibbons"); // Ganti dengan endpoint yang benar
+  } = useGET("/event-user-twibbons");
+
+  const {
+    data: userCollectionsData,
+    isLoading: collectionsLoading,
+    refetch: refetchCollections,
+  } = useGET("/bookmarks");
 
   const [viewMode, setViewMode] = useState("grid");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -46,7 +52,7 @@ const DetailProfile = () => {
   );
   const navigate = useNavigate();
 
-  // Updated data extraction based on new API structure
+  // Updated data extraction
   const userData = profileData?.data || {};
   const twibbonData = userData.my_event_twibbons || [];
   const supports = userData.supports || 0;
@@ -55,6 +61,24 @@ const DetailProfile = () => {
 
   // Extract posts data
   const userPosts = userPostsData?.data || [];
+
+  useEffect(() => {
+    // Kalau API balikin object { status: 403 }
+    if (
+      profileData?.status === 403 ||
+      userPostsData?.status === 403 ||
+      userCollectionsData?.status === 403
+    ) {
+      localStorage.clear();
+      openToast(
+        "toast",
+        true,
+        "Sesi telah berakhir. Silakan login kembali.",
+        "error"
+      );
+      navigate("/SignIn");
+    }
+  }, [profileData, userPostsData, userCollectionsData, navigate, openToast]);
 
   useEffect(() => {
     refetch();
@@ -66,7 +90,7 @@ const DetailProfile = () => {
   // Tentukan tabs berdasarkan role
   const availableTabs =
     role === "contributor"
-      ? [t("profile.campaign"), "Collections"]
+      ? [t("profile.campaign")]
       : role === "user"
       ? [t("profile.posts"), "Collections"]
       : [];
@@ -353,16 +377,40 @@ const DetailProfile = () => {
 
             {/* Collections Content */}
             {activeTab === "Collections" && (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
-                  <Trophy className="w-8 h-8 text-gray-400 dark:text-gray-500" />
-                </div>
-                <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-                  {t("profile.no_collections")}
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400">
-                  {t("profile.collections_will_appear")}
-                </p>
+              <div>
+                {collectionsLoading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <div className="w-8 h-8 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
+                  </div>
+                ) : userCollectionsData?.data?.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
+                      <Trophy className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
+                      {t("profile.no_collections")}
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      {t("profile.collections_will_appear")}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {userCollectionsData.data?.map((twibon) => (
+                      <CardCollections
+                        key={twibon.id}
+                        twibon={{
+                          id: twibon.event_twibbon?.id,
+                          title: twibon.event_twibbon?.title,
+                          author: twibon.event_twibbon?.author,
+                          supports: twibon.event_twibbon?.supports,
+                          slug: twibon.event_twibbon?.slug_event_twibbon,
+                          image: twibon.event_twibbon?.template_twibbon,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

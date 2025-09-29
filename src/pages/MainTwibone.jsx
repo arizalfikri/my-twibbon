@@ -19,11 +19,13 @@ import Footer from "../components/layoutpage/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import useImageStore from "../helper/store/imagestore";
 import DetailResult from "../components/modal/DetailResult";
-import { useGET } from "../services/api";
+import { useGET, usePOST } from "../services/api";
 import LoadingPage from "../components/layoutpage/LoadingPage";
 import useTwibbonStore from "../helper/store/TwiboneUser";
 import { useModalStore } from "../helper/store/modal.store";
 import NotFound from "./NotfoundPage";
+import ModalLogin from "../components/modal/modalLogin";
+import { useGlobalStore } from "../helper/store/global.store";
 
 function MainTwibone() {
   const { t } = useTranslation();
@@ -31,13 +33,17 @@ function MainTwibone() {
   const navigate = useNavigate();
   const { slug } = useParams();
   const { data: twibbon, isLoading, refetch } = useGET(`twibbon/${slug}`);
-  const { openToast } = useModalStore();
+  const { data: bookmark } = useGET(`bookmarks`);
 
+  const { openToast } = useModalStore();
+  const { token, role } = useGlobalStore();
+  const BookmarkMutation = usePOST(`/bookmark`);
   const [cards, setCards] = useState([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     refetch();
@@ -143,16 +149,34 @@ function MainTwibone() {
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
   };
-  const toggleBookmark = () => {
-    setBookmarked(!bookmarked);
-    openToast(
-      "toast",
-      true,
-      bookmarked ? t("main.bookmark_removed") : t("main.bookmark_added"),
-      "success"
-    );
-  };
+  const toggleBookmark = async () => {
+    if (!token || role !== "user") {
+      // Kalau belum login atau role bukan user → buka modal login
+      setShowLoginModal(true);
+      return;
+    }
 
+    try {
+      const response = await BookmarkMutation.mutateAsync({
+        url: "/bookmark",
+        data: {
+          event_twibbon_id: twibbon?.data?.id,
+        },
+      });
+
+      if (response?.status === 200) {
+        setBookmarked(!bookmarked);
+        openToast("toast", true, t("main.bookmark_success"), "success");
+      }
+    } catch (error) {
+      console.error("Bookmark error:", error);
+      openToast("toast", true, t("main.bookmark_failed"), "error");
+    }
+  };
+  const handleLoginSuccess = async () => {
+    setShowLoginModal(false);
+    await toggleBookmark();
+  };
   if (isLoading) return <LoadingPage />;
   if (!isLoading && !twibbon?.data) {
     return <NotFound />;
@@ -397,6 +421,13 @@ function MainTwibone() {
         </div>
       </div>
       <Footer />
+      {showLoginModal && (
+        <ModalLogin
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
     </div>
   );
 }
