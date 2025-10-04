@@ -19,7 +19,7 @@ import Footer from "../components/layoutpage/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import useImageStore from "../helper/store/imagestore";
 import DetailResult from "../components/modal/DetailResult";
-import { useGET, usePOST } from "../services/api";
+import { useGET, usePOST, useDELETE } from "../services/api";
 import LoadingPage from "../components/layoutpage/LoadingPage";
 import useTwibbonStore from "../helper/store/TwiboneUser";
 import { useModalStore } from "../helper/store/modal.store";
@@ -33,16 +33,18 @@ function MainTwibone() {
   const navigate = useNavigate();
   const { slug } = useParams();
   const { data: twibbon, isLoading, refetch } = useGET(`twibbon/${slug}`);
-  const { data: bookmark } = useGET(`bookmarks`);
+  const { data: bookmark, refetch: refetchBookmarks } = useGET(`bookmarks`);
 
   const { openToast } = useModalStore();
   const { token, role } = useGlobalStore();
   const BookmarkMutation = usePOST(`/bookmark`);
+  const DeleteBookmarkMutation = useDELETE(`/bookmark`);
   const [cards, setCards] = useState([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarkId, setBookmarkId] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
@@ -56,6 +58,15 @@ function MainTwibone() {
 
   useEffect(() => {
     if (twibbon?.data) {
+      // Set bookmark status dari response API twibbon
+      const isBookmarked =
+        twibbon.data.bookmark !== null &&
+        twibbon.data.bookmark !== undefined &&
+        typeof twibbon.data.bookmark === "object" &&
+        twibbon.data.bookmark.user_id;
+
+      setBookmarked(isBookmarked);
+
       useTwibbonStore.getState().setTwibbonData(twibbon.data);
       const baseURL = "https://api-twibbon-dev.digiduindo.com";
       const userCards = twibbon.data.user_twibbons.map((utw) => ({
@@ -71,6 +82,22 @@ function MainTwibone() {
       setCards(userCards);
     }
   }, [twibbon]);
+
+  // Effect untuk set bookmark ID dari list bookmarks
+  useEffect(() => {
+    if (bookmark?.data && twibbon?.data?.id) {
+      // Cari bookmark yang sesuai dengan event_twibbon_id saat ini
+      const currentBookmark = bookmark.data.find(
+        (bm) => bm.event_twibbon_id === twibbon.data.id
+      );
+
+      if (currentBookmark) {
+        setBookmarkId(currentBookmark.id);
+      } else {
+        setBookmarkId(null);
+      }
+    }
+  }, [bookmark, twibbon]);
 
   useEffect(() => {
     if (twibbon?.data?.template_twibbon) {
@@ -149,38 +176,80 @@ function MainTwibone() {
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
   };
+
   const toggleBookmark = async () => {
     if (!token || role !== "user") {
-      // Kalau belum login atau role bukan user → buka modal login
       setShowLoginModal(true);
       return;
     }
 
     try {
-      const response = await BookmarkMutation.mutateAsync({
-        url: "/bookmark",
-        data: {
-          event_twibbon_id: twibbon?.data?.id,
-        },
-      });
+      if (bookmarked && bookmarkId) {
+        const response = await DeleteBookmarkMutation.mutateAsync(
+          `/bookmark/${bookmarkId}`
+        );
 
-      if (response?.status === 200) {
-        setBookmarked(!bookmarked);
-        openToast("toast", true, t("main.bookmark_success"), "success");
+        if (response?.status === 200) {
+          setBookmarked(false);
+          setBookmarkId(null);
+
+          setTimeout(() => {
+            refetch();
+            refetchBookmarks();
+          }, 100);
+
+          openToast("toast", true, t("main.bookmark_removed"), "success");
+        }
+      } else {
+        const response = await BookmarkMutation.mutateAsync({
+          url: "/bookmark",
+          data: {
+            event_twibbon_id: twibbon?.data?.id,
+          },
+        });
+
+        if (response?.status === 200 || response?.status === 201) {
+          setBookmarked(true);
+
+          if (response?.data?.data?.id) {
+            setBookmarkId(response.data.data.id);
+          } else if (response?.data?.id) {
+            setBookmarkId(response.data.id);
+          }
+
+          setTimeout(() => {
+            refetch();
+            if (refetchBookmarks) {
+              refetchBookmarks();
+            }
+          }, 100);
+
+          openToast("toast", true, t("main.bookmark_success"), "success");
+        }
       }
     } catch (error) {
       console.error("Bookmark error:", error);
-      openToast("toast", true, t("main.bookmark_failed"), "error");
+
+      // Cek jika error 401 atau 403 (unauthorized/forbidden)
+      const status = error?.response?.status || error?.status;
+      if (status === 401 || status === 403) {
+        setShowLoginModal(true);
+        openToast("toast", true, t("main.please_login"), "warning");
+      } else {
+        openToast("toast", true, t("main.bookmark_failed"), "error");
+      }
     }
   };
+
   const handleLoginSuccess = async () => {
+    await Promise.all([refetch(), refetchBookmarks()]);
     setShowLoginModal(false);
-    await toggleBookmark();
   };
   if (isLoading) return <LoadingPage />;
   if (!isLoading && !twibbon?.data) {
     return <NotFound />;
   }
+
   const renderCards = (showAll = false) => {
     const slots = [];
     const displayCards = showAll ? cards : cards.slice(0, 9);
@@ -197,7 +266,6 @@ function MainTwibone() {
       );
     });
 
-    // Jika tidak showAll, tambahkan placeholder untuk slot kosong
     if (!showAll) {
       for (let i = displayCards.length; i < 9; i++) {
         slots.push(
