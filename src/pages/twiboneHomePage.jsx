@@ -34,9 +34,20 @@ import Reading from "../assets/images/Reading-Scroll.png";
 import S2O from "../assets/images/S2O-Scroll.png";
 
 const samplePhotos = [
-  [ASOE, Earth, Fk, IIS, IYPES,ASOE, Earth, Fk, IIS, IYPES],
-  [Kartini, Language, LOF6, Pahlawan, Pelajar,Kartini, Language, LOF6, Pahlawan, Pelajar],
-  [Pelajar2, PMI, Reading, S2O, ASOE,Pelajar2, PMI, Reading, S2O, ASOE],
+  [ASOE, Earth, Fk, IIS, IYPES, ASOE, Earth, Fk, IIS, IYPES],
+  [
+    Kartini,
+    Language,
+    LOF6,
+    Pahlawan,
+    Pelajar,
+    Kartini,
+    Language,
+    LOF6,
+    Pahlawan,
+    Pelajar,
+  ],
+  [Pelajar2, PMI, Reading, S2O, ASOE, Pelajar2, PMI, Reading, S2O, ASOE],
 ];
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -119,11 +130,7 @@ function TwiboneHomepage() {
           </div>
         </div>
         <div className="absolute bottom-0 w-full h-40 md:top-0 md:h-full md:-right-96">
-          <div
-            className="absolute inset-0 rotate-[-110deg] md:origin-center w-[120%] h-[120%]  md:left-[-10%] md:top-[-20%] left-[-40%]  top-[-0%]
-      
-    "
-          >
+          <div className="absolute inset-0 rotate-[-110deg] md:origin-center w-[120%] h-[120%]  md:left-[-10%] md:top-[-20%] left-[-40%]  top-[-30%] ">
             {/* === Row 1 === */}
             <Swiper
               modules={[Autoplay, FreeMode]}
@@ -222,8 +229,8 @@ function TwiboneHomepage() {
           </div>
         </div>
 
-        <div className="absolute md:hidden inset-0 bg-gradient-to-b from-[#4C0D68]/100 via-[#4C0D68]/95 to-transparent lg:from-[#4C0D68]/60 lg:via-transparent lg:to-transparent dark:from-[#3A0A51]/100 dark:via-[#3A0A51]/95 dark:lg:from-[#3A0A51]/60 pointer-events-none z-10"></div>
-        <div className="absolute hidden  md:block inset-0 bg-gradient-to-b from-[#4C0D68]/100 via-[#4C0D68]/95 to-transparent lg:from-[#4C0D68]/40 lg:via-transparent lg:to-transparent dark:from-[#3A0A51]/100 dark:via-[#3A0A51]/95 dark:lg:from-[#3A0A51]/40 pointer-events-none z-10"></div>
+        <div className="absolute md:hidden inset-0 bg-gradient-to-b from-[#4C0D68]/100 via-[#4C0D68]/100 to-transparent lg:from-[#4C0D68]/60 lg:via-transparent lg:to-transparent dark:from-[#3A0A51]/100 dark:via-[#3A0A51]/100 dark:lg:from-[#3A0A51]/60 pointer-events-none z-10"></div>
+        <div className="absolute hidden  nmd:block inset-0 bg-gradient-to-b from-[#4C0D68]/100 via-[#4C0D68]/95 to-transparent lg:from-[#4C0D68]/40 lg:via-transparent lg:to-transparent dark:from-[#3A0A51]/100 dark:via-[#3A0A51]/95 dark:lg:from-[#3A0A51]/40 pointer-events-none z-10"></div>
       </section>
 
       <main className="px-4 py-8 mx-auto max-w-screen-2xl">

@@ -14,6 +14,7 @@ export default function MembershipPage() {
   const { data, isLoading } = useGET("/plans");
   const { data: dataSubscription, refetch: refetchSubscription } =
     useGET("/subscription");
+  const { data: dataPayment, refetch: refetchPayment } = useGET("/payment");
   const [selectedPlan, setSelectedPlan] = useState(null);
   const navigate = useNavigate();
   const CheckoutMutation = usePOST("/subscribe");
@@ -51,18 +52,57 @@ export default function MembershipPage() {
       setShowLoginModal(true);
       return;
     }
-    const { data: newSub } = await refetchSubscription();
 
-    // cek subscription status terbaru
-    if (newSub?.data?.status === "active") {
+    // refetch data payment terbaru
+    const { data: newPayment } = await refetchPayment();
+    const paymentStatus = newPayment?.data?.status;
+    const paymentPlanId = newPayment?.data?.subscription?.plan_id;
+
+    if (paymentStatus === "active") {
       openToast("toast", true, "Kamu sudah memiliki langganan aktif", "info");
       return;
     }
-    if (newSub?.data?.status === "pending") {
-      openToast("toast", true, "Langganan kamu sedang diproses", "warning");
+
+    if (paymentStatus === "pending") {
+      if (paymentPlanId === selectedPlan.id) {
+        // plan sama → jangan post ulang, langsung redirect
+        openToast("toast", true, "Langganan kamu sedang diproses", "warning");
+        navigate("/checkout");
+        return;
+      } else {
+        // plan beda → bikin subscribe baru
+        setIsProcessing(true);
+        try {
+          const res = await CheckoutMutation.mutateAsync({
+            url: "/subscribe",
+            data: { plan_id: selectedPlan.id.toString() },
+          });
+
+          if (res.status === 201 || res.status === 200) {
+            openToast("toast", true, "Redirecting to checkout...", "success");
+            navigate("/checkout");
+          }
+        } catch (error) {
+          console.error("Subscription failed:", error);
+          openToast("toast", true, "Subscription failed", "error");
+        } finally {
+          setIsProcessing(false);
+        }
+        return;
+      }
+    }
+
+    if (paymentStatus === "waiting_verification") {
+      openToast(
+        "toast",
+        true,
+        "Menunggu verifikasi pembayaran kamu",
+        "warning"
+      );
       return;
     }
 
+    // kalau semua aman → bikin subscription baru
     setIsProcessing(true);
     try {
       const res = await CheckoutMutation.mutateAsync({
@@ -102,7 +142,7 @@ export default function MembershipPage() {
           data-aos="fade-up"
         >
           <span className="mt-16 text-sm">PRICING</span>
-          <span className="font-bold md:text-[72px] text-[32px] leading-none ">
+          <span className="font-bold md:text-[72px] text-[32px] leading-none mx-5">
             Find the right Premium plan for your need
           </span>
         </section>

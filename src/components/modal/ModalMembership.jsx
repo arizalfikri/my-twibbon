@@ -14,41 +14,89 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
   const { token, role } = useGlobalStore();
   const { openToast } = useModalStore();
   const CheckoutMutation = usePOST("/subscribe");
-  const { data: plansData, isLoading } = useGET("/plans");
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const { data: dataSubscription } = useGET("/subscription");
+
+  // API calls
+  const { data: plansData, isLoading } = useGET("/plans", {
+    enabled: isOpen,
+  });
+  const { data: dataSubscription } = useGET("/subscription", {
+    enabled: isOpen,
+  });
+  const { data: dataPayment, refetch: refetchPayment } = useGET("/payment", {
+    enabled: isOpen,
+  });
 
   const plans = plansData?.data || [];
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-
     if (dataSubscription?.data?.status === "expired") {
       openToast("toast", true, "Langganan kamu sudah berakhir", "info");
     }
   }, [dataSubscription, openToast]);
 
   const handleSubscribe = async (planId) => {
+    // cek login dulu
+    if (!token || role !== "user") {
+      openToast("toast", true, "Login Peserta Terlebih dahulu", "warning");
+      setSelectedPlanId(planId);
+      setShowLoginModal(true);
+      return;
+    }
+
+    // refetch data payment terbaru
+    const { data: newPayment } = await refetchPayment();
+    const paymentStatus = newPayment?.data?.status;
+    const paymentPlanId = newPayment?.data?.subscription?.plan_id;
+
+    if (paymentStatus === "active") {
+      openToast("toast", true, "Kamu sudah memiliki langganan aktif", "info");
+      return;
+    }
+
+    if (paymentStatus === "pending") {
+      if (paymentPlanId === planId) {
+        // plan sama → jangan post ulang, langsung redirect
+        openToast("toast", true, "Langganan kamu sedang diproses", "warning");
+        navigate("/checkout");
+        return;
+      } else {
+        // plan beda → bikin subscribe baru
+        setIsProcessing(true);
+        try {
+          const res = await CheckoutMutation.mutateAsync({
+            url: "/subscribe",
+            data: { plan_id: planId.toString() },
+          });
+
+          if (res.status === 201 || res.status === 200) {
+            openToast("toast", true, "Redirecting to checkout...", "success");
+            navigate("/checkout");
+          }
+        } catch (error) {
+          console.error("Subscription failed:", error);
+          openToast("toast", true, "Subscription failed", "error");
+        } finally {
+          setIsProcessing(false);
+        }
+        return;
+      }
+    }
+
+    if (paymentStatus === "waiting_verification") {
+      openToast(
+        "toast",
+        true,
+        "Pembayaranmu sedang menunggu verifikasi",
+        "warning"
+      );
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      if (!token || role !== "user") {
-        openToast("toast", true, "Login Peserta Terlebih dahulu", "warning");
-        setSelectedPlan(planId);
-        setShowLoginModal(true);
-        return;
-      }
-
-      // ✅ cek status subscription
-      if (dataSubscription?.data?.status === "active") {
-        openToast("toast", true, "Kamu sudah memiliki langganan aktif", "info");
-        return;
-      }
-      if (dataSubscription?.data?.status === "pending") {
-        openToast("toast", true, "Langganan kamu sedang diproses", "warning");
-        return;
-      }
-
       const res = await CheckoutMutation.mutateAsync({
         url: "/subscribe",
         data: { plan_id: planId.toString() },
@@ -59,13 +107,8 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
         navigate("/checkout");
       }
     } catch (error) {
-      console.error("Subscribe error:", error);
-      openToast(
-        "toast",
-        true,
-        "Subscription failed. Please try again.",
-        "error"
-      );
+      console.error("Subscription failed:", error);
+      openToast("toast", true, "Subscription failed", "error");
     } finally {
       setIsProcessing(false);
     }
@@ -73,18 +116,17 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
 
   const handleLoginSuccess = async () => {
     setShowLoginModal(false);
-    if (selectedPlan) {
-      await handleSubscribe(selectedPlan);
+    if (selectedPlanId) {
+      await handleSubscribe(selectedPlanId);
     }
   };
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("id-ID", {
+  const formatPrice = (price) =>
+    new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(price);
-  };
 
   const getPlanIcon = (name) => {
     switch (name.toLowerCase()) {
@@ -246,7 +288,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
           isOpen={showLoginModal}
           onClose={() => {
             setShowLoginModal(false);
-            setSelectedPlan(null);
+            setSelectedPlanId(null);
             setIsProcessing(false);
           }}
           onLoginSuccess={handleLoginSuccess}

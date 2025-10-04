@@ -71,10 +71,9 @@ function EditorPage() {
 
   return (
     <QueryClientProvider client={queryClient}>
-              <NavbarEditor title={twibbonData?.title} />
+      <NavbarEditor title={twibbonData?.title} />
 
       <div className="flex flex-col items-center justify-between min-h-screen bg-white dark:bg-gray-900 md:min-h-screen">
-
         {/* Mobile Layout */}
         <div className="flex flex-col flex-1 md:hidden">
           {/* CardEditor Area - Fixed Height with padding for fixed ControlPanel */}

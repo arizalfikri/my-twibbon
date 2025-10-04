@@ -19,10 +19,9 @@ import {
 import { useGlobalStore } from "../../helper/store/global.store";
 import ModalLogout from "../modal/ModalLogout";
 import { useThemeStore } from "../../helper/store/theme.store";
-import { useLanguageStore } from "../../helper/store/language.store";
+import { useTranslation } from "react-i18next";
 import FLAGID from "../../assets/images/indonesiaflag.png";
 import FLAGEN from "../../assets/images/amerikaflag.png";
-import { useTranslation } from "react-i18next";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -36,7 +35,6 @@ function Navbar() {
   const { theme, toggleTheme } = useThemeStore();
   const { t, i18n } = useTranslation();
 
-  // Sync search query with URL params when on explore page
   useEffect(() => {
     if (location.pathname === "/explore") {
       const searchFromUrl = searchParams.get("search");
@@ -48,13 +46,11 @@ function Navbar() {
     }
   }, [searchParams, location.pathname]);
 
-  // Handle logout button click - show modal instead of direct logout
   const handleLogoutClick = () => {
     setIsLogoutModalOpen(true);
     setIsSidebarOpen(false);
   };
 
-  // Handle mobile search mode toggle
   const handleMobileSearchToggle = () => {
     setIsMobileSearchMode(!isMobileSearchMode);
     if (isMobileSearchMode) {
@@ -62,7 +58,6 @@ function Navbar() {
     }
   };
 
-  // Handle cancel search mode
   const handleCancelSearch = () => {
     setIsMobileSearchMode(false);
     setSearchQuery("");
@@ -71,11 +66,9 @@ function Navbar() {
     }
   };
 
-  // Handle search functionality for mobile (form submit)
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Use simpler encoding for mobile to avoid %20
       const cleanQuery = searchQuery.trim().replace(/\s+/g, " ");
       navigate(`/explore?search=${cleanQuery}`);
       setIsMobileSearchMode(false);
@@ -85,12 +78,10 @@ function Navbar() {
     }
   };
 
-  // Handle search input change
   const handleSearchInputChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
 
-    // If on explore page and desktop, update URL in real-time with proper encoding
     if (location.pathname === "/explore" && window.innerWidth >= 768) {
       if (value.trim()) {
         setSearchParams({ search: value.trim() });
@@ -100,27 +91,22 @@ function Navbar() {
     }
   };
 
-  // Handle search key press for mobile
   const handleSearchKeyPress = (e) => {
     if (e.key === "Enter") {
       handleSearch(e);
     }
   };
 
-  // Handle desktop search submit (when user presses enter)
   const handleDesktopSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Use simpler encoding to avoid %20 display
       const cleanQuery = searchQuery.trim().replace(/\s+/g, " ");
       navigate(`/explore?search=${cleanQuery}`);
     } else if (location.pathname === "/explore") {
-      // Clear search params if empty and already on explore page
       setSearchParams({});
     }
   };
 
-  // Function to clear search
   const clearSearch = () => {
     setSearchQuery("");
     if (location.pathname === "/explore") {
@@ -138,7 +124,6 @@ function Navbar() {
       <nav className="bg-[#4C0D68] text-white py-5 relative z-40 dark:bg-gray-900 dark:border-b dark:border-gray-600">
         <div className="px-4 mx-auto max-w-screen-2xl">
           <div className="flex items-center justify-between">
-            {/* Mobile Search Mode */}
             {isMobileSearchMode ? (
               <div className="flex items-center w-full space-x-3 md:hidden">
                 <form onSubmit={handleSearch} className="relative flex-1">
@@ -167,7 +152,7 @@ function Navbar() {
               </div>
             ) : (
               <>
-                {/* Logo Section */}
+                {/* Logo */}
                 <Link to="/" className="flex items-center space-x-2">
                   <div className="flex items-center justify-center w-12 h-12 rounded">
                     <img
@@ -179,7 +164,7 @@ function Navbar() {
                   <span className="text-lg font-semibold">Gypem Twibone</span>
                 </Link>
 
-                {/* Desktop Search Bar */}
+                {/* Desktop Search */}
                 <div className="flex-1 hidden max-w-md mx-8 md:flex">
                   <form
                     onSubmit={handleDesktopSearch}
@@ -198,7 +183,6 @@ function Navbar() {
                     >
                       <Search className="w-4 h-4" />
                     </button>
-                    {/* Clear button - hanya muncul jika ada search query */}
                     {searchQuery && (
                       <button
                         type="button"
@@ -211,8 +195,8 @@ function Navbar() {
                   </form>
                 </div>
 
-                {/* Desktop Right Section */}
-                <div className="items-center hidden space-x-2 md:flex ">
+                {/* Desktop Right */}
+                <div className="items-center hidden space-x-2 md:flex">
                   <Link
                     to="/create"
                     className="bg-yellow-400 text-[#4C0D68] px-4 py-2 rounded-full font-semibold flex items-center space-x-2 hover:bg-yellow-300 transition-colors"
@@ -223,7 +207,7 @@ function Navbar() {
                     </span>
                     <span className="lg:hidden ">{t("add")}</span>
                   </Link>
-                  <button onClick={() => toggleLanguage()}>
+                  <button onClick={toggleLanguage}>
                     <img
                       src={i18n.language.startsWith("id") ? FLAGID : FLAGEN}
                       alt={i18n.language}
@@ -238,7 +222,7 @@ function Navbar() {
                   </button>
                 </div>
 
-                {/* Mobile Right Section */}
+                {/* Mobile Right */}
                 <div className="flex items-center space-x-2 md:hidden">
                   <button
                     onClick={handleMobileSearchToggle}
@@ -246,7 +230,7 @@ function Navbar() {
                   >
                     <Search className="w-5 h-5" />
                   </button>
-                  <button onClick={() => toggleLanguage()}>
+                  <button onClick={toggleLanguage}>
                     <img
                       src={i18n.language.startsWith("id") ? FLAGID : FLAGEN}
                       alt={i18n.language}
@@ -266,7 +250,7 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* Sidebar Overlay */}
+      {/* Overlay */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50"
@@ -274,11 +258,11 @@ function Navbar() {
         ></div>
       )}
 
-      {/* Unified Sidebar for both Desktop and Mobile */}
+      {/* Sidebar */}
       <div
         className={`fixed top-0 right-0 h-full md:w-80 w-screen bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 dark:bg-gray-800 ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        } flex flex-col`}
       >
         {/* Sidebar Header */}
         <div className="bg-[#4C0D68] text-white p-4 flex items-center justify-between dark:bg-gray-700">
@@ -291,15 +275,14 @@ function Navbar() {
           </button>
         </div>
 
-        {/* Sidebar Content */}
-        <div className="p-6">
-          {/* Authentication Section */}
+        {/* Sidebar Content - scrollable */}
+        <div className="flex-1 p-6 overflow-y-auto">
+          {/* Account */}
           <div className="mb-8 space-y-4">
             <h3 className="mb-4 text-sm font-medium tracking-wide text-gray-800 uppercase dark:text-gray-200">
               {t("account")}
             </h3>
 
-            {/* Login Button */}
             {token && fullname && role ? (
               <Link
                 to="/DetailProfile"
@@ -331,7 +314,7 @@ function Navbar() {
                   <span>Login</span>
                 </button>
                 <button
-                  className="w-full bg-yellow-400  text-[#4C0D68] px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors"
+                  className="w-full bg-yellow-400 text-[#4C0D68] px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors"
                   onClick={() => {
                     navigate("/SignUp");
                     setIsSidebarOpen(false);
@@ -344,11 +327,10 @@ function Navbar() {
             )}
           </div>
 
-          {/* Divider */}
           <div className="mb-6 border-t border-gray-200 dark:border-gray-600"></div>
 
-          {/* Navigation List */}
-          <ul className="space-y-3 ">
+          {/* Navigation */}
+          <ul className="space-y-3">
             <li>
               <Link
                 to="/explore"
@@ -373,18 +355,15 @@ function Navbar() {
                 className="bg-yellow-400 text-[#4C0D68] px-4 py-2 rounded-full font-semibold flex items-center space-x-2 hover:bg-yellow-300 transition-colors md:hidden mb-5"
               >
                 <Plus className="w-4 h-4" />
-                <span className="hidden capitalize lg:inline">
-                  {t("add_twibone")}
-                </span>
-                <span className="lg:hidden ">{t("add")}</span>
+                <span>{t("add_twibone")}</span>
               </Link>
             </li>
           </ul>
         </div>
 
         {/* Sidebar Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 space-y-4 border-t border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700">
-          {/* Theme Toggle Section */}
+        <div className="p-4 mt-auto space-y-4 border-t border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700">
+          {/* Theme Toggle */}
           <div className="mb-6 space-y-4">
             <h3 className="mb-4 text-sm font-medium tracking-wide text-gray-800 uppercase dark:text-gray-200">
               {t("theme")}
@@ -410,6 +389,7 @@ function Navbar() {
               </div>
             </button>
           </div>
+
           <div className="mb-6 border-t border-gray-200 dark:border-gray-600"></div>
 
           <div className="flex items-center space-x-2">
@@ -428,7 +408,6 @@ function Navbar() {
             </div>
           </div>
 
-          {/* Logout Button in Sidebar Footer */}
           {token && fullname && role && (
             <button
               onClick={handleLogoutClick}
@@ -440,7 +419,6 @@ function Navbar() {
         </div>
       </div>
 
-      {/* ModalLogout Component */}
       <ModalLogout
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}

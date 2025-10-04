@@ -43,7 +43,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   const { data: infoUser } = useGET(
     id_user_twibbons ? `event-user-twibbon/${id_user_twibbons}` : null,
     {
-      enabled: isOpen && !!id_user_twibbons, // fetch hanya kalau modal kebuka
+      enabled: isOpen && !!id_user_twibbons, 
     }
   );
 
@@ -54,7 +54,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   } = useGET(
     id_user_twibbons ? `twibbon/user/${id_user_twibbons}/comments` : null,
     {
-      enabled: isOpen && !!id_user_twibbons, // fetch hanya kalau modal kebuka
+      enabled: isOpen && !!id_user_twibbons, 
     }
   );
 

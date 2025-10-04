@@ -11,6 +11,10 @@ function CheckoutPage() {
   const uploadProof = usePOST();
   const navigate = useNavigate();
   const { openToast } = useModalStore();
+  
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   // cek apakah ada data payment
   useEffect(() => {

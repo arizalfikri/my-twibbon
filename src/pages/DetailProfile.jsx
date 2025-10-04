@@ -16,6 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
 import { useModalStore } from "../helper/store/modal.store.js";
 import CardCollections from "../components/cards/CardCollection.jsx";
+import ModalDeleteCollection from "../components/modal/ModalDeleteCollection.jsx";
 
 const DetailProfile = () => {
   const { t } = useTranslation();
@@ -43,9 +44,12 @@ const DetailProfile = () => {
   // States untuk posts
   const [showDeletePostModal, setShowDeletePostModal] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
+  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
   const [showPostDetailModal, setShowPostDetailModal] = useState(false);
   const [selectedPostData, setSelectedPostData] = useState(null);
 
+  const [showDeleteCollectionModal, setShowDeleteCollectionModal] =
+    useState(false);
   const { email, token, fullname, role } = useGlobalStore();
   const [activeTab, setActiveTab] = useState(
     role === "contributor" ? "Campaign" : "Posts"
@@ -61,13 +65,18 @@ const DetailProfile = () => {
 
   // Extract posts data
   const userPosts = userPostsData?.data || [];
-  
+
   useEffect(() => {
-    if (
-      profileData?.status === 403 &&
-      userPostsData?.status === 403 &&
-      userCollectionsData?.status === 403
-    ) {
+    const isProfileError =
+      profileData?.status === 401 || profileData?.status === 403;
+    const isPostsError =
+      userPostsData?.status === 401 || userPostsData?.status === 403;
+    const isCollectionsError =
+      userCollectionsData?.status === 401 ||
+      userCollectionsData?.status === 403;
+
+    // Jika semua error (401/403)
+    if (isProfileError && isPostsError && isCollectionsError) {
       localStorage.clear();
       openToast(
         "toast",
@@ -140,6 +149,11 @@ const DetailProfile = () => {
     setShowDeletePostModal(true);
   };
 
+  const handleCollectionDelete = (collectionId) => {
+    setSelectedCollectionId(collectionId);
+    setShowDeleteCollectionModal(true);
+  };
+
   const handlePostShare = (post) => {
     // Handle share functionality
     if (navigator.share) {
@@ -176,6 +190,13 @@ const DetailProfile = () => {
     setSelectedPostId(null);
     refetchPosts();
     openToast("toast", true, t("main.post_deleted_successfully"), "success");
+  };
+
+  const handleCollectionDeleteSuccess = () => {
+    setShowDeleteCollectionModal(false);
+    setSelectedCollectionId(null);
+    refetchCollections();
+    openToast("toast", true, t("profile.collection_deleted"), "success");
   };
 
   return (
@@ -398,14 +419,16 @@ const DetailProfile = () => {
                     {userCollectionsData.data?.map((twibon) => (
                       <CardCollections
                         key={twibon.id}
+                        collectionId={twibon.id}
                         twibon={{
-                          id: twibon.event_twibbon?.id,
+                          id: twibon.id,
                           title: twibon.event_twibbon?.title,
                           author: twibon.event_twibbon?.author,
                           supports: twibon.event_twibbon?.supports,
                           slug: twibon.event_twibbon?.slug_event_twibbon,
                           image: twibon.event_twibbon?.template_twibbon,
                         }}
+                        onDelete={handleCollectionDelete}
                       />
                     ))}
                   </div>
@@ -437,7 +460,7 @@ const DetailProfile = () => {
         itemData={selectedItemData}
       />
 
-      {/* Post Delete Modal - Anda perlu membuat ini */}
+      {/* Post Delete Modal = */}
       <ModalDeletePost
         visible={showDeletePostModal}
         onClose={() => {
@@ -446,6 +469,15 @@ const DetailProfile = () => {
         }}
         onDeleteSuccess={handlePostDeleteSuccess}
         postId={selectedPostId}
+      />
+      <ModalDeleteCollection
+        visible={showDeleteCollectionModal}
+        onClose={() => {
+          setShowDeleteCollectionModal(false);
+          setSelectedCollectionId(null);
+        }}
+        onDeleteSuccess={handleCollectionDeleteSuccess}
+        collectionId={selectedCollectionId}
       />
 
       {/* Post Detail Modal */}

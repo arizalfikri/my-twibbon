@@ -4,8 +4,10 @@ import { LogOut, X, AlertTriangle } from "lucide-react";
 import { useGlobalStore } from "../../helper/store/global.store";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 
 function ModalLogout({ isOpen, onClose }) {
+  const queryClient = useQueryClient();
   const { setToken, setEmail, setFullName, setRole } = useGlobalStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -19,6 +21,8 @@ function ModalLogout({ isOpen, onClose }) {
     setEmail(null);
     setFullName(null);
     setRole(null);
+
+    queryClient.removeQueries();
 
     onClose();
     navigate("/");

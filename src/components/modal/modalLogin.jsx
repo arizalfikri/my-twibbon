@@ -10,8 +10,10 @@ import { useForm } from "react-hook-form";
 import InputPassword from "../FormControl/InputPassword";
 import InputWithLabel from "../FormControl/InputWithLabel";
 import { InputType } from "../FormControl";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -48,6 +50,7 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
         setFullName(response.data.user.fullname);
         setRole(response.data.user.role);
         openToast("toast", true, t("auth.login_successful"), "success");
+        queryClient.removeQueries();
 
         onClose();
       }

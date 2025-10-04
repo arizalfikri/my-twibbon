@@ -13,20 +13,30 @@ import { InputType } from "../components/FormControl";
 import InputPassword from "../components/FormControl/InputPassword";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signInSchema } from "../helper/yup/index";
+import { useQueryClient } from "@tanstack/react-query";
 
 const SignIn = () => {
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [selectedRole, setSelectedRole] = useState(null);
   const { openToast } = useModalStore();
-  const token = localStorage.getItem("token");
-  const { setEmail, setToken, setFullName, setRole } = useGlobalStore();
+  const {
+    setEmail,
+    setToken,
+    setFullName,
+    setRole,
+    email,
+    token,
+    fullname,
+    role,
+  } = useGlobalStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token) {
+    if (email && token && fullname && role) {
       navigate("/");
     }
-  }, [token, navigate]);
+  }, [email, token, fullname, role, navigate]);
 
   // Setup API hooks untuk kedua endpoint
   const contributorLogin = usePOST("/auth/login");
@@ -63,6 +73,8 @@ const SignIn = () => {
         setEmail(response.data.email);
         setFullName(response.data.user.fullname);
         setRole(response.data.user.role);
+        queryClient.removeQueries();
+
         navigate("/");
       }
     } catch (error) {
@@ -92,7 +104,6 @@ const SignIn = () => {
             src={LoginImage}
             alt={t("auth.login")}
           />
-          
 
           <div className="flex flex-col justify-center col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
             <a href="/">
