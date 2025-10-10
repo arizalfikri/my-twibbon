@@ -311,7 +311,7 @@ function Navbar() {
                   }}
                 >
                   <User className="w-5 h-5" />
-                  <span>Login</span>
+                  <span>Sign In</span>
                 </button>
                 <button
                   className="w-full bg-yellow-400 text-[#4C0D68] px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors"
@@ -321,7 +321,7 @@ function Navbar() {
                   }}
                 >
                   <User className="w-5 h-5" />
-                  <span>Daftar Kontributor</span>
+                  <span>Sign Up Kontributor</span>
                 </button>
               </>
             )}

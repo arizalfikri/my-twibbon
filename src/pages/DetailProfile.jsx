@@ -75,16 +75,28 @@ const DetailProfile = () => {
       userCollectionsData?.status === 401 ||
       userCollectionsData?.status === 403;
 
-    // Jika semua error (401/403)
     if (isProfileError && isPostsError && isCollectionsError) {
+      const { setEmail, setToken, setFullName, setRole } =
+        useGlobalStore.getState();
+      setEmail(null);
+      setToken(null);
+      setFullName(null);
+      setRole(null);
+
       localStorage.clear();
+
+      window.dispatchEvent(new Event("storage"));
+
       openToast(
         "toast",
         true,
         "Sesi telah berakhir. Silakan login kembali.",
         "error"
       );
-      navigate("/SignIn");
+
+      setTimeout(() => {
+        navigate("/SignIn", { replace: true }); 
+      }, 1000);
     }
   }, [profileData, userPostsData, userCollectionsData, navigate, openToast]);
 
