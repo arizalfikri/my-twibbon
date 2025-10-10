@@ -63,11 +63,11 @@
     },
     "form": {
       "campaign_title": "Judul Kampanye",
-      "title_placeholder": "Dapat berupa angka, alfabet atau karakter spesial",
-      "caption": "Caption",
-      "caption_placeholder": "Bagikan rincian tentang kampanyemu untuk menarik dukungan",
-      "campaign_link": "Link Kampanye",
-      "link_placeholder": "link-kampanye"
+      "title_placeholder": "Masukkan judul kampanye",
+      "caption": "Deskripsi",
+      "caption_placeholder": "Tulis deskripsi singkat tentang kampanye Anda",
+      "campaign_link": "Tautan Kampanye",
+      "link_placeholder": "Masukkan tautan unik untuk kampanye"
     },
     "buttons": {
       "back": "Kembali",
@@ -76,11 +76,11 @@
       "saving": "Menyimpan..."
     },
     "errors": {
-      "duplicate_title": "Judul sudah digunakan oleh kampanye lain",
-      "duplicate_link": "Link kampanye sudah digunakan",
-      "contributor_required": "Anda Harus Menjadi Kontributor.",
-      "data_already_used": "Data sudah digunakan",
-      "server_error": "Kesalahan Server"
+      "duplicate_title": "Judul kampanye sudah digunakan.",
+      "duplicate_link": "Tautan kampanye sudah digunakan.",
+      "contributor_required": "Anda harus login sebagai kontributor untuk membuat Twibone.",
+      "data_already_used": "Data sudah digunakan.",
+      "server_error": "Terjadi kesalahan pada server. Silakan coba lagi nanti."
     }
   },
   "main": {
@@ -91,7 +91,9 @@
     "no_title": "Belum Ada Title",
     "supporters": "Pendukung",
     "copy_success": "Berhasil disalin!",
-    "view_all_images": "Lihat semua gambar"
+    "view_all_images": "Lihat semua gambar",
+    "share": "Bagikan",
+    "delete": "Hapus"
   },
   "common": {
     "logo": "Logo",
@@ -288,11 +290,18 @@
     }
   },
   "modaldeletetwibbone": {
-    "title": "Delete Twibone",
-    "message": "Are you sure you want to delete this Twibone?",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "deleting": "Deleting..."
+    "title": "Hapus Twibone",
+    "message": "Apakah kamu yakin ingin menghapus Twibone ini?",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "deleting": "Menghapus..."
+  },
+  "modaldeletecollection": {
+    "title": "Hapus Koleksi",
+    "message": "Apakah kamu yakin ingin menghapus koleksi ini?",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "deleting": "Menghapus..."
   },
   "modaldeletecomment": {
     "title": "Hapus Komentar",
@@ -408,5 +417,57 @@
     "create_desc": "Mulai membuat twibbon baru",
     "help_text": "Jika Anda yakin ini adalah kesalahan, silakan",
     "contact_support": "hubungi dukungan"
+  },
+  "camera": {
+    "takePhoto": "Ambil Foto",
+    "previewPhoto": "Preview Foto",
+    "capturedAlt": "Foto yang diambil",
+    "retake": "Ulangi",
+    "usePhoto": "Gunakan Foto",
+    "switchCamera": "Ganti Kamera"
+  },
+  "checkout": {
+    "title": "Upgrade ke Premium Supporter",
+    "subtitle": "Kumpulkan pendukungmu dan kembangkan kampanye dengan fitur eksklusif kami.",
+    "premium_title": "Premium Supporter",
+    "feature_remove_watermark": "Hapus Watermark",
+    "feature_no_ads": "Tanpa Iklan",
+    "detail_title": "Detail Pendaftaran",
+    "total": "Total",
+    "duration": "Durasi",
+    "days": "hari",
+    "status": "Status",
+    "expired_at": "Berakhir pada",
+    "upload_label": "Upload Bukti Transfer",
+    "upload_button": "Upload Bukti Transfer →",
+    "uploading": "Mengunggah...",
+    "file_selected": "File dipilih",
+    "no_file": "Pilih file terlebih dahulu.",
+    "upload_success": "Bukti transfer berhasil diupload!",
+    "upload_fail": "Upload gagal, coba lagi.",
+    "no_payment": "Kamu belum punya pembayaran aktif, silakan pilih membership dulu.",
+    "payment_success": "Pembayaran Berhasil!",
+    "waiting_verification": "Harap tunggu, pembayaran Anda sedang dalam proses verifikasi.",
+    "verification_notice": "Tim kami akan memverifikasi pembayaran Anda dalam 1x24 jam. Anda akan mendapatkan notifikasi setelah verifikasi selesai."
+  },
+  "membership": {
+    "pricing": "HARGA",
+    "title": "Pilih paket Premium sesuai kebutuhan",
+
+    "plan_premium": "Premium",
+    "plan_supporter": "Supporter",
+    "desc": "Untuk kamu yang ingin lebih banyak fitur di Twibbonize",
+    "remove_watermark": "Hapus Watermark",
+    "no_extra_features": "Belum ada fitur tambahan lainnya",
+    "on_your_account": "pada akunmu sendiri",
+    "for_days": "selama {{days}} hari",
+    "processing": "Sedang diproses...",
+    "upgrade_button": "Upgrade →",
+    "login_warning": "Silakan login sebagai peserta terlebih dahulu",
+    "active_subscription": "Kamu sudah memiliki langganan aktif",
+    "processing_subscription": "Langganan kamu sedang diproses",
+    "waiting_verification": "Menunggu verifikasi pembayaran kamu",
+    "subscribe_failed": "Langganan gagal, coba lagi",
+    "redirecting_checkout": "Mengalihkan ke halaman checkout..."
   }
 }

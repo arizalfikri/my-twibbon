@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { TrendingUp, User, Edit2, MoreVertical, Trash2 } from "lucide-react";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const CardProfile = ({ twibon, isGrid = true, onEdit, onDelete }) => {
+  const {t}=useTranslation()
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
 
   const handleEdit = (e) => {

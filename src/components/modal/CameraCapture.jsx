@@ -1,9 +1,11 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { X, RotateCcw, Download, Camera } from "lucide-react";
 import Webcam from "react-webcam";
+import { useTranslation } from "react-i18next";
 
 const CameraCapture = ({ onCapture, onClose }) => {
   const webcamRef = useRef(null);
+  const { t } = useTranslation();
   const [capturedImage, setCapturedImage] = useState(null);
   const [facingMode, setFacingMode] = useState("user");
 
@@ -83,14 +85,14 @@ const CameraCapture = ({ onCapture, onClose }) => {
               className="flex items-center gap-2 px-6 py-3 text-white transition-colors bg-gray-600 rounded-lg hover:bg-gray-700"
             >
               <RotateCcw size={20} />
-              Ulangi
+              {t("camera.retake")}
             </button>
             <button
               onClick={confirmPhoto}
               className="flex items-center gap-2 px-6 py-3 text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
             >
               <Download size={20} />
-              Gunakan Foto
+              {t("camera.usePhoto")}
             </button>
           </div>
         ) : (
@@ -100,7 +102,7 @@ const CameraCapture = ({ onCapture, onClose }) => {
               <button
                 onClick={switchCamera}
                 className="p-3 text-white transition-colors bg-gray-600 rounded-full hover:bg-gray-700"
-                title="Ganti Kamera"
+                title={t("camera.switchCamera")}
               >
                 <RotateCcw size={20} />
               </button>

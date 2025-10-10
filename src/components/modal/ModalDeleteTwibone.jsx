@@ -46,7 +46,7 @@ export default function ModalDeleteTwibone({
             disabled={deleteMutation.isPending}
             className="bg-white border-2 border-[#E8121F] text-black px-10 md:px-20 lg:px-20 py-3 items-center rounded-lg mt-6 font-semibold disabled:opacity-50"
           >
-            Batal
+            {t("modaldeletetwibbone.cancel")}
           </button>
           <button
             onClick={handleDelete}

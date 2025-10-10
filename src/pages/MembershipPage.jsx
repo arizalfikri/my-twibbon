@@ -9,25 +9,22 @@ import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
 import ModalLogin from "../components/modal/modalLogin";
 import LoadingPage from "../components/layoutpage/LoadingPage";
+import { useTranslation } from "react-i18next";
 
 export default function MembershipPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useGET("/plans");
-  const { data: dataSubscription, refetch: refetchSubscription } =
-    useGET("/subscription");
-  const { data: dataPayment, refetch: refetchPayment } = useGET("/payment");
+  const { refetch: refetchPayment } = useGET("/payment");
   const [selectedPlan, setSelectedPlan] = useState(null);
   const navigate = useNavigate();
   const CheckoutMutation = usePOST("/subscribe");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // ambil auth
   const { token, role } = useGlobalStore();
   const { openToast } = useModalStore();
 
-  // modal login
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  // default pilih plan pertama
   useEffect(() => {
     if (data?.data?.length > 0 && !selectedPlan) {
       setSelectedPlan(data.data[0]);
@@ -35,42 +32,34 @@ export default function MembershipPage() {
   }, [data, selectedPlan]);
 
   useEffect(() => {
-    AOS.init({
-      duration: 800,
-      offset: 100,
-      easing: "ease-in-out",
-    });
+    AOS.init({ duration: 800, offset: 100, easing: "ease-in-out" });
     AOS.refresh();
   }, []);
 
   const handleSubscribe = async () => {
     if (!selectedPlan) return;
 
-    // cek login dulu
     if (!token || role !== "user") {
-      openToast("toast", true, "Login Peserta Terlebih dahulu", "warning");
+      openToast("toast", true, t("membership.login_warning"), "warning");
       setShowLoginModal(true);
       return;
     }
 
-    // refetch data payment terbaru
     const { data: newPayment } = await refetchPayment();
     const paymentStatus = newPayment?.data?.status;
     const paymentPlanId = newPayment?.data?.subscription?.plan_id;
 
     if (paymentStatus === "active") {
-      openToast("toast", true, "Kamu sudah memiliki langganan aktif", "info");
+      openToast("toast", true, t("membership.active_subscription"), "info");
       return;
     }
 
     if (paymentStatus === "pending") {
       if (paymentPlanId === selectedPlan.id) {
-        // plan sama → jangan post ulang, langsung redirect
-        openToast("toast", true, "Langganan kamu sedang diproses", "warning");
+        openToast("toast", true, t("membership.processing_subscription"), "warning");
         navigate("/checkout");
         return;
       } else {
-        // plan beda → bikin subscribe baru
         setIsProcessing(true);
         try {
           const res = await CheckoutMutation.mutateAsync({
@@ -79,12 +68,12 @@ export default function MembershipPage() {
           });
 
           if (res.status === 201 || res.status === 200) {
-            openToast("toast", true, "Redirecting to checkout...", "success");
+            openToast("toast", true, t("membership.redirecting_checkout"), "success");
             navigate("/checkout");
           }
         } catch (error) {
           console.error("Subscription failed:", error);
-          openToast("toast", true, "Subscription failed", "error");
+          openToast("toast", true, t("membership.subscribe_failed"), "error");
         } finally {
           setIsProcessing(false);
         }
@@ -93,16 +82,10 @@ export default function MembershipPage() {
     }
 
     if (paymentStatus === "waiting_verification") {
-      openToast(
-        "toast",
-        true,
-        "Menunggu verifikasi pembayaran kamu",
-        "warning"
-      );
+      openToast("toast", true, t("membership.waiting_verification"), "warning");
       return;
     }
 
-    // kalau semua aman → bikin subscription baru
     setIsProcessing(true);
     try {
       const res = await CheckoutMutation.mutateAsync({
@@ -111,12 +94,12 @@ export default function MembershipPage() {
       });
 
       if (res.status === 201 || res.status === 200) {
-        openToast("toast", true, "Redirecting to checkout...", "success");
+        openToast("toast", true, t("membership.redirecting_checkout"), "success");
         navigate("/checkout");
       }
     } catch (error) {
       console.error("Subscription failed:", error);
-      openToast("toast", true, "Subscription failed", "error");
+      openToast("toast", true, t("membership.subscribe_failed"), "error");
     } finally {
       setIsProcessing(false);
     }
@@ -124,13 +107,11 @@ export default function MembershipPage() {
 
   const handleLoginSuccess = async () => {
     setShowLoginModal(false);
-
     await handleSubscribe();
   };
 
-  if (isLoading) {
-    return <LoadingPage />;
-  }
+  if (isLoading) return <LoadingPage />;
+
   return (
     <>
       <Navbar />
@@ -141,9 +122,9 @@ export default function MembershipPage() {
           className="flex flex-col items-center max-w-2xl mb-1 text-center text-white"
           data-aos="fade-up"
         >
-          <span className="mt-16 text-sm">PRICING</span>
+          <span className="mt-16 text-sm">{t("membership.pricing")}</span>
           <span className="font-bold md:text-[72px] text-[32px] leading-none mx-5">
-            Find the right Premium plan for your need
+            {t("membership.title")}
           </span>
         </section>
 
@@ -152,12 +133,12 @@ export default function MembershipPage() {
           <div className="bg-gradient-to-br from-[#11cefe] to-[#7ecd67] text-white">
             <div className="p-6 text-center">
               <p className="text-xs tracking-widest uppercase opacity-90">
-                Premium
+                {t("membership.plan_premium")}
               </p>
-              <h2 className="mt-1 text-3xl font-bold">Supporter</h2>
-              <p className="mt-1 text-sm opacity-90">
-                For people who want more out of Twibbonize
-              </p>
+              <h2 className="mt-1 text-3xl font-bold">
+                {t("membership.plan_supporter")}
+              </h2>
+              <p className="mt-1 text-sm opacity-90">{t("membership.desc")}</p>
             </div>
 
             {/* Toggle plan */}
@@ -187,7 +168,7 @@ export default function MembershipPage() {
                   Rp {selectedPlan.price.toLocaleString("id-ID")}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  for {selectedPlan.duration_days} days
+                  {t("membership.for_days", { days: selectedPlan.duration_days })}
                 </p>
               </div>
             )}
@@ -204,16 +185,16 @@ export default function MembershipPage() {
                 loop
                 playsInline
               />
-              <p className="font-semibold">Remove Watermark</p>
+              <p className="font-semibold">{t("membership.remove_watermark")}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                on your own account
+                {t("membership.on_your_account")}
               </p>
             </div>
 
             <div className="flex flex-col items-center p-4 text-center bg-gray-100 shadow-sm dark:bg-black/40 rounded-xl">
               <p className="text-3xl">😔</p>
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                No Extra Features available
+                {t("membership.no_extra_features")}
               </p>
             </div>
           </div>
@@ -225,7 +206,7 @@ export default function MembershipPage() {
               disabled={isProcessing}
               className="block w-full py-3 font-semibold text-center text-white transition bg-black rounded-full hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 disabled:opacity-50"
             >
-              {isProcessing ? "Processing..." : "Upgrade →"}
+              {isProcessing ? t("membership.processing") : t("membership.upgrade_button")}
             </button>
           </div>
         </div>
@@ -233,7 +214,6 @@ export default function MembershipPage() {
 
       <Footer />
 
-      {/* Modal login muncul kalau belum login */}
       {showLoginModal && (
         <ModalLogin
           isOpen={showLoginModal}

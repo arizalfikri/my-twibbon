@@ -63,11 +63,11 @@
     },
     "form": {
       "campaign_title": "Campaign Title",
-      "title_placeholder": "Can contain numbers, alphabets or special characters",
-      "caption": "Caption",
-      "caption_placeholder": "Share details about your campaign to attract support",
+      "title_placeholder": "Enter your campaign title",
+      "caption": "Description",
+      "caption_placeholder": "Write a short description about your campaign",
       "campaign_link": "Campaign Link",
-      "link_placeholder": "campaign-link"
+      "link_placeholder": "Enter a unique link for the campaign"
     },
     "buttons": {
       "back": "Back",
@@ -76,11 +76,11 @@
       "saving": "Saving..."
     },
     "errors": {
-      "duplicate_title": "Title is already used by another campaign",
-      "duplicate_link": "Campaign link is already used",
-      "contributor_required": "You Must Be a Contributor.",
-      "data_already_used": "Data already used",
-      "server_error": "Server Error"
+      "duplicate_title": "This campaign title is already in use.",
+      "duplicate_link": "This campaign link is already in use.",
+      "contributor_required": "You must be logged in as a contributor to create a Twibone.",
+      "data_already_used": "Data is already used.",
+      "server_error": "A server error occurred. Please try again later."
     }
   },
   "main": {
@@ -91,7 +91,9 @@
     "no_title": "No Title Available",
     "supporters": "Supporters",
     "copy_success": "Successfully copied!",
-    "view_all_images": "View all images"
+    "view_all_images": "View all images",
+    "share": "Share",
+    "delete": "Delete"
   },
   "common": {
     "logo": "Logo",
@@ -293,6 +295,13 @@
     "delete": "Delete",
     "deleting": "Deleting..."
   },
+  "modaldeletecollection": {
+    "title": "Delete Collection",
+    "message": "Are you sure you want to delete this collection?",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting..."
+  },
   "modaldeletecomment": {
     "title": "Delete Comment",
     "message": "Are you sure you want to delete this comment?",
@@ -406,5 +415,55 @@
     "create_desc": "Start creating a new twibbon",
     "help_text": "If you believe this is a mistake, please",
     "contact_support": "contact support"
+  },
+  "camera": {
+    "takePhoto": "Take Photo",
+    "previewPhoto": "Preview Photo",
+    "capturedAlt": "Captured photo",
+    "retake": "Retake",
+    "usePhoto": "Use Photo",
+    "switchCamera": "Switch Camera"
+  },
+  "checkout": {
+    "title": "Upgrade to Premium Supporter",
+    "subtitle": "Gather your supporters and scale up your campaign with our exclusive features.",
+    "premium_title": "Premium Supporter",
+    "feature_remove_watermark": "Remove Watermark",
+    "feature_no_ads": "No Ads",
+    "detail_title": "Registration Details",
+    "total": "Total",
+    "duration": "Duration",
+    "days": "days",
+    "status": "Status",
+    "expired_at": "Expired At",
+    "upload_label": "Upload Proof of Transfer",
+    "upload_button": "Upload Proof of Transfer →",
+    "uploading": "Uploading...",
+    "file_selected": "Selected file",
+    "no_file": "Please select a file first.",
+    "upload_success": "Proof of transfer uploaded successfully!",
+    "upload_fail": "Upload failed, please try again.",
+    "no_payment": "You don't have any active payment yet. Please choose a membership first.",
+    "payment_success": "Payment Successful!",
+    "waiting_verification": "Please wait, your payment is being verified.",
+    "verification_notice": "Our team will verify your payment within 24 hours. You'll receive a notification once it's completed."
+  }, "membership": {
+    "pricing": "PRICING",
+    "title": "Find the right Premium plan for your need",
+    "plan_premium": "Premium",
+    "plan_supporter": "Supporter",
+    "desc": "For people who want more out of Twibbonize",
+    "remove_watermark": "Remove Watermark",
+    "no_extra_features": "No Extra Features available",
+    "on_your_account": "on your own account",
+    "for_days": "for {{days}} days",
+    "processing": "Processing...",
+    "upgrade_button": "Upgrade →",
+    "login_warning": "Please login as participant first",
+    "active_subscription": "You already have an active subscription",
+    "processing_subscription": "Your subscription is being processed",
+    "waiting_verification": "Waiting for payment verification",
+    "subscribe_failed": "Subscription failed",
+    "redirecting_checkout": "Redirecting to checkout..."
   }
 }
