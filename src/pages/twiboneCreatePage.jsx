@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import NavbarEditor from "../components/layoutpage/NavbarEditor";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
 import ImageUploadArea from "../components/uploadArea/ImageUploadArea";
@@ -309,25 +309,8 @@ function TwiboneCreatePage() {
                   >
                     {isPending ? (
                       <span className="flex items-center">
-                        <svg
-                          className="w-5 h-5 mr-2 text-white animate-spin"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8v4l3.5-3.5L12 0v4a8 8 0 018 8z"
-                          ></path>
-                        </svg>
+                        <Loader2 size={20} className="animate-spin" />
+
                         {t("create.buttons.saving")}
                       </span>
                     ) : currentStep === totalSteps - 1 ? (

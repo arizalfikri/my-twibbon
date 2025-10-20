@@ -9,6 +9,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { usePOST } from "../services/api";
 import { useForm } from "react-hook-form";
 import { InputType } from "../components/FormControl";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 function ForgotPassword() {
   const { t } = useTranslation();
@@ -17,15 +18,7 @@ function ForgotPassword() {
   const { setEmail, setToken, setFullName, setRole } = useGlobalStore();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (token) {
-      navigate("/");
-    }
-  }, [token, navigate]);
-
-  // API hook
-  const contributorLogin = usePOST("/auth/login");
-  const { isPending } = contributorLogin;
+  const { mutateAsync, isPending } = usePOST("/auth/forgot-password");
 
   const {
     control,
@@ -35,25 +28,19 @@ function ForgotPassword() {
 
   const onSubmit = async (data) => {
     try {
-      const response = await contributorLogin.mutateAsync({
-        url: "/auth/login",
-        data: { email: data.email, password: data.password },
-      });
-
+      let response;
+      {
+        response = await mutateAsync({
+          url: "/auth/forgot-password",
+          data: { email: data.email },
+        });
+      }
+      console.log(response);
       if (response.status === 200) {
-        openToast("toast", true, t("auth.login_success"), "success");
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("email", response.data.email);
-        localStorage.setItem("fullname", response.data.user.fullname);
-        localStorage.setItem("role", response.data.user.role);
-        setToken(response.data.token);
-        setEmail(response.data.email);
-        setFullName(response.data.user.fullname);
-        setRole(response.data.user.role);
-        navigate("/");
+        openToast("toast", true, t("Silahkan Cek Email"), "success");
       }
     } catch (error) {
-      switch (error?.response?.status) {
+      switch (error?.response.status) {
         case 401:
           openToast("toast", true, t("auth.invalid_credentials"), "info");
           break;
@@ -101,8 +88,7 @@ function ForgotPassword() {
               })}
             </h2>
             <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 md:text-sm">
-              jangan sedih, yuk ikuti langkah - langkah berikut untuk mengatur
-              ulang password kamu !
+              {t("auth.forgot_password_description")}
             </p>
           </div>
 

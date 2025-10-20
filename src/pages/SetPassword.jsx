@@ -1,37 +1,57 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
 import LoginImage from "../assets/images/login_image.png";
 import LogoGypem from "../assets/images/gypem_logo.png";
 import { InputType } from "../components/FormControl";
 import { useModalStore } from "../helper/store/modal.store";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { setPasswordSchema } from "../helper/yup";
+import { usePOST } from "../services/api";
+import InputPassword from "../components/FormControl/InputPassword";
 
 function SetPassword() {
   const { t } = useTranslation();
   const { openToast } = useModalStore();
   const navigate = useNavigate();
-  
+  const { token } = useParams();
+  const role = localStorage.getItem("selectedRole");
+  const { mutateAsync, isPending } = usePOST("/event-twibbon");
+
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-
+  } = useForm({ resolver: yupResolver(setPasswordSchema) });
   const onSubmit = async (data) => {
-    if (data.password !== data.confirmPassword) {
-      openToast("toast", true, "Password dan konfirmasi tidak sama", "warning");
-      return;
+    try {
+      let response;
+      {
+        response = await mutateAsync({
+          url: `auth/reset-password/${token}`,
+          data: { password: data.password, role: role },
+        });
+      }
+      console.log(response);
+      if (response.status === 200) {
+        localStorage.removeItem("selectedRole");
+        navigate("/SignIn");
+      }
+    } catch (error) {
+      switch (error?.response.status) {
+        case 401:
+          openToast("toast", true, "info");
+          break;
+        case 400:
+          openToast("toast", true, "warning");
+          break;
+        default:
+          openToast("toast", true);
+          break;
+      }
     }
-
-    console.log("Password Baru:", data.password);
-
-    // Notifikasi dummy
-    openToast("toast", true, "Password berhasil diubah (dummy)", "success");
-
-    // Redirect ke login
-    navigate("/signin");
   };
 
   return (
@@ -41,7 +61,9 @@ function SetPassword() {
         <img
           className="hidden object-cover w-full h-full col-span-1 lg:block"
           src={LoginImage}
-          alt={t("auth.reset_password_title", { defaultValue: "Atur Password" })}
+          alt={t("auth.reset_password_title", {
+            defaultValue: "Atur Password",
+          })}
         />
 
         {/* Konten kanan */}
@@ -54,25 +76,34 @@ function SetPassword() {
             />
           </a>
 
-
+          <div className="">
+            <Link
+              to="/SignIn"
+              className="inline-block mt-10 text-sm font-medium text-purple-700 rounded-lg dark:hover:text-purple-500 hover:text-purple-800 transition-smooth"
+            >
+              ← {t("common.back", { defaultValue: "Kembali Ke Login" })}
+            </Link>
+          </div>
           {/* Judul + deskripsi */}
           <div className="mt-4 mb-6">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
-              {t("auth.reset_password_title", { defaultValue: "Atur Password Baru" })}
+              {t("auth.reset_password_title", {
+                defaultValue: "Atur Password Baru",
+              })}
             </h2>
             <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 md:text-sm">
-              Silakan masukkan password baru kamu dan konfirmasi ulang.
+              {t("auth.reset_password_description")}
             </p>
           </div>
 
           {/* Form */}
           <form className="mt-6 md:mt-5" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-5">
-              <InputWithLabel
+              <InputPassword
                 htmlFor="password"
-                label="Password Baru"
+                label={t("auth.new_password")}
                 type={InputType.PASSWORD}
-                placeholder="Masukkan password baru"
+                placeholder={t("auth.enter_new_password")}
                 name="password"
                 id="password"
                 style="rounded-xl"
@@ -81,13 +112,13 @@ function SetPassword() {
                 error={errors}
               />
 
-              <InputWithLabel
-                htmlFor="confirmPassword"
-                label="Konfirmasi Password"
+              <InputPassword
+                htmlFor="password_confirmation"
+                label={t("auth.confirm_new_password")}
                 type={InputType.PASSWORD}
-                placeholder="Ulangi password baru"
-                name="confirmPassword"
-                id="confirmPassword"
+                placeholder={t("auth.reenter_new_password")}
+                name="password_confirmation"
+                id="password_confirmation"
                 style="rounded-xl"
                 control={control}
                 autoComplete="new-password"

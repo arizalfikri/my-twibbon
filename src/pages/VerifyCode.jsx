@@ -7,12 +7,13 @@ import LoginImage from "../assets/images/login_image.png";
 import LogoGypem from "../assets/images/gypem_logo.png";
 import { InputType } from "../components/FormControl";
 import { useModalStore } from "../helper/store/modal.store";
+import { usePOST } from "../services/api";
 
 function VerifyCode() {
   const { t } = useTranslation();
   const { openToast } = useModalStore();
   const navigate = useNavigate();
-
+  const { mutateAsync } = usePOST("/auth/forgot-password");
   const {
     control,
     handleSubmit,
@@ -20,13 +21,31 @@ function VerifyCode() {
   } = useForm();
 
   const onSubmit = async (data) => {
-    console.log("Kode OTP:", data.code);
+    try {
+      let response;
+      {
+        response = await mutateAsync({
+          url: "/auth/forgot-password",
+          data: { email: data.email, password: data.password },
+        });
+      }
 
-    // Notifikasi sementara
-    openToast("toast", true, "Kode berhasil diverifikasi (dummy)", "success");
-
-    // Lanjut ke reset password
-    navigate("/reset-password");
+      if (response.status === 200) {
+        openToast("toast", true, t("Silahkan Cek Email"), "success");
+      }
+    } catch (error) {
+      switch (error?.response.status) {
+        case 401:
+          openToast("toast", true, t("auth.invalid_credentials"), "info");
+          break;
+        case 400:
+          openToast("toast", true, t("auth.not_registered"), "warning");
+          break;
+        default:
+          openToast("toast", true, t("auth.server_error"));
+          break;
+      }
+    }
   };
 
   return (
@@ -49,7 +68,14 @@ function VerifyCode() {
             />
           </a>
 
-          
+          <div className="">
+            <Link
+              to="/SignIn"
+              className="inline-block mt-10 text-sm font-medium text-purple-700 rounded-lg dark:hover:text-purple-500 hover:text-purple-800 transition-smooth"
+            >
+              ← {t("common.back", { defaultValue: "Kembali Ke Login" })}
+            </Link>
+          </div>
           {/* Judul + deskripsi */}
           <div className="mt-4 mb-6">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">

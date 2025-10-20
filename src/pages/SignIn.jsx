@@ -122,7 +122,10 @@ const SignIn = () => {
               <div className="flex flex-col gap-4">
                 <button
                   type="button"
-                  onClick={() => setSelectedRole("contributor")}
+                  onClick={() => {
+                    setSelectedRole("contributor");
+                    localStorage.setItem("selectedRole", "contributor");
+                  }}
                   className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-purple-700 gap-x-1 transition-smooth rounded-xl hover:bg-purple-900"
                 >
                   {t("auth.login_as_contributor")}
@@ -130,7 +133,10 @@ const SignIn = () => {
 
                 <button
                   type="button"
-                  onClick={() => setSelectedRole("participant")}
+                  onClick={() => {
+                    setSelectedRole("participant");
+                    localStorage.setItem("selectedRole", "participant");
+                  }}
                   className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-yellow-400 gap-x-1 transition-smooth rounded-xl hover:bg-yellow-600"
                 >
                   {t("auth.login_as_participant")}
@@ -202,24 +208,12 @@ const SignIn = () => {
 
             <div className="flex justify-end my-5">
               <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
-                {t("auth.forgot_password")}{" "}
-                {selectedRole === "contributor" ? (
-                  <Link
-                    to="/Forgot-Password"
-                    className="font-medium text-purple-700 hover:underline"
-                  >
-                    {t("auth.reset_here")}
-                  </Link>
-                ) : (
-                  <a
-                    href="https://gypem.com/forgot-password"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-purple-700 hover:underline"
-                  >
-                    {t("auth.reset_here")}
-                  </a>
-                )}
+                <Link
+                  to="/Forgot-Password"
+                  className="font-medium text-purple-700 hover:underline"
+                >
+                  {t("auth.forgot_password")}{" "}
+                </Link>
               </p>
             </div>
 

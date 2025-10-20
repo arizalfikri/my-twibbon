@@ -53,7 +53,7 @@ export const router = createBrowserRouter([
         element: <VerifyCode />,
       },
       {
-        path: "Set-Password",
+        path: "reset-password/:token",
         element: <SetPassword />,
       },
       {
