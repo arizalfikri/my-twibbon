@@ -46,7 +46,7 @@ const CardProfile = ({ twibon, isGrid = true, onEdit, onDelete }) => {
         }`}
       >
         <img
-          src={`https://api-twibbon-dev.digiduindo.com${twibon.image}`}
+          src={`${import.meta.env.VITE_FILE_URL}${twibon.image}`}
           alt={twibon.title}
           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
         />

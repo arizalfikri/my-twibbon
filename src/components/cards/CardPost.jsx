@@ -51,7 +51,7 @@ function CardPost({
       {/* Post Image */}
       <div className="relative aspect-[1/1]" onClick={handleCardClick}>
         <img
-          src={`https://api-twibbon-dev.digiduindo.com${post.image_url}`}
+          src={`${import.meta.env.VITE_FILE_URL}${post.image_url}`}
           alt={post.caption || "Post image"}
           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
           onError={(e) => {

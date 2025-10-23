@@ -57,7 +57,7 @@ const CardCollections = ({ twibon, onDelete, onShare, showActions = true }) => {
       {/* Image */}
       <div className="relative aspect-[1/1]">
         <img
-          src={`https://api-twibbon-dev.digiduindo.com${twibon.image}`}
+          src={`${import.meta.env.VITE_FILE_URL}${twibon.image}`}
           alt={twibon.title}
           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
           onError={(e) => {
@@ -104,7 +104,7 @@ const CardCollections = ({ twibon, onDelete, onShare, showActions = true }) => {
               <span className="sm:hidden dark:text-white">
                 {t("main.delete")}
               </span>
-              </button>
+            </button>
           </div>
         )}
       </div>

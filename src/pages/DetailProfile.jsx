@@ -95,7 +95,7 @@ const DetailProfile = () => {
       );
 
       setTimeout(() => {
-        navigate("/SignIn", { replace: true }); 
+        navigate("/SignIn", { replace: true });
       }, 1000);
     }
   }, [profileData, userPostsData, userCollectionsData, navigate, openToast]);
@@ -188,7 +188,7 @@ const DetailProfile = () => {
     const transformedData = {
       id: post.id,
       title: post.event_twibbon?.title || post.caption || "Post",
-      image: `https://api-twibbon-dev.digiduindo.com${post.image_url}`,
+      image: `${import.meta.env.VITE_FILE_URL}${post.image_url}`,
       status: "Active",
       author: post.event_twibbon?.contributor?.fullname || "Unknown",
     };

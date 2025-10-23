@@ -101,7 +101,9 @@ function MainTwibone() {
 
   useEffect(() => {
     if (twibbon?.data?.template_twibbon) {
-      const imageURL = `https://api-twibbon-dev.digiduindo.com${twibbon.data.template_twibbon}`;
+      const imageURL = `${import.meta.env.VITE_FILE_URL}${
+        twibbon.data.template_twibbon
+      }`;
       setFrameImage(imageURL);
     }
   }, [twibbon]);

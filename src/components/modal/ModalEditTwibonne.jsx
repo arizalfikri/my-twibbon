@@ -238,7 +238,9 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                   <div className="w-full overflow-hidden border-2 border-gray-200 border-dashed dark:border-gray-700 aspect-square bg-gray-50 dark:bg-gray-800 rounded-2xl">
                     {itemData?.image ? (
                       <img
-                        src={`https://api-twibbon-dev.digiduindo.com${itemData.image}`}
+                        src={`${import.meta.env.VITE_FILE_URL}${
+                          itemData.image
+                        }`}
                         alt="Preview"
                         className="object-cover w-full h-full"
                       />
