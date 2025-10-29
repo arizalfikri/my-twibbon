@@ -55,11 +55,10 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
         });
 
         if (response.status === 200) {
-          setEmail(response.data.email);
+          setEmail(response.data.user.email);
           setFullName(response.data.user.fullname);
           setToken(response.data.token);
           setRole(response.data.user.role);
-
           localStorage.setItem("email", response.data.user.email);
           localStorage.setItem("fullname", response.data.user.fullname);
           localStorage.setItem("role", response.data.user.role);
@@ -97,7 +96,7 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
 
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("email", response.data.email);
+        localStorage.setItem("email", response.data.user.email);
         localStorage.setItem("fullname", response.data.user.fullname);
         localStorage.setItem("role", response.data.user.role);
         setToken(response.data.token);
@@ -187,16 +186,8 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
             </div>
 
             {/* Remember me and Forgot password */}
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 dark:border-gray-600"
-                />
-                <span className="text-gray-600 dark:text-gray-400">
-                  {t("auth.remember_me")}
-                </span>
-              </label>
+            <div className="flex items-center justify-end text-sm">
+              
               <button
                 type="button"
                 className="font-medium text-purple-600 hover:text-purple-700"
