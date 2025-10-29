@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Grid, List, Search, X } from "lucide-react";
 import Navbar from "../components/layoutpage/Navbar";
 import Footer from "../components/layoutpage/Footer";
@@ -18,18 +18,25 @@ function ExploreTwibone() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [allTwibbons, setAllTwibbons] = useState([]);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const searchFromUrl = searchParams.get("search") || "";
+  const observerTarget = useRef(null);
 
   const displaySearchQuery = searchFromUrl
     ? decodeURIComponent(searchFromUrl).trim()
     : "";
 
-  const { data, isLoading, refetch } = useGET(
-    searchFromUrl
-      ? `twibbons?q=${encodeURIComponent(searchFromUrl)}`
-      : "twibbons"
-  );
+  // Construct URL dengan page
+  const apiUrl = searchFromUrl
+    ? `twibbons?q=${encodeURIComponent(searchFromUrl)}&page=${currentPage}`
+    : `twibbons?page=${currentPage}`;
+
+  const { data, isLoading, refetch } = useGET(apiUrl);
 
   // Set default view mode sekali aja saat mount
   useEffect(() => {
@@ -49,13 +56,60 @@ function ExploreTwibone() {
     }
   }, [searchFromUrl, displaySearchQuery]);
 
-  const twibbonData = data?.data || [];
+  // Reset pagination saat search berubah
+  useEffect(() => {
+    setCurrentPage(1);
+    setAllTwibbons([]);
+  }, [searchFromUrl]);
+
+  // Update data saat response datang
+  useEffect(() => {
+    if (data?.data) {
+      const newTwibbons = data.data;
+      const pagination = data.pagination;
+
+      if (currentPage === 1) {
+        setAllTwibbons(newTwibbons);
+      } else {
+        setAllTwibbons(prev => [...prev, ...newTwibbons]);
+      }
+
+      setHasNextPage(pagination?.has_next || false);
+      setIsLoadingMore(false);
+    }
+  }, [data, currentPage]);
+
+  // Intersection Observer untuk infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasNextPage && !isLoading && !isLoadingMore) {
+          setIsLoadingMore(true);
+          setCurrentPage(prev => prev + 1);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '100px' 
+      }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasNextPage, isLoading, isLoadingMore]);
 
   // Update search query and URL
   const handleSearchChange = (value) => {
     setSearchQuery(value);
     if (value.trim()) {
-      // Use cleaner URL params without excessive encoding
       const cleanValue = value.trim().replace(/\s+/g, " ");
       setSearchParams({ search: cleanValue });
     } else {
@@ -70,7 +124,7 @@ function ExploreTwibone() {
   };
 
   const renderEmptyState = () => {
-    if (isLoading) {
+    if (isLoading && currentPage === 1) {
       return (
         <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
           <div className="max-w-md space-y-6 text-center">
@@ -90,8 +144,8 @@ function ExploreTwibone() {
       );
     }
 
-    // ✅ Jika ada search tapi tidak ada data → tampilkan empty state pencarian
-    if (searchFromUrl && twibbonData.length === 0) {
+    // Jika ada search tapi tidak ada data → tampilkan empty state pencarian
+    if (searchFromUrl && allTwibbons.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
           <div className="max-w-md space-y-6 text-center">
@@ -119,8 +173,23 @@ function ExploreTwibone() {
       );
     }
 
-    // ✅ Jika tidak ada search & kosong → pakai empty state dari Homepage
+    // Jika tidak ada search & kosong → pakai empty state dari Homepage
     return <EmptyTwibbon />;
+  };
+
+  const renderLoadingMore = () => {
+    if (!isLoadingMore) return null;
+
+    return (
+      <div className="flex items-center justify-center py-8 col-span-full">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 border-4 border-purple-400 rounded-full dark:border-purple-500 border-t-transparent animate-spin"></div>
+          <span className="text-gray-600 dark:text-gray-400">
+            {t("explore.loading_more") || "Loading more..."}
+          </span>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -141,7 +210,6 @@ function ExploreTwibone() {
                   onChange={(e) => handleSearchChange(e.target.value)}
                   className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#4C0D68] dark:focus:ring-[#8B3A9C] focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
                 />
-                {/* Clear button untuk mobile search */}
                 {searchQuery && (
                   <button
                     type="button"
@@ -154,15 +222,15 @@ function ExploreTwibone() {
               </div>
               <div className="items-center hidden gap-8 mb-4 md:flex">
                 <p className="text-xl font-bold text-gray-600 dark:text-gray-300">
-                  {isLoading
+                  {isLoading && currentPage === 1
                     ? t("explore.loading")
                     : searchFromUrl
                     ? t("explore.showing_search_results", {
-                        count: twibbonData.length,
+                        count: allTwibbons.length,
                         query: displaySearchQuery,
                       })
                     : t("explore.showing_twibone", {
-                        count: twibbonData.length,
+                        count: allTwibbons.length,
                       })}
                 </p>
                 {searchFromUrl && (
@@ -206,14 +274,14 @@ function ExploreTwibone() {
           {/* Results Count */}
           <div className="flex items-center justify-between mb-4 md:hidden ">
             <p className="text-gray-600 dark:text-gray-300">
-              {isLoading
+              {isLoading && currentPage === 1
                 ? t("explore.loading")
                 : searchFromUrl
                 ? t("explore.showing_search_results", {
-                    count: twibbonData.length,
+                    count: allTwibbons.length,
                     query: displaySearchQuery,
                   })
-                : t("explore.showing_twibone", { count: twibbonData.length })}
+                : t("explore.showing_twibone", { count: allTwibbons.length })}
             </p>
             {searchFromUrl && (
               <button
@@ -234,16 +302,16 @@ function ExploreTwibone() {
               : "space-y-4"
           }`}
         >
-          {twibbonData.length === 0
+          {allTwibbons.length === 0
             ? renderEmptyState()
-            : twibbonData.map((twibon) => (
+            : allTwibbons.map((twibon) => (
                 <CardHome
                   key={twibon.id}
                   twibon={{
                     id: twibon.id,
                     title: twibon.title || t("explore.untitled"),
                     author: twibon?.contributor?.fullname || "Gypem",
-                    supports:twibon?.supports||0,
+                    supports: twibon?.supports || 0,
                     slug: twibon.slug_event_twibbon,
                     image: twibon.template_twibbon,
                     isNew: false,
@@ -252,17 +320,22 @@ function ExploreTwibone() {
                   isGrid={viewMode === "grid"}
                 />
               ))}
+          
+          {/* Loading More Indicator */}
+          {renderLoadingMore()}
         </div>
 
-        {/* Load More Button - if you want pagination */}
-        {twibbonData.length > 0 && twibbonData.length >= 20 && (
-          <div className="mt-12 text-center">
-            <button
-              onClick={() => refetch()}
-              className="bg-[#4C0D68] dark:bg-[#6B1E7A] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#6B1E7A] dark:hover:bg-[#8B3A9C] transition-colors"
-            >
-              {t("explore.load_more")}
-            </button>
+        {/* Intersection Observer Target - invisible element untuk trigger load more */}
+        {hasNextPage && allTwibbons.length > 0 && (
+          <div ref={observerTarget} className="h-10" />
+        )}
+
+        {/* End of Results Message */}
+        {!hasNextPage && allTwibbons.length > 0 && !isLoadingMore && (
+          <div className="py-8 text-center">
+            <p className="text-gray-500 dark:text-gray-400">
+              {t("explore.end_of_results") || "You've reached the end of the results"}
+            </p>
           </div>
         )}
       </main>

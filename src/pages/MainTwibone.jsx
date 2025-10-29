@@ -180,7 +180,7 @@ function MainTwibone() {
   };
 
   const toggleBookmark = async () => {
-    if (!token || role !== "user") {
+    if (!token ) {
       setShowLoginModal(true);
       return;
     }
