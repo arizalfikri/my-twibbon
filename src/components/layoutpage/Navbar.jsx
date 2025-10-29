@@ -34,6 +34,17 @@ function Navbar() {
   const { email, token, fullname, role } = useGlobalStore();
   const { theme, toggleTheme } = useThemeStore();
   const { t, i18n } = useTranslation();
+  
+  useEffect(() => {
+    if (!email && localStorage.getItem("email")) {
+      useGlobalStore.setState({
+        email: localStorage.getItem("email"),
+        fullname: localStorage.getItem("fullname"),
+        role: localStorage.getItem("role"),
+        token: localStorage.getItem("token"),
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (location.pathname === "/explore") {

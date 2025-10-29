@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
 import LoginImage from "../assets/images/login_image.png";
 import LogoGypem from "../assets/images/gypem_logo.png";
+import LogoGypemPutih from "../assets/images/gypem_logo_putih.png";
+
 import { InputType } from "../components/FormControl";
 import { useModalStore } from "../helper/store/modal.store";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -70,7 +72,11 @@ function SetPassword() {
         <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
           <a href="/">
             <img
-              src={LogoGypem}
+              src={
+                document.documentElement.classList.contains("dark")
+                  ? LogoGypemPutih
+                  : LogoGypem
+              }
               alt={t("common.logo")}
               className="block w-20 h-full mx-auto md:w-28 md:h-28"
             />

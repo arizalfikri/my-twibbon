@@ -3,6 +3,9 @@ import axios from "axios";
 
 export const apiClient = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
+    headers: {
+        "X-API-KEY": import.meta.env.VITE_API_KEY,
+    },
 });
 
 const postData = async ({ url, data }) => {
@@ -37,11 +40,13 @@ export const usePOST = (key) => {
     });
 };
 
-export const useGET = (url) => {
-    return useQuery({
-        queryKey: [url],
-        queryFn: () => getData(url),
-    });
+export const useGET = (url, options = {}) => {
+  return useQuery({
+    queryKey: [url],
+    queryFn: () => getData(url),
+    enabled: options.enabled ?? true, // default true
+    ...options, // biar bisa pakai option lain seperti staleTime, refetchOnWindowFocus
+  });
 };
 
 const deleteData = async (url) => {

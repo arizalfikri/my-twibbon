@@ -51,7 +51,8 @@
     "showing_search_results": "Menampilkan {{count}} hasil untuk \"{{query}}\"",
     "showing_twibone": "Menampilkan {{count}} twibone",
     "untitled": "Tanpa Judul",
-    "load_more": "Muat Lebih Banyak"
+    "load_more": "Muat Lebih Banyak",
+    "end_of_results": "Sudah mencapai akhir hasil pencarian"
   },
   "create": {
     "page_title": "Buat Twibone",
@@ -86,7 +87,11 @@
   "main": {
     "link_copied": "Link berhasil disalin ke clipboard!",
     "share_text": "Lihat twibbon {{title}} yang saya buat!",
+    "no_twibbon_yet": "Belum ada Twibbone",
     "no_posts_yet": "Belum Ada Yang Di Post",
+    "post_deleted_successfully": "Post deleted successfully",
+    "bookmark_removed": "Bookmark dihapus",
+    "bookmark_success": "Ditambahkan ke bookmark",
     "be_first_to_post": "Jadilah yang pertama untuk membuat dan membagikan twibbon Anda! Upload foto dan buat karya yang menarik.",
     "no_title": "Belum Ada Title",
     "supporters": "Pendukung",
@@ -110,10 +115,10 @@
     "forgot_password_title": "Kamu lupa password?",
     "no_account": "Belum punya akun?",
     "click_here": "Klik di sini",
-    "select_login_role": "Pilih Role Login",
-    "login_as_contributor": "Login sebagai Kontributor",
-    "login_as_participant": "Login sebagai Peserta",
-    "login_as": "Login sebagai",
+    "select_register_role": "Pilih Role register",
+    "register_as_contributor": "Login sebagai Kontributor",
+    "register_as_participant": "Login sebagai Peserta",
+    "register_as": "register sebagai",
     "contributor": "Kontributor",
     "participant": "Peserta",
     "invalid_credentials": "Email atau password salah",
@@ -129,7 +134,7 @@
     "register_success": "Registrasi berhasil! Silakan login dengan akunmu.",
     "login_success": "Login berhasil! Selamat datang kembali.",
     "login_image": "Gambar Login",
-    "welcome_back": "Selamat Datang Kembali!",
+    "welcome_back": "Login untuk lanjut",
     "email_address": "Alamat Email",
     "email_placeholder": "nama@contoh.com",
     "enter_password": "Masukkan password kamu",
@@ -176,9 +181,25 @@
   "profile": {
     "campaign": "Kampanye",
     "posts": "Postingan",
+    "collections": "Koleksi",
     "edit_profile": "Edit Profil",
     "campaigns": "Kampanye",
-    "posts_will_appear": "Postingan yang Anda buat akan muncul di sini"
+    "twibbone_will_appear": "Twibbone yang kamu buat akan muncul di sini.",
+    "posts_will_appear": "Postingan yang Anda buat akan muncul di sini",
+    "no_collections": "Belum Ada Koleksi",
+    "collections_will_appear": "Koleksi yang Anda simpan akan muncul di sini",
+    "collection_deleted": "Koleksi berhasil dihapus",
+    "membership_status": {
+      "title": "Status Membership",
+      "active": "Langganan Aktif",
+      "pending": "Status: Menunggu Pembayaran",
+      "canceled": "Status: Dibatalkan",
+      "expired": "Status: Kedaluwarsa",
+      "not_subscribed": "Belum Berlangganan",
+      "continue_payment": "Lanjutkan Pembayaran",
+      "subscribe_now": "Langganan Sekarang",
+      "renew_subscription": "Perpanjang Langganan"
+    }
   },
   "edit_profile": {
     "back_to_profile": "Kembali ke Profil",

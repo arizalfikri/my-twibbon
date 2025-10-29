@@ -51,7 +51,8 @@
     "showing_search_results": "Showing {{count}} results for \"{{query}}\"",
     "showing_twibone": "Showing {{count}} twibone",
     "untitled": "Untitled",
-    "load_more": "Load More"
+    "load_more": "Load More",
+    "end_of_results": "You've reached the end of the results"
   },
   "create": {
     "page_title": "Create Twibone",
@@ -86,7 +87,11 @@
   "main": {
     "link_copied": "Link successfully copied to clipboard!",
     "share_text": "Check out the {{title}} twibbon I created!",
+    "no_twibbon_yet": "No Twibbone yet",
     "no_posts_yet": "No Posts Yet",
+    "post_deleted_successfully": "Postingan berhasil dihapus",
+    "bookmark_removed": "Bookmark removed",
+    "bookmark_success": "Added to bookmarks",
     "be_first_to_post": "Be the first to create and share your twibbon! Upload photos and create attractive works.",
     "no_title": "No Title Available",
     "supporters": "Supporters",
@@ -96,7 +101,7 @@
     "delete": "Delete"
   },
   "common": {
-    "back": "Back to Login",
+    "back": "Back ",
     "submit": "Submit",
     "logo": "Logo",
     "loading": "Loading..."
@@ -110,10 +115,10 @@
     "forgot_password_title": "Forgot your password?",
     "no_account": "Don't have an account?",
     "click_here": "Click here",
-    "select_login_role": "Select Login Role",
-    "login_as_contributor": "Login as Contributor",
-    "login_as_participant": "Login as Participant",
-    "login_as": "Login as",
+    "select_register_role": "Select register Role",
+    "register_as_contributor": "Login as Contributor",
+    "register_as_participant": "Login as Participant",
+    "register_as": "register as",
     "contributor": "Contributor",
     "participant": "Participant",
     "invalid_credentials": "Invalid email or password",
@@ -129,7 +134,7 @@
     "register_success": "Registration successful! Please sign in with your account.",
     "login_success": "Login successful! Welcome back.",
     "login_image": "Login Image",
-    "welcome_back": "Welcome Back!",
+    "welcome_back": "Please log in to continue",
     "email_address": "Email Address",
     "email_placeholder": "name@example.com",
     "enter_password": "Enter your password",
@@ -139,7 +144,7 @@
     "or_continue_with": "or continue with",
     "register_now": "Register now",
     "forgot_password_description": "Don’t worry! Just follow the steps below to reset your password.",
-     "reset_password_title": "Set New Password",
+    "reset_password_title": "Set New Password",
     "reset_password_description": "Please enter your new password and confirm it again.",
     "new_password": "New Password",
     "confirm_new_password": "Confirm Password",
@@ -176,9 +181,25 @@
   "profile": {
     "campaign": "Campaign",
     "posts": "Posts",
+    "collections": "Collections",
     "edit_profile": "Edit Profile",
     "campaigns": "Campaigns",
-    "posts_will_appear": "Posts you create will appear here"
+    "twibbone_will_appear": "The Twibbone you create will appear here.",
+    "posts_will_appear": "Posts you create will appear here",
+    "no_collections": "No Collections Yet",
+    "collections_will_appear": "Collections you save will appear here",
+    "collection_deleted": "Collection deleted successfully",
+    "membership_status": {
+      "title": "Membership Status",
+      "active": "Active Subscription",
+      "pending": "Status: Awaiting Payment",
+      "canceled": "Status: Canceled",
+      "expired": "Status: Expired",
+      "not_subscribed": "Not Subscribed Yet",
+      "continue_payment": "Continue Payment",
+      "subscribe_now": "Subscribe Now",
+      "renew_subscription": "Renew Subscription"
+    }
   },
   "edit_profile": {
     "back_to_profile": "Back to Profile",

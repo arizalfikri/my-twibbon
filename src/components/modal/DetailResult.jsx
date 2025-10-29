@@ -434,7 +434,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                 <span className="text-sm font-bold text-white">
                   {getUserInitials(
-                    infoUser?.data?.author?.user_firstname ||
+                    infoUser?.data?.author?.fullname ||
                       t("detailresult.unknown_user")
                   )}
                 </span>
@@ -442,7 +442,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-gray-700 truncate dark:text-gray-300">
                   {truncateText(
-                    infoUser?.data?.author?.user_firstname ||
+                    infoUser?.data?.author?.fullname ||
                       t("detailresult.unknown_user"),
                     20
                   )}
@@ -450,14 +450,13 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 <div className="text-sm truncate">
                   @
                   {truncateText(
-                    infoUser?.data?.author?.user_email ||
+                    infoUser?.data?.author?.email ||
                       t("detailresult.unknown_email"),
                     25
                   )}
                 </div>
               </div>
             </div>
-
             {/* Komentar Section */}
             <div className="border-t border-gray-200 dark:border-gray-700">
               <div className="py-4">
@@ -586,7 +585,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                   <span className="text-xs font-bold text-white">
                     {getUserInitials(
-                      infoUser?.data?.author?.user_firstname ||
+                      infoUser?.data?.author?.fullname ||
                         t("detailresult.unknown_user")
                     )}
                   </span>
@@ -594,7 +593,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-gray-700 truncate dark:text-gray-300">
                     {truncateText(
-                      infoUser?.data?.author?.user_firstname ||
+                      infoUser?.data?.author?.fullname ||
                         t("detailresult.unknown_user"),
                       20
                     )}
@@ -602,7 +601,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                   <div className="text-xs truncate">
                     @
                     {truncateText(
-                      infoUser?.data?.author?.user_email ||
+                      infoUser?.data?.author?.email ||
                         t("detailresult.unknown_email"),
                       25
                     )}

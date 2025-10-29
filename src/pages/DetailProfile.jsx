@@ -21,7 +21,12 @@ import ModalDeleteCollection from "../components/modal/ModalDeleteCollection.jsx
 const DetailProfile = () => {
   const { t } = useTranslation();
   const { openToast } = useModalStore();
-  const { data: profileData, isLoading, refetch } = useGET("my-profile");
+  const { data: profileData, isLoading, refetch } = useGET("/my-profile");
+  const {
+    data: SubscribeData,
+    isLoading: subscribeLoading,
+    refetch: refetchLoading,
+  } = useGET("/subscription");
 
   const {
     data: userPostsData,
@@ -51,9 +56,7 @@ const DetailProfile = () => {
   const [showDeleteCollectionModal, setShowDeleteCollectionModal] =
     useState(false);
   const { email, token, fullname, role } = useGlobalStore();
-  const [activeTab, setActiveTab] = useState(
-    role === "contributor" ? "Campaign" : "Posts"
-  );
+  const [activeTab, setActiveTab] = useState("Campaign");
   const navigate = useNavigate();
 
   // Updated data extraction
@@ -102,18 +105,16 @@ const DetailProfile = () => {
 
   useEffect(() => {
     refetch();
-    if (role === "user") {
-      refetchPosts();
-    }
-  }, [refetch, refetchPosts, role]);
+    refetchPosts();
+    refetchCollections();
+  }, [refetch, refetchPosts, refetchCollections]);
 
-  // Tentukan tabs berdasarkan role
-  const availableTabs =
-    role === "contributor"
-      ? [t("profile.campaign")]
-      : role === "user"
-      ? [t("profile.posts"), "Collections"]
-      : [];
+  // Semua tabs muncul untuk semua role
+  const availableTabs = [
+    t("profile.campaign"),
+    t("profile.posts"),
+    "Collections",
+  ];
 
   useEffect(() => {
     if (!role) {
@@ -177,6 +178,36 @@ const DetailProfile = () => {
     } else {
       // Fallback: copy to clipboard
       const shareUrl = window.location.origin + `/post/${post.id}`;
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        openToast("toast", true, t("main.link_copied"), "success");
+      });
+    }
+  };
+  const handleCollectionShare = (twibbon) => {
+    console.log(twibbon);
+    if (!twibbon) {
+      openToast("toast", true, t("main.twibbon_not_found"), "error");
+      return;
+    }
+
+    const caption = twibbon.caption || "Check out this post!";
+    const shareUrl = `${window.location.origin}/${
+      twibbon.slug   || ""
+    }`;
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: caption,
+          text: caption,
+          url: shareUrl,
+        })
+        .catch(() => {
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            openToast("toast", true, t("main.link_copied"), "success");
+          });
+        });
+    } else {
       navigator.clipboard.writeText(shareUrl).then(() => {
         openToast("toast", true, t("main.link_copied"), "success");
       });
@@ -252,52 +283,132 @@ const DetailProfile = () => {
                 </p>
               </div>
 
-              {role === "contributor" ? (
-                <div className="flex gap-4 mb-8">
-                  <Link to="/EditProfile">
-                    <button className="flex items-center gap-2 px-4 py-2 transition-colors bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <Edit className="w-4 h-4 dark:text-white" />
-                      <p className="text-gray-700 dark:text-gray-300">
-                        {t("profile.edit_profile")}
-                      </p>
-                    </button>
-                  </Link>
-                </div>
-              ) : null}
+              <div className="flex gap-4 mb-8">
+                <Link to="/EditProfile">
+                  <button className="flex items-center gap-2 px-4 py-2 transition-colors bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <Edit className="w-4 h-4 dark:text-white" />
+                    <p className="text-gray-700 dark:text-gray-300">
+                      {t("profile.edit_profile")}
+                    </p>
+                  </button>
+                </Link>
+              </div>
             </div>
 
             {/* Stats Sidebar */}
             <div className="mt-5 lg:w-80">
               <div className="p-6 space-y-4 bg-white border border-gray-200 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
-                {role === "contributor" ? (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Users className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                      <span className="font-medium text-gray-700 dark:text-gray-200">
-                        {t("main.supporters")}
-                      </span>
-                    </div>
-                    <span className="text-xl font-bold text-gray-900 dark:text-white">
-                      {supports}
+                {/* Supporters */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                    <span className="font-medium text-gray-700 dark:text-gray-200">
+                      {t("main.supporters")}
                     </span>
                   </div>
-                ) : null}
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">
+                    {supports}
+                  </span>
+                </div>
 
+                {/* Campaigns */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                     <span className="font-medium text-gray-700 dark:text-gray-200">
-                      {role === "contributor"
-                        ? t("profile.campaigns")
-                        : t("profile.posts")}
+                      {`${t("profile.campaigns")}`}
                     </span>
                   </div>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">
-                    {role === "contributor"
-                      ? twibbonData.length
-                      : userPosts.length}
+                    {twibbonData?.length}
                   </span>
                 </div>
+
+                {/* Posts */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                    <span className="font-medium text-gray-700 dark:text-gray-200">
+                      {`${t("profile.posts")}`}
+                    </span>
+                  </div>
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">
+                    {userPosts?.length}
+                  </span>
+                </div>
+              </div>
+
+              {/* Subscription Status Box */}
+              <div className="mt-5 lg:w-80">
+                {subscribeLoading ? (
+                  <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl dark:border-gray-700 dark:bg-gray-800">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      Memuat status...
+                    </p>
+                  </div>
+                ) : (
+                  <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl dark:border-gray-700 dark:bg-gray-800">
+                    <h3 className="mb-4 text-sm font-semibold text-gray-600 uppercase dark:text-gray-300">
+                      {t("profile.membership_status.title")}
+                    </h3>
+
+                    {SubscribeData?.data?.status === "active" ? (
+                      <div>
+                        <p className="mb-3 text-lg font-medium text-green-600 dark:text-green-400">
+                          {t("profile.membership_status.active")}
+                        </p>
+                      </div>
+                    ) : SubscribeData?.data?.status === "pending" ? (
+                      <div>
+                        <p className="mb-3 text-lg font-medium text-yellow-600 dark:text-yellow-400">
+                          {t("profile.membership_status.pending")}
+                        </p>
+                        <button
+                          onClick={() => navigate("/checkout")}
+                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-purple-700 rounded-lg hover:bg-purple-800"
+                        >
+                          {t("profile.membership_status.continue_payment")}
+                        </button>
+                      </div>
+                    ) : SubscribeData?.data?.status === "canceled" ? (
+                      <div>
+                        <p className="mb-3 text-lg font-medium text-red-600 dark:text-red-400">
+                          {t("profile.membership_status.canceled")}
+                        </p>
+                        <button
+                          onClick={() => navigate("/membership")}
+                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-purple-700 rounded-lg hover:bg-purple-800"
+                        >
+                          {t("profile.membership_status.subscribe_now")}
+                        </button>
+                      </div>
+                    ) : SubscribeData?.data?.status === "expired" ? (
+                      <div>
+                        <p className="mb-3 text-lg font-medium text-gray-600 dark:text-gray-400">
+                          {t("profile.membership_status.expired")}
+                        </p>
+                        <button
+                          onClick={() => navigate("/membership")}
+                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-purple-700 rounded-lg hover:bg-purple-800"
+                        >
+                          {t("profile.membership_status.renew_subscription")}
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="mb-3 text-lg font-medium text-gray-600 dark:text-gray-400">
+                          {t("profile.membership_status.not_subscribed")}
+                        </p>
+                        <button
+                          onClick={() => navigate("/membership")}
+                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-purple-700 rounded-lg hover:bg-purple-800"
+                        >
+                          {t("profile.membership_status.subscribe_now")}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -338,7 +449,7 @@ const DetailProfile = () => {
             </div>
 
             {/* Campaign Content */}
-            {activeTab === "Campaign" && role === "contributor" && (
+            {activeTab === "Campaign" && (
               <div
                 className={`${
                   viewMode === "grid"
@@ -347,7 +458,17 @@ const DetailProfile = () => {
                 }`}
               >
                 {twibbonData.length === 0 ? (
-                  <EmptyTwibbon />
+                  <div className="flex flex-col items-center justify-center col-span-4 py-16 text-center">
+                    <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
+                      <Edit className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
+                      {t("main.no_twibbon_yet")}
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      {t("profile.twibbone_will_appear")}
+                    </p>
+                  </div>
                 ) : (
                   twibbonData.map((twibon) => (
                     <CardProfile
@@ -372,7 +493,7 @@ const DetailProfile = () => {
             )}
 
             {/* Posts Content - Updated */}
-            {activeTab === "Posts" && role === "user" && (
+            {activeTab === "Posts" && (
               <div>
                 {postsLoading ? (
                   <div className="flex items-center justify-center py-16">
@@ -440,6 +561,7 @@ const DetailProfile = () => {
                           slug: twibon.event_twibbon?.slug_event_twibbon,
                           image: twibon.event_twibbon?.template_twibbon,
                         }}
+                        onShare={handleCollectionShare}
                         onDelete={handleCollectionDelete}
                       />
                     ))}
