@@ -13,6 +13,7 @@ import { usePOST } from "../services/api";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { setCaptionSchema } from "../helper/yup";
 import { useModalStore } from "../helper/store/modal.store";
+import imageCompression from "browser-image-compression";
 
 function Result() {
   const { t } = useTranslation();
@@ -25,6 +26,7 @@ function Result() {
   const { twibbonData } = useTwibbonStore();
   const { mutateAsync, isPending } = usePOST("/event-user-twibbon");
   const { openToast } = useModalStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRestart = () => {
     window.location.href = `/${twibbonData.slug_event_twibbon}`;
@@ -63,15 +65,37 @@ function Result() {
     resolver: yupResolver(setCaptionSchema),
   });
 
+  // Ubah sedikit fungsi convertBlobUrlToFile
   const convertBlobUrlToFile = async (blobUrl, fileName) => {
     const response = await fetch(blobUrl);
     const blob = await response.blob();
     return new File([blob], fileName, { type: blob.type });
   };
 
+  // Tambahkan kompresi di onSubmit
   const onSubmit = async (data) => {
+    if (isSubmitting || isPending) return; // 🔒 Proteksi anti spam
+    setIsSubmitting(true);
+
     try {
-      const file = await convertBlobUrlToFile(resultImage, "twibbon-result.png");
+      let file = await convertBlobUrlToFile(resultImage, "twibbon-result.png");
+
+      // Cek ukuran (dalam byte)
+      const sizeInMB = file.size / (1024 * 1024);
+      if (sizeInMB > 2) {
+        // Kompres jika di atas 2 MB
+        const options = {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 1920, // biar kualitas tetap bagus
+          useWebWorker: true,
+        };
+        file = await imageCompression(file, options);
+        console.log(
+          "Compressed to:",
+          (file.size / 1024 / 1024).toFixed(2),
+          "MB"
+        );
+      }
 
       const response = await mutateAsync({
         url: "/event-user-twibbon",
@@ -81,23 +105,31 @@ function Result() {
           image: file,
         },
       });
+
       if (response.status === 201) {
         setIsPosted(true);
-        openToast("toast", true, t('result.post_success'), "success");
+        openToast("toast", true, t("result.post_success"), "success");
       }
     } catch (error) {
-      switch (error?.response.status) {
+      switch (error?.response?.status) {
         case 401:
-          openToast("toast", true, t('result.insufficient_data'), "error");
+          openToast("toast", true, t("result.insufficient_data"), "error");
           break;
         case 403:
-          openToast("toast", true, t('create.errors.contributor_required'), "info");
+          openToast(
+            "toast",
+            true,
+            t("create.errors.contributor_required"),
+            "info"
+          );
           setShowLoginModal(true);
           break;
         default:
-          openToast("toast", true, t('auth.server_error'), "error");
+          openToast("toast", true, t("auth.server_error"), "error");
           break;
       }
+    } finally {
+      setIsSubmitting(false); // ⬅️ Reset kembali di akhir (sukses/gagal)
     }
   };
 
@@ -113,12 +145,14 @@ function Result() {
   };
 
   const handleCopyCaption = async () => {
-    const captionValue = document.querySelector("textarea[name='caption']")?.value;
+    const captionValue = document.querySelector(
+      "textarea[name='caption']"
+    )?.value;
     if (captionValue) {
       await navigator.clipboard.writeText(captionValue);
-      openToast("toast", true, t('result.caption_copied'), "success");
+      openToast("toast", true, t("result.caption_copied"), "success");
     } else {
-      openToast("toast", true, t('result.caption_empty'), "info");
+      openToast("toast", true, t("result.caption_empty"), "info");
     }
   };
 
@@ -133,7 +167,7 @@ function Result() {
             <div className="relative w-fit">
               <img
                 src={resultImage}
-                alt={t('result.twibbon_result')}
+                alt={t("result.twibbon_result")}
                 className="object-contain h-auto rounded-lg shadow w-fit"
               />
             </div>
@@ -142,13 +176,13 @@ function Result() {
           {/* Download link */}
           <div className="mt-4 text-center">
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              {t('result.photo_not_downloaded')}{" "}
+              {t("result.photo_not_downloaded")}{" "}
               <a
                 href={resultImage}
                 download="twibbon-result.png"
                 className="font-semibold text-purple-600 dark:text-purple-400 hover:underline"
               >
-                {t('result.redownload')}
+                {t("result.redownload")}
               </a>
             </span>
           </div>
@@ -159,22 +193,22 @@ function Result() {
           {isPosted ? (
             <div className="text-center">
               <h2 className="mb-4 text-xl font-semibold text-green-600 dark:text-green-400">
-                {t('result.posted_successfully')}
+                {t("result.posted_successfully")}
               </h2>
               <p className="mb-6 text-gray-600 dark:text-gray-400">
-                {t('result.photo_posted_to_gypem')}
+                {t("result.photo_posted_to_gypem")}
               </p>
               <button
                 onClick={handleRestart}
                 className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg dark:text-gray-200 hover:bg-yellow-600"
               >
-                {t('result.create_twibbon_again')}
+                {t("result.create_twibbon_again")}
               </button>
             </div>
           ) : (
             <>
               <h2 className="mb-4 text-xl font-semibold text-center text-gray-800 dark:text-gray-100">
-                {t('result.post_photo_to_gypem')}
+                {t("result.post_photo_to_gypem")}
               </h2>
               <form action="" onSubmit={handleSubmit(onSubmit)}>
                 <div className="space-y-4">
@@ -185,7 +219,7 @@ function Result() {
                         htmlFor="caption"
                         className="text-sm font-medium text-gray-700 dark:text-gray-300"
                       >
-                        {t('create.form.caption')}
+                        {t("create.form.caption")}
                       </label>
                       <button
                         type="button"
@@ -201,7 +235,7 @@ function Result() {
                       name="caption"
                       htmlFor="caption"
                       type="textarea"
-                      placeholder={t('create.form.caption_placeholder')}
+                      placeholder={t("create.form.caption_placeholder")}
                       error={errors}
                       disabled={isPending}
                     />
@@ -210,21 +244,21 @@ function Result() {
                   <button
                     type="button"
                     onClick={handlePostClick}
-                    disabled={isPending}
+                    disabled={isPending || isSubmitting}
                     className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-purple-500 dark:hover:bg-purple-600"
                   >
-                    {isPending
-                      ? t('result.posting')
+                    {isPending || isSubmitting
+                      ? t("result.posting")
                       : isLoggedIn
-                      ? t('result.post_to_gypem')
-                      : t('result.login_and_post_to_gypem')}
+                      ? t("result.post_to_gypem")
+                      : t("result.login_and_post_to_gypem")}
                   </button>
 
                   <button
                     onClick={handleRestart}
                     className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900"
                   >
-                    {t('result.create_again')}
+                    {t("result.create_again")}
                   </button>
                 </div>
               </form>
@@ -237,23 +271,23 @@ function Result() {
           {isPosted ? (
             <div className="text-center">
               <h3 className="mb-4 text-lg font-semibold text-green-600 dark:text-green-400">
-                {t('result.posted_successfully')}
+                {t("result.posted_successfully")}
               </h3>
               <p className="mb-6 text-gray-600 dark:text-gray-400">
-                {t('result.photo_posted_to_gypem')}
+                {t("result.photo_posted_to_gypem")}
               </p>
               <button
                 onClick={handleRestart}
                 className="flex items-center justify-center w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg dark:text-gray-200 hover:bg-yellow-600"
               >
-                {t('result.create_twibbon_again')}
+                {t("result.create_twibbon_again")}
               </button>
             </div>
           ) : (
             <form action="" onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4">
                 <h3 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-gray-100">
-                  {t('result.post_photo_to_gypem')}
+                  {t("result.post_photo_to_gypem")}
                 </h3>
                 {/* Caption + Copy */}
                 <div>
@@ -262,7 +296,7 @@ function Result() {
                       htmlFor="caption"
                       className="text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      {t('create.form.caption')}
+                      {t("create.form.caption")}
                     </label>
                     <button
                       type="button"
@@ -279,7 +313,7 @@ function Result() {
                     name="caption"
                     htmlFor="caption"
                     type="textarea"
-                    placeholder={t('create.form.caption_placeholder')}
+                    placeholder={t("create.form.caption_placeholder")}
                     error={errors}
                     maxLength={500}
                     disabled={isPending}
@@ -289,21 +323,21 @@ function Result() {
               <button
                 type="button"
                 onClick={handlePostClick}
-                disabled={isPending}
+                disabled={isPending || isSubmitting}
                 className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-purple-500 dark:hover:bg-purple-600"
               >
-                {isPending
-                  ? t('result.posting')
+                {isPending || isSubmitting
+                  ? t("result.posting")
                   : isLoggedIn
-                  ? t('result.post_to_gypem')
-                  : t('result.login_and_post_to_gypem')}
+                  ? t("result.post_to_gypem")
+                  : t("result.login_and_post_to_gypem")}
               </button>
 
               <button
                 onClick={handleRestart}
                 className="w-full px-4 py-3 mt-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900"
               >
-                {t('result.create_again')}
+                {t("result.create_again")}
               </button>
             </form>
           )}
