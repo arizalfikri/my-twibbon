@@ -18,14 +18,14 @@ import { useGET } from "../services/api.js";
 
 const categories = ["Semua"]; // sementara cuma ada 'Semua'
 
-import ASOE from "../assets/images/ASOE-Scroll.png";
+import ASOE from "../assets/images/ASOE-Scroll.webp";
 import Earth from "../assets/images/Earth-Scroll.png";
 import Fk from "../assets/images/fk-Scroll.png";
-import IIS from "../assets/images/IIS-Scroll.png";
-import IYPES from "../assets/images/IYPES-Scroll.png";
+import IIS from "../assets/images/IIS-Scroll.webp";
+import IYPES from "../assets/images/IYPES-Scroll.webp";
 import Kartini from "../assets/images/Kartini-Scroll.png";
 import Language from "../assets/images/Language-scroll.png";
-import LOF6 from "../assets/images/LOF6-Scroll.png";
+import LOF6 from "../assets/images/LOF6-Scroll.webp";
 import Pahlawan from "../assets/images/Pahlawan-Scroll.png";
 import Pelajar from "../assets/images/Pelajar-Scroll.png";
 import Pelajar2 from "../assets/images/Pelajar2-Scroll.png";

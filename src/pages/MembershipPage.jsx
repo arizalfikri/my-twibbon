@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/layoutpage/Navbar";
-import NoWatermark from "../assets/vidios/Vidio_Remove_Watermark.mp4";
+import NoWatermark from "../assets/vidios/Vidio_Remove_Watermark2.mp4";
 import Footer from "../components/layoutpage/Footer";
 import AOS from "aos";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +39,7 @@ export default function MembershipPage() {
   const handleSubscribe = async () => {
     if (!selectedPlan) return;
 
-    if (!token || role !== "user") {
+    if (!token || role !== "participant") {
       openToast("toast", true, t("membership.login_warning"), "warning");
       setShowLoginModal(true);
       return;
