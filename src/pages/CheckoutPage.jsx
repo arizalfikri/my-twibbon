@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useModalStore } from "../helper/store/modal.store";
 import LoadingPage from "../components/layoutpage/LoadingPage";
 import { useTranslation } from "react-i18next";
+import { FaCheckCircle } from "react-icons/fa";
+import { CircleCheckBig } from "lucide-react";
 
 function CheckoutPage() {
   const { t } = useTranslation();
@@ -13,7 +15,7 @@ function CheckoutPage() {
   const uploadProof = usePOST();
   const navigate = useNavigate();
   const { openToast } = useModalStore();
-  
+
   useEffect(() => {
     refetch();
   }, [refetch]);
@@ -61,7 +63,9 @@ function CheckoutPage() {
         <main className="px-6 py-10 mx-auto max-w-screen-2xl">
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
             <div className="max-w-md p-8 text-center bg-white shadow-lg dark:bg-gray-800 rounded-xl">
-              <div className="mb-4 text-6xl">⏳</div>
+              <div className="flex items-center justify-center mb-4 text-6xl">
+                <CircleCheckBig size={100} color="#02f72b" />
+              </div>
               <h1 className="mb-4 text-2xl font-bold text-green-600 dark:text-green-400">
                 {t("checkout.payment_success")}
               </h1>
@@ -117,7 +121,8 @@ function CheckoutPage() {
               <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
                 {t("checkout.duration")}:{" "}
                 <span className="font-semibold">
-                  {detail?.subscription?.plan?.duration_days} {t("checkout.days")}
+                  {detail?.subscription?.plan?.duration_days}{" "}
+                  {t("checkout.days")}
                 </span>
               </p>
 
