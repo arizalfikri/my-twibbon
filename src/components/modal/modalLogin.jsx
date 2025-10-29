@@ -125,7 +125,7 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
 
   return (
     <ModalAlert onClose={onClose}>
-      <div className="relative w-full max-w-md mx-auto overflow-hidden bg-white rounded-md shadow-2xl md:w-96 dark:bg-gray-900">
+      <div className="relative w-[97vw] -mx-[2.5vw] sm:w-[90vw] sm:mx-auto md:w-[420px] max-w-lg overflow-hidden bg-white rounded-md shadow-2xl dark:bg-gray-900">
         <div className="relative px-8 py-6 bg-gradient-to-r from-purple-600 to-purple-700">
           <button
             onClick={onClose}
@@ -187,7 +187,6 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
 
             {/* Remember me and Forgot password */}
             <div className="flex items-center justify-end text-sm">
-              
               <button
                 type="button"
                 className="font-medium text-purple-600 hover:text-purple-700"
