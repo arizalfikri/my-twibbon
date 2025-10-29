@@ -39,7 +39,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
 
   const handleSubscribe = async (planId) => {
     // cek login dulu
-    if (!token || role !== "user") {
+    if (!token) {
       openToast("toast", true, "Login Peserta Terlebih dahulu", "warning");
       setSelectedPlanId(planId);
       setShowLoginModal(true);
@@ -189,7 +189,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
             ) : (
               <div className="space-y-4">
                 {/* Membership Plans */}
-                <div className="space-y-3">
+                <div className="pr-2 space-y-3 overflow-y-auto max-h-72 ">
                   {plans.map((plan) => (
                     <button
                       key={plan.id}

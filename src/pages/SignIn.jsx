@@ -14,6 +14,9 @@ import InputPassword from "../components/FormControl/InputPassword";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signInSchema } from "../helper/yup/index";
 import { useQueryClient } from "@tanstack/react-query";
+import { useGoogleLogin } from "@react-oauth/google";
+import { FcGoogle } from "react-icons/fc";
+import axios from "axios";
 
 const SignIn = () => {
   const queryClient = useQueryClient();
@@ -39,8 +42,59 @@ const SignIn = () => {
   }, [email, token, fullname, role, navigate]);
 
   // Setup API hooks untuk kedua endpoint
-  const contributorLogin = usePOST("/auth/login");
-  const participantLogin = usePOST("/auth/login-participant");
+  const userLogin = usePOST("/auth/login");
+  const googleLoginAPI = usePOST("/auth/login-sosmed");
+
+  const loginGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const googleUser = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${tokenResponse.access_token}`,
+            },
+          }
+        );
+
+        const email = googleUser.data.email;
+
+        const response = await googleLoginAPI.mutateAsync({
+          url: "/auth/login-sosmed",
+          data: { email },
+        });
+
+        if (response.status === 200) {
+          setEmail(response.data.email);
+          setFullName(response.data.user.fullname);
+          setToken(response.data.token);
+          setRole(response.data.user.role);
+
+          localStorage.setItem("email", response.data.user.email);
+          localStorage.setItem("fullname", response.data.user.fullname);
+          localStorage.setItem("role", response.data.user.role);
+          localStorage.setItem("token", response.data.token);
+
+          openToast("toast", true, "Login with Google successful", "success");
+          queryClient.removeQueries();
+          navigate("/");
+        } else {
+          openToast(
+            "toast",
+            true,
+            response.message || "Login with Google failed",
+            "error"
+          );
+        }
+      } catch (err) {
+        console.error(err);
+        openToast("toast", true, "Login with Google failed", "error");
+      }
+    },
+    onError: () => {
+      openToast("toast", true, "Login with Google failed", "error");
+    },
+  });
 
   const {
     control,
@@ -51,22 +105,16 @@ const SignIn = () => {
   const onSubmit = async (data) => {
     try {
       let response;
-      if (selectedRole === "contributor") {
-        response = await contributorLogin.mutateAsync({
+        response = await userLogin.mutateAsync({
           url: "/auth/login",
           data: { email: data.email, password: data.password },
         });
-      } else if (selectedRole === "participant") {
-        response = await participantLogin.mutateAsync({
-          url: "/auth/login-participant",
-          data: { email: data.email, password: data.password },
-        });
-      }
+     
 
       if (response.status === 200) {
         openToast("toast", true, t("auth.login_success"), "success");
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("email", response.data.email);
+        localStorage.setItem("email", response.data.user.email);
         localStorage.setItem("fullname", response.data.user.fullname);
         localStorage.setItem("role", response.data.user.role);
         setToken(response.data.token);
@@ -92,62 +140,9 @@ const SignIn = () => {
     }
   };
 
-  const isPending = contributorLogin.isPending || participantLogin.isPending;
+  const isPending = userLogin.isPending ;
 
-  // Pilih role dulu
-  if (!selectedRole) {
-    return (
-      <div id="root">
-        <div className="grid items-center justify-center h-screen grid-cols-1 overflow-x-hidden bg-white dark:bg-gray-900 md:grid-cols-2 lg:grid-cols-3">
-          <img
-            className="hidden object-cover w-full h-full col-span-1 lg:block"
-            src={LoginImage}
-            alt={t("auth.login")}
-          />
-
-          <div className="flex flex-col justify-center col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
-            <a href="/">
-              <img
-                src={LogoGypem}
-                alt={t("common.logo")}
-                className="block w-20 h-full mx-auto md:w-28 md:h-28"
-              />
-            </a>
-
-            <div className="mt-10 md:mt-5">
-              <h2 className="mb-8 text-2xl font-bold text-center text-gray-800 dark:text-gray-200">
-                {t("auth.select_login_role")}
-              </h2>
-
-              <div className="flex flex-col gap-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedRole("contributor");
-                    localStorage.setItem("selectedRole", "contributor");
-                  }}
-                  className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-purple-700 gap-x-1 transition-smooth rounded-xl hover:bg-purple-900"
-                >
-                  {t("auth.login_as_contributor")}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedRole("participant");
-                    localStorage.setItem("selectedRole", "participant");
-                  }}
-                  className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-yellow-400 gap-x-1 transition-smooth rounded-xl hover:bg-yellow-600"
-                >
-                  {t("auth.login_as_participant")}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+ 
 
   // Form login
   return (
@@ -162,21 +157,17 @@ const SignIn = () => {
         <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
           <a href="/">
             <img
-              src={LogoGypem}
+              src={
+                document.documentElement.classList.contains("dark")
+                  ? LogoGypemPutih
+                  : LogoGypem
+              }
               alt={t("common.logo")}
               className="block w-20 h-full mx-auto md:w-28 md:h-28"
             />
           </a>
 
-          <div className="mt-4 mb-6 text-center">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-              {t("auth.login_as")}{" "}
-              {selectedRole === "contributor"
-                ? t("auth.contributor")
-                : t("auth.participant")}
-            </h2>
-          </div>
-
+       
           <form className="mt-10 md:mt-5" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-5">
               <InputWithLabel
@@ -227,24 +218,20 @@ const SignIn = () => {
               </button>
             </div>
 
-            {selectedRole === "contributor" ? null : (
               <button
                 type="button"
+                onClick={() => loginGoogle()}
                 className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-100 hover:bg-gray-900 hover:text-white transition-smooth dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
               >
-                Google
+                <FcGoogle className="w-5 h-5" />
+                google
               </button>
-            )}
           </form>
 
           <div className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400 md:text-md ">
             {t("auth.no_account")}{" "}
             <a
-              href={
-                selectedRole === "participant"
-                  ? "https://gypem.com/register"
-                  : "/SignUp"
-              }
+              href={"/SignUp"}
               className="font-semibold text-purple-700 hover:underline dark:text-purple-400"
             >
               {t("auth.click_here")}

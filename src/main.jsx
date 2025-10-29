@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { router } from "./routes/index";
 import "./index.css";
 import { ModalToast } from "./components/modal/ModalToast";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./i18n";
 import "aos/dist/aos.css";
 
@@ -29,9 +30,11 @@ router.subscribe(({ location }) => {
 });
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <ModalToast />
-    </QueryClientProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ModalToast />
+      </QueryClientProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>
 );
