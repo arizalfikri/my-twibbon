@@ -203,7 +203,7 @@ function CardEditor({
                 doubleClick={{ disabled: true }}
               >
                 <TransformComponent
-                  wrapperStyle={{ width: "100%", height: "100%" }}
+                  wrapperStyle={{ width: "130%", height: "150%" ,position:"absolute",left:"-60px"}}
                 >
                   <img
                     src={image}
