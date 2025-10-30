@@ -180,7 +180,7 @@ function MainTwibone() {
   };
 
   const toggleBookmark = async () => {
-    if (!token ) {
+    if (!token) {
       setShowLoginModal(true);
       return;
     }
@@ -400,7 +400,7 @@ function MainTwibone() {
 
       <div className="grid h-full grid-cols-1 lg:grid-cols-2">
         <div
-          className="relative flex items-center justify-center p-4"
+          className="relative flex items-center justify-center p-4 md:p-8" // ← tambah padding lebih besar di desktop
           style={{
             backgroundImage: `url(${Bg1})`,
             backgroundSize: "cover",
@@ -411,7 +411,9 @@ function MainTwibone() {
           <div className="absolute inset-0 hidden bg-black/60 dark:block"></div>
 
           {/* Konten */}
-          <div className="relative z-10">
+          <div className="relative z-10 w-full max-w-sm md:max-w-md lg:max-w-lg">
+            {" "}
+            {/* ← tambah wrapper dengan max-width */}
             <CardEditor frameImage={frameImage} />
           </div>
         </div>

@@ -1,7 +1,7 @@
 // components/ui/ControlPanel.jsx
-import React from 'react';
-import UploadButton from '../buttons/UploudButton';
-import DownloadButton from '../buttons/DownloadButton';
+import React from "react";
+import UploadButton from "../buttons/UploudButton";
+import DownloadButton from "../buttons/DownloadButton";
 
 const ControlPanel = ({ onDownload, hasImage = false }) => {
   if (!hasImage) {
@@ -14,14 +14,11 @@ const ControlPanel = ({ onDownload, hasImage = false }) => {
 
   return (
     <>
-      {/* Mobile Controls */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-lg dark:border-gray-900 dark:bg-gray-700 md:hidden">
+      {/* Mobile Controls - dengan z-index tinggi */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 md:hidden">
         <div className="grid w-full max-w-sm grid-cols-4 gap-3 mx-auto">
           <UploadButton variant="icon" />
-          <DownloadButton 
-            onClick={onDownload}
-            fullWidth={true}
-          />
+          <DownloadButton onClick={onDownload} fullWidth={true} />
         </div>
       </div>
 

@@ -75,10 +75,10 @@ function EditorPage() {
 
       <div className="flex flex-col items-center justify-between min-h-screen bg-white dark:bg-gray-900 md:max-h-screen md:overflow-hidden">
         {/* Mobile Layout */}
-        <div className="flex flex-col flex-1 md:hidden">
-          {/* CardEditor Area - Fixed Height with padding for fixed ControlPanel */}
-          <div className="flex-1 min-h-0 ">
-            <div ref={editorRef}>
+        <div className="flex flex-col flex-1 w-full md:hidden">
+          {/* CardEditor Area - Full width dengan padding yang cukup */}
+          <div className="flex items-center justify-center flex-1 min-h-0 p-6 bg-gray-50 dark:bg-gray-900">
+            <div ref={editorRef} className="w-full max-w-md">
               <CardEditor
                 frameImage={frameImage}
                 filters={filters}
@@ -89,7 +89,7 @@ function EditorPage() {
           </div>
 
           {/* Mobile Filter Panel - Light/Dark */}
-          <div className="flex flex-col h-64 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 pb-[500px]">
+          <div className="flex flex-col pb-20 bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700 h-96">
             {/* Mobile Tabs - Light/Dark */}
             <div className="flex flex-shrink-0 p-1 m-4 mb-2 bg-gray-100 rounded-lg dark:bg-gray-700">
               <button
@@ -125,7 +125,7 @@ function EditorPage() {
             </div>
 
             {/* Mobile Content - Light/Dark Mode */}
-            <div className="flex-1 px-4 pb-4 ">
+            <div className="flex-1 px-4 pb-4 overflow-y-auto">
               {activeTab === "presets" && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between mb-3">
@@ -222,6 +222,7 @@ function EditorPage() {
 
               {activeTab === "basic" && (
                 <div className="space-y-4">
+                  {" "}
                   {/* Brightness Control - Light/Dark */}
                   <div className="p-3 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
                     <div className="space-y-3">
@@ -245,7 +246,6 @@ function EditorPage() {
                       />
                     </div>
                   </div>
-
                   {/* Contrast Control - Light/Dark */}
                   <div className="p-3 border border-purple-200 rounded-lg dark:border-purple-600/30 bg-purple-50 dark:bg-purple-900/20">
                     <div className="space-y-3">
@@ -269,7 +269,6 @@ function EditorPage() {
                       />
                     </div>
                   </div>
-
                   {/* Saturation Control - Light/Dark */}
                   <div className="p-3 border border-pink-200 rounded-lg dark:border-pink-600/30 bg-pink-50 dark:bg-pink-900/20">
                     <div className="space-y-3">
@@ -378,17 +377,21 @@ function EditorPage() {
         {/* Desktop Layout  */}
 
         <div className="hidden md:grid md:grid-cols-[2fr_1fr] max-w-screen-2xl p-6 gap-12 justify-between">
-          <div ref={editorRef} className="flex items-start">
-            <CardEditor
-              frameImage={frameImage}
-              filters={filters}
-              event_twibbon_id={twibbonData?.id}
-              SubscribeData={SubscribeData}
-            />
+          <div ref={editorRef} className="flex items-center justify-center">
+            <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl">
+              {" "}
+              {/* ← ubah ini */}
+              <CardEditor
+                frameImage={frameImage}
+                filters={filters}
+                event_twibbon_id={twibbonData?.id}
+                SubscribeData={SubscribeData}
+              />
+            </div>
           </div>
 
           {/* Enhanced Settings Panel - Light/Dark */}
-          <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl">
+          <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl overflow-y-auto max-h-[calc(100vh-12rem)]">
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold text-gray-900 truncate dark:text-gray-200">
                 🎨 {t("editor.filter_settings")}
@@ -401,9 +404,9 @@ function EditorPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-6 overflow-y-auto max-h-[600px]  bg-white dark:bg-gray-900">
+            <div className="p-6 space-y-6 bg-white dark:bg-gray-900">
               {/* Preset Filters - Light/Dark */}
-              <div>
+              <div className="flex flex-col bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700 max-h-80">
                 <h3 className="mb-4 text-lg font-medium text-gray-900 truncate dark:text-gray-200">
                   {t("editor.filter_preset")}
                 </h3>
@@ -486,7 +489,6 @@ function EditorPage() {
                   </button>
                 </div>
               </div>
-
               {/* Basic Controls - Light/Dark */}
               <div>
                 <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
@@ -575,7 +577,6 @@ function EditorPage() {
                   </div>
                 </div>
               </div>
-
               {/* Advanced Controls - Light/Dark */}
               <div>
                 <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">

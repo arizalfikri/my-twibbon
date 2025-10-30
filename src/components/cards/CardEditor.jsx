@@ -185,11 +185,9 @@ function CardEditor({
         <div className="flex flex-col items-center justify-center flex-1 p-4">
           <div
             ref={containerRef}
-            className="relative max-w-sm w-full md:w-[200%] overflow-hidden lg:max-w-md rounded-xl"
+            className="relative w-full mx-auto overflow-hidden rounded-xl"
             style={{
               aspectRatio: frameAspectRatio,
-              minWidth: "320px",
-              minHeight: "320px",
             }}
           >
             {image && (
@@ -203,7 +201,12 @@ function CardEditor({
                 doubleClick={{ disabled: true }}
               >
                 <TransformComponent
-                  wrapperStyle={{ width: "130%", height: "150%" ,position:"absolute",left:"-60px"}}
+                  wrapperStyle={{
+                    width: "130%",
+                    height: "150%",
+                    position: "absolute",
+                    left: "-60px",
+                  }}
                 >
                   <img
                     src={image}

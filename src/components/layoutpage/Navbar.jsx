@@ -332,7 +332,7 @@ function Navbar() {
                   }}
                 >
                   <User className="w-5 h-5" />
-                  <span>Sign Up Kontributor</span>
+                  <span>Sign Up </span>
                 </button>
               </>
             )}
