@@ -97,7 +97,7 @@ function TwiboneHomepage() {
       <Navbar />
 
       {/* Header Section with Diagonal Scrolling Photos */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#4C0D68] to-[#6B1E7A] dark:from-[#3A0A51] dark:to-[#5A1869] text-white h-[540px] md:h-[640px] ">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#4C0D68] to-[#6B1E7A] dark:from-[#3A0A51] dark:to-[#5A1869] text-white h-[440px] md:h-[640px] ">
         <div className="relative z-20 grid h-full max-w-screen-lg px-4 mx-auto">
           <div className="relative grid items-center h-full gap-8 md:grid-cols-2 lg:gap-16">
             {/* ✅ Left Column - Text Content */}
