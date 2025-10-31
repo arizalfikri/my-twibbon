@@ -113,14 +113,14 @@ function TwiboneHomepage() {
               </p>
               <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row md:items-start lg:justify-start lg:ms-10">
                 <Link to="/create">
-                  <button className="bg-yellow-400 dark:bg-yellow-500 text-[#4C0D68] dark:text-[#3A0A51] px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:bg-yellow-300 dark:hover:bg-yellow-400 transition-colors flex items-center gap-2">
+                  <button className="bg-yellow-400 dark:bg-yellow-500 text-[#4C0D68] dark:text-[#3A0A51] md:px-5 md:py-2.5  lg:text-xl md:text-base px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:bg-yellow-300 dark:hover:bg-yellow-400 transition-colors flex items-center gap-2">
                     <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                     {t("homepage.start_creating")}
                   </button>
                 </Link>
                 <Link
                   to="/explore"
-                  className="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold text-base sm:text-lg hover:bg-white hover:text-[#4C0D68] dark:hover:bg-gray-100 dark:hover:text-[#3A0A51] transition-colors inline-flex items-center gap-2"
+                  className="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold md:px-5 md:py-2.5  lg:text-xl md:text-base text-base sm:text-lg hover:bg-white hover:text-[#4C0D68] dark:hover:bg-gray-100 dark:hover:text-[#3A0A51] transition-colors inline-flex items-center gap-2"
                 >
                   {t("homepage.explore_twibone")}
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />

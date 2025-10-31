@@ -234,12 +234,33 @@ function CardEditor({
             />
             {/* WATERMARK */}
             {isExporting && downloadWithWatermark && (
-              <div className="absolute flex items-center px-2 py-1 text-gray-600 shadow-md shadow-gray-800 rounded-2xl bottom-2 right-2 bg-white/95">
-                <span className="text-[8px] font-medium ">Made with</span>
+              <div
+                id="watermark-fixed"
+                className="absolute flex items-center justify-center gap-1 px-2 py-[2px]
+      text-gray-700 bg-white/95 rounded-lg shadow-md shadow-gray-600
+      bottom-[10px] right-[10px]"
+                style={{
+                  transformOrigin: "bottom right",
+                  scale: "clamp(0.7, 1vw, 1)", // 🔥 auto scaling biar konsisten di HP & PC
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "clamp(7px, 1.3vw, 10px)", // 🔥 teks menyesuaikan device
+                    fontWeight: 600,
+                    lineHeight: 1,
+                  }}
+                >
+                  Made with
+                </span>
                 <img
                   src={gypemLogo}
                   alt="Logo"
-                  className="object-contain h-4 w-fit"
+                  style={{
+                    height: "clamp(12px, 2vw, 20px)", // 🔥 logo fleksibel tapi proporsional
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
                   crossOrigin="anonymous"
                 />
               </div>
