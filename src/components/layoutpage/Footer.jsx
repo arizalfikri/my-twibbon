@@ -15,7 +15,7 @@ function Footer() {
             </div>
 
             {/* Main Content - Horizontal Layout */}
-            <div className="relative px-4 py-16 mx-auto max-w-screen-2xl">
+            <div className="relative max-w-screen-lg px-4 py-16 mx-auto">
                 {/* Top Section - Company Info Centered */}
                 <div className="mb-12 text-center">
                     <div className="flex items-center justify-center gap-4 mb-6">

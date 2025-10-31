@@ -90,15 +90,19 @@ function SignUp() {
 
   if (!selectedRole) {
     return (
-      <div id="root">
-        <div className="grid items-center justify-center h-screen grid-cols-1 overflow-x-hidden bg-white dark:bg-gray-900 md:grid-cols-2 lg:grid-cols-3">
+      <div id="root" className="flex w-screen h-screen overflow-hidden">
+        {/* Left Side - Fixed Image */}
+        <div className="flex-shrink-0 hidden w-1/3 bg-white lg:flex dark:bg-gray-900">
           <img
-            className="hidden object-cover w-full h-full col-span-1 lg:block"
+            className="object-cover w-full h-full"
             src={LoginImage}
             alt={t("auth.register")}
           />
+        </div>
 
-          <div className="flex flex-col justify-center col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
+        {/* Right Side - Scrollable Form */}
+        <div className="flex-1 w-full overflow-y-auto bg-white lg:w-2/3 dark:bg-gray-900">
+          <div className="flex flex-col justify-center min-h-full px-4 py-16 md:px-32 xl:px-52 md:py-20">
             <a href="/">
               <img
                 src={
@@ -147,14 +151,19 @@ function SignUp() {
   }
 
   return (
-    <div id="root">
-      <div className="grid h-screen grid-cols-1 overflow-x-hidden md:grid-cols-2 lg:grid-cols-3">
+    <div id="root" className="flex w-screen h-screen overflow-hidden">
+      {/* Left Side - Fixed Image */}
+      <div className="flex-shrink-0 hidden w-1/3 bg-white lg:flex dark:bg-gray-900">
         <img
-          className="hidden object-cover w-full h-full col-span-1 lg:block"
+          className="object-cover w-full h-full"
           src={LoginImage}
           alt={t("auth.login_image")}
         />
-        <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto text-gray-800 bg-white dark:bg-gray-900 dark:text-gray-100 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
+      </div>
+
+      {/* Right Side - Scrollable Form */}
+      <div className="flex-1 w-full overflow-y-auto text-gray-800 bg-white lg:w-2/3 dark:bg-gray-900 dark:text-gray-100">
+        <div className="flex flex-col min-h-full px-4 py-16 md:px-32 xl:px-52 md:py-20">
           <a href="/">
             <img
               src={

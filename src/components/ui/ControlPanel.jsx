@@ -6,7 +6,7 @@ import DownloadButton from "../buttons/DownloadButton";
 const ControlPanel = ({ onDownload, hasImage = false }) => {
   if (!hasImage) {
     return (
-      <div className="flex justify-center p-4">
+      <div className="flex justify-center p-6">
         <UploadButton />
       </div>
     );
@@ -14,16 +14,16 @@ const ControlPanel = ({ onDownload, hasImage = false }) => {
 
   return (
     <>
-      {/* Mobile Controls - dengan z-index tinggi */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 md:hidden">
-        <div className="grid w-full max-w-sm grid-cols-4 gap-3 mx-auto">
+      {/* 🔹 Mobile Controls (tetap fixed di bawah) */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-900 md:hidden">
+        <div className="flex justify-center gap-4">
           <UploadButton variant="icon" />
-          <DownloadButton onClick={onDownload} fullWidth={true} />
+          <DownloadButton onClick={onDownload} />
         </div>
       </div>
 
-      {/* Desktop Controls */}
-      <div className="justify-center hidden gap-3 pt-4 md:flex">
+      {/* 🔹 Desktop Controls (rapi & proporsional) */}
+      <div className="flex justify-center gap-6 mt-6 md:mt-8">
         <UploadButton variant="icon" />
         <DownloadButton onClick={onDownload} />
       </div>

@@ -191,9 +191,7 @@ const DetailProfile = () => {
     }
 
     const caption = twibbon.caption || "Check out this post!";
-    const shareUrl = `${window.location.origin}/${
-      twibbon.slug   || ""
-    }`;
+    const shareUrl = `${window.location.origin}/${twibbon.slug || ""}`;
 
     if (navigator.share) {
       navigator
@@ -259,7 +257,7 @@ const DetailProfile = () => {
         </div>
 
         {/* Profile Content */}
-        <div className="container relative px-6 mx-auto">
+        <div className="container relative max-w-screen-lg px-6 mx-auto">
           <div className="flex flex-col gap-8 lg:flex-row">
             {/* Main Profile Section */}
             <div className="flex-1">
@@ -414,161 +412,162 @@ const DetailProfile = () => {
           </div>
         </div>
       </div>
+      <div className="w-full max-w-screen-lg px-4 mx-auto sm:px-6 lg:px-8">
+        {/* Content Section */}
+        <div className="container px-6 py-8 mx-auto">
+          <div className="flex flex-col gap-8 lg:flex-row">
+            {/* Main Content */}
+            <div className="flex-1">
+              {/* Tabs */}
+              <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex space-x-8">
+                  {availableTabs.map((tab, index) => {
+                    const tabKey =
+                      tab === t("profile.campaign")
+                        ? "Campaign"
+                        : tab === t("profile.posts")
+                        ? "Posts"
+                        : "Collections";
 
-      {/* Content Section */}
-      <div className="container px-6 py-8 mx-auto">
-        <div className="flex flex-col gap-8 lg:flex-row">
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Tabs */}
-            <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex space-x-8">
-                {availableTabs.map((tab, index) => {
-                  const tabKey =
-                    tab === t("profile.campaign")
-                      ? "Campaign"
-                      : tab === t("profile.posts")
-                      ? "Posts"
-                      : "Collections";
-
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => setActiveTab(tabKey)}
-                      className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-                        activeTab === tabKey
-                          ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
-                          : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => setActiveTab(tabKey)}
+                        className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                          activeTab === tabKey
+                            ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                            : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
-            {/* Campaign Content */}
-            {activeTab === "Campaign" && (
-              <div
-                className={`${
-                  viewMode === "grid"
-                    ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                    : "space-y-4"
-                }`}
-              >
-                {twibbonData.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center col-span-4 py-16 text-center">
-                    <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
-                      <Edit className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+              {/* Campaign Content */}
+              {activeTab === "Campaign" && (
+                <div
+                  className={`${
+                    viewMode === "grid"
+                      ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                      : "space-y-4"
+                  }`}
+                >
+                  {twibbonData.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center col-span-4 py-16 text-center">
+                      <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
+                        <Edit className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                      </div>
+                      <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
+                        {t("main.no_twibbon_yet")}
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        {t("profile.twibbone_will_appear")}
+                      </p>
                     </div>
-                    <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-                      {t("main.no_twibbon_yet")}
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      {t("profile.twibbone_will_appear")}
-                    </p>
-                  </div>
-                ) : (
-                  twibbonData.map((twibon) => (
-                    <CardProfile
-                      key={twibon.id}
-                      twibon={{
-                        id: twibon.id,
-                        title: twibon.title || t("main.no_title"),
-                        author: userFullname || "Gypem",
-                        supports: twibon?.supports ?? 0,
-                        slug: twibon.slug_event_twibbon,
-                        image: twibon.template_twibbon,
-                        caption: twibon.caption,
-                        url: twibon.url,
-                      }}
-                      onDelete={handleDeleteClick}
-                      onEdit={handleEditClick}
-                      isGrid={viewMode === "grid"}
-                    />
-                  ))
-                )}
-              </div>
-            )}
-
-            {/* Posts Content - Updated */}
-            {activeTab === "Posts" && (
-              <div>
-                {postsLoading ? (
-                  <div className="flex items-center justify-center py-16">
-                    <div className="w-8 h-8 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
-                  </div>
-                ) : userPosts.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
-                      <Edit className="w-8 h-8 text-gray-400 dark:text-gray-500" />
-                    </div>
-                    <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-                      {t("main.no_posts_yet")}
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      {t("profile.posts_will_appear")}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {userPosts.map((post) => (
-                      <CardPost
-                        key={post.id}
-                        post={post}
-                        onDelete={handlePostDelete}
-                        onShare={handlePostShare}
-                        onCardClick={handlePostClick}
-                        showActions={true}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Collections Content */}
-            {activeTab === "Collections" && (
-              <div>
-                {collectionsLoading ? (
-                  <div className="flex items-center justify-center py-16">
-                    <div className="w-8 h-8 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
-                  </div>
-                ) : userCollectionsData?.data?.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
-                      <Trophy className="w-8 h-8 text-gray-400 dark:text-gray-500" />
-                    </div>
-                    <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-                      {t("profile.no_collections")}
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      {t("profile.collections_will_appear")}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {userCollectionsData.data?.map((twibon) => (
-                      <CardCollections
+                  ) : (
+                    twibbonData.map((twibon) => (
+                      <CardProfile
                         key={twibon.id}
-                        collectionId={twibon.id}
                         twibon={{
                           id: twibon.id,
-                          title: twibon.event_twibbon?.title,
-                          author: twibon.event_twibbon?.author,
-                          supports: twibon.event_twibbon?.supports,
-                          slug: twibon.event_twibbon?.slug_event_twibbon,
-                          image: twibon.event_twibbon?.template_twibbon,
+                          title: twibon.title || t("main.no_title"),
+                          author: userFullname || "Gypem",
+                          supports: twibon?.supports ?? 0,
+                          slug: twibon.slug_event_twibbon,
+                          image: twibon.template_twibbon,
+                          caption: twibon.caption,
+                          url: twibon.url,
                         }}
-                        onShare={handleCollectionShare}
-                        onDelete={handleCollectionDelete}
+                        onDelete={handleDeleteClick}
+                        onEdit={handleEditClick}
+                        isGrid={viewMode === "grid"}
                       />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* Posts Content - Updated */}
+              {activeTab === "Posts" && (
+                <div>
+                  {postsLoading ? (
+                    <div className="flex items-center justify-center py-16">
+                      <div className="w-8 h-8 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
+                    </div>
+                  ) : userPosts.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
+                        <Edit className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                      </div>
+                      <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
+                        {t("main.no_posts_yet")}
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        {t("profile.posts_will_appear")}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-4 ">
+                      {userPosts.map((post) => (
+                        <CardPost
+                          key={post.id}
+                          post={post}
+                          onDelete={handlePostDelete}
+                          onShare={handlePostShare}
+                          onCardClick={handlePostClick}
+                          showActions={true}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Collections Content */}
+              {activeTab === "Collections" && (
+                <div>
+                  {collectionsLoading ? (
+                    <div className="flex items-center justify-center py-16">
+                      <div className="w-8 h-8 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
+                    </div>
+                  ) : userCollectionsData?.data?.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
+                        <Trophy className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                      </div>
+                      <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
+                        {t("profile.no_collections")}
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        {t("profile.collections_will_appear")}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                      {userCollectionsData.data?.map((twibon) => (
+                        <CardCollections
+                          key={twibon.id}
+                          collectionId={twibon.id}
+                          twibon={{
+                            id: twibon.id,
+                            title: twibon.event_twibbon?.title,
+                            author: twibon.event_twibbon?.author,
+                            supports: twibon.event_twibbon?.supports,
+                            slug: twibon.event_twibbon?.slug_event_twibbon,
+                            image: twibon.event_twibbon?.template_twibbon,
+                          }}
+                          onShare={handleCollectionShare}
+                          onDelete={handleCollectionDelete}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -196,7 +196,7 @@ function ExploreTwibone() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white">
       <Navbar />
 
-      <main className="px-4 py-8 mx-auto max-w-screen-2xl">
+      <main className="max-w-screen-lg px-4 py-8 mx-auto">
         {/* Search and Filters */}
         <div className="mb-8">
           <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
@@ -298,7 +298,7 @@ function ExploreTwibone() {
         <div
           className={`${
             viewMode === "grid"
-              ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6"
+              ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6"
               : "space-y-4"
           }`}
         >

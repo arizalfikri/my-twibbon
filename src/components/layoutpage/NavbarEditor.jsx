@@ -18,7 +18,7 @@ function NavbarEditor({ title, onExit, disableModalExit = false }) {
   return (
     <>
       <nav className="bg-[#4C0D68] dark:bg-gray-900 shadow-lg border-b border-purple-600/30 dark:border-gray-700">
-        <div className="px-4 mx-auto max-w-screen-2xl sm:px-6 lg:px-8">
+        <div className="max-w-screen-lg px-4 mx-auto sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Desktop */}
             <div className="items-center hidden md:flex">

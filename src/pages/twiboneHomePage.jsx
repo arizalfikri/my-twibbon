@@ -93,34 +93,36 @@ function TwiboneHomepage() {
   const filteredTwibbons = twibbonData.filter(() => true).slice(0, 8);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white ">
       <Navbar />
 
       {/* Header Section with Diagonal Scrolling Photos */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#4C0D68] to-[#6B1E7A] dark:from-[#3A0A51] dark:to-[#5A1869] text-white h-[540px] md:h-[640px] ">
-        <div className="relative z-20 grid h-full px-4 mx-auto max-w-screen-2xl">
+        <div className="relative z-20 grid h-full max-w-screen-lg px-4 mx-auto">
           <div className="relative grid items-center h-full gap-8 md:grid-cols-2 lg:gap-16">
             {/* ✅ Left Column - Text Content */}
             <div className="items-center justify-center space-y-4 text-center md:text-left md:space-y-6">
-              <div className="flex items-center justify-center mb-4 lg:justify-start">
+              <div className="flex items-center justify-center mb-4 md:justify-start">
                 <Sparkles className="w-6 h-6 mr-2 text-yellow-400 sm:w-7 sm:h-7 md:w-8 md:h-8" />
-                <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl">
+                <h1 className="text-3xl font-bold sm:text-4xl md:text-2xl lg:text-4xl">
                   {t("title")}
                 </h1>
               </div>
-              <p className="flex items-center justify-center text-lg text-purple-100 dark:text-purple-200 sm:text-xl md:text-2xl ">
+              <p className="flex items-center justify-center text-lg text-purple-100 dark:text-purple-200 sm:text-xl md:text-lg ">
                 {t("homepage.hero_subtitle")}
               </p>
-              <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row md:items-start lg:justify-start lg:ms-10">
-                <Link to="/create">
-                  <button className="bg-yellow-400 dark:bg-yellow-500 text-[#4C0D68] dark:text-[#3A0A51] md:px-5 md:py-2.5  lg:text-xl md:text-base px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:bg-yellow-300 dark:hover:bg-yellow-400 transition-colors flex items-center gap-2">
-                    <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                    {t("homepage.start_creating")}
-                  </button>
+              <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row md:items-start md:justify-start lg:ps-0">
+                <Link
+                  to="/create"
+                  className="bg-yellow-400 dark:bg-yellow-500 text-[#4C0D68] dark:text-[#3A0A51] px-6 py-3 sm:px-8 sm:py-4 md:px-5 md:py-2.5 rounded-full font-bold text-base sm:text-lg md:text-base hover:bg-yellow-300 dark:hover:bg-yellow-400 transition-colors inline-flex items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                  {t("homepage.start_creating")}
                 </Link>
+
                 <Link
                   to="/explore"
-                  className="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold md:px-5 md:py-2.5  lg:text-xl md:text-base text-base sm:text-lg hover:bg-white hover:text-[#4C0D68] dark:hover:bg-gray-100 dark:hover:text-[#3A0A51] transition-colors inline-flex items-center gap-2"
+                  className="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 md:px-5 md:py-2.5 rounded-full font-semibold text-base sm:text-lg md:text-base  hover:bg-white hover:text-[#4C0D68] dark:hover:bg-gray-100 dark:hover:text-[#3A0A51] transition-colors inline-flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   {t("homepage.explore_twibone")}
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -153,7 +155,7 @@ function TwiboneHomepage() {
             >
               {[...samplePhotos[0], ...samplePhotos[0]].map((photo, index) => (
                 <SwiperSlide key={`row1-${index}`} className="!w-auto">
-                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
+                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl md:h-40 md:w-40 lg:h-48 lg:w-48 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
                       className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover border-[6px] border-white hover:scale-110 rounded-xl"
                       style={{ backgroundImage: `url(${photo})` }}
@@ -185,7 +187,7 @@ function TwiboneHomepage() {
             >
               {[...samplePhotos[1], ...samplePhotos[1]].map((photo, index) => (
                 <SwiperSlide key={`row2-${index}`} className="!w-auto">
-                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
+                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl md:h-40 md:w-40 lg:h-48 lg:w-48 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
                       className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover border-[6px] border-white hover:scale-110 rounded-xl"
                       style={{ backgroundImage: `url(${photo})` }}
@@ -217,7 +219,7 @@ function TwiboneHomepage() {
             >
               {[...samplePhotos[2], ...samplePhotos[2]].map((photo, index) => (
                 <SwiperSlide key={`row3-${index}`} className="!w-auto">
-                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl xl:w-40 xl:h-40 2xl:w-52 2xl:h-52 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
+                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl md:h-40 md:w-40 lg:h-48 lg:w-48 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
                       className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover border-[6px] border-white hover:scale-110 rounded-xl"
                       style={{ backgroundImage: `url(${photo})` }}
@@ -233,7 +235,7 @@ function TwiboneHomepage() {
         <div className="absolute hidden  nmd:block inset-0 bg-gradient-to-b from-[#4C0D68]/100 via-[#4C0D68]/95 to-transparent lg:from-[#4C0D68]/40 lg:via-transparent lg:to-transparent dark:from-[#3A0A51]/100 dark:via-[#3A0A51]/95 dark:lg:from-[#3A0A51]/40 pointer-events-none z-10"></div>
       </section>
 
-      <main className="px-4 py-8 mx-auto max-w-screen-2xl">
+      <main className="max-w-screen-lg px-4 py-8 mx-auto">
         <div className="mb-8">
           <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-2">

@@ -343,7 +343,7 @@ function MainTwibone() {
   return (
     <div className="bg-white dark:bg-gray-900 dark:text-white">
       <Navbar />
-      <header className="px-3 py-3 m-5 mx-auto bg-white dark:bg-gray-900 dark:text-white max-w-screen-2xl">
+      <header className="max-w-screen-lg px-3 py-3 m-5 mx-auto bg-white dark:bg-gray-900 dark:text-white">
         <div className="grid items-center grid-cols-1 lg:grid-cols-3">
           <div className="flex flex-col min-w-0">
             <h1 className="text-lg font-medium capitalize truncate">
@@ -400,7 +400,7 @@ function MainTwibone() {
 
       <div className="grid h-full grid-cols-1 lg:grid-cols-2">
         <div
-          className="relative flex items-center justify-center p-4 md:p-8" // ← tambah padding lebih besar di desktop
+          className="relative flex items-center justify-center p-4"
           style={{
             backgroundImage: `url(${Bg1})`,
             backgroundSize: "cover",
@@ -411,9 +411,7 @@ function MainTwibone() {
           <div className="absolute inset-0 hidden bg-black/60 dark:block"></div>
 
           {/* Konten */}
-          <div className="relative z-10 w-full max-w-sm md:max-w-md lg:max-w-lg">
-            {" "}
-            {/* ← tambah wrapper dengan max-width */}
+          <div className="relative z-10 w-full lg:max-w-lg">
             <CardEditor frameImage={frameImage} />
           </div>
         </div>

@@ -185,7 +185,7 @@ function CardEditor({
         <div className="flex flex-col items-center justify-center flex-1 p-4">
           <div
             ref={containerRef}
-            className="relative w-full mx-auto overflow-hidden rounded-xl"
+            className="relative w-full mx-auto overflow-hidden rounded-xl "
             style={{
               aspectRatio: frameAspectRatio,
             }}

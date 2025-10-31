@@ -87,7 +87,7 @@ function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white">
       <Navbar />
-      <main className="px-6 py-10 mx-auto max-w-screen-2xl">
+      <main className="max-w-screen-lg px-6 py-10 mx-auto">
         <h1 className="mb-6 text-2xl font-bold">{t("checkout.title")}</h1>
         <p className="mb-8 text-gray-600 dark:text-gray-300">
           {t("checkout.subtitle")}

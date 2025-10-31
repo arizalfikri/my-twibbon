@@ -41,7 +41,6 @@ const SignIn = () => {
     }
   }, [email, token, fullname, role, navigate]);
 
-  // Setup API hooks untuk kedua endpoint
   const userLogin = usePOST("/auth/login");
   const googleLoginAPI = usePOST("/auth/login-sosmed");
 
@@ -105,11 +104,10 @@ const SignIn = () => {
   const onSubmit = async (data) => {
     try {
       let response;
-        response = await userLogin.mutateAsync({
-          url: "/auth/login",
-          data: { email: data.email, password: data.password },
-        });
-     
+      response = await userLogin.mutateAsync({
+        url: "/auth/login",
+        data: { email: data.email, password: data.password },
+      });
 
       if (response.status === 200) {
         openToast("toast", true, t("auth.login_success"), "success");
@@ -140,21 +138,22 @@ const SignIn = () => {
     }
   };
 
-  const isPending = userLogin.isPending ;
+  const isPending = userLogin.isPending;
 
- 
-
-  // Form login
   return (
-    <div id="root">
-      <div className="grid justify-center h-screen grid-cols-1 overflow-x-hidden bg-white dark:bg-gray-900 md:grid-cols-2 lg:grid-cols-3">
+    <div id="root" className="flex w-screen h-screen overflow-hidden">
+      {/* Left Side - Fixed Image */}
+      <div className="flex-shrink-0 hidden w-1/3 bg-white lg:flex dark:bg-gray-900">
         <img
-          className="hidden object-cover w-full h-full col-span-1 lg:block"
+          className="object-cover w-full h-full"
           src={LoginImage}
           alt={t("auth.login")}
         />
+      </div>
 
-        <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
+      {/* Right Side - Scrollable Form */}
+      <div className="flex-1 w-full overflow-y-auto bg-white lg:w-2/3 dark:bg-gray-900">
+        <div className="flex flex-col min-h-full px-4 py-16 md:px-32 xl:px-52 md:py-20">
           <a href="/">
             <img
               src={
@@ -167,7 +166,6 @@ const SignIn = () => {
             />
           </a>
 
-       
           <form className="mt-10 md:mt-5" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-5">
               <InputWithLabel
@@ -218,17 +216,17 @@ const SignIn = () => {
               </button>
             </div>
 
-              <button
-                type="button"
-                onClick={() => loginGoogle()}
-                className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-100 hover:bg-gray-900 hover:text-white transition-smooth dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
-              >
-                <FcGoogle className="w-5 h-5" />
-                google
-              </button>
+            <button
+              type="button"
+              onClick={() => loginGoogle()}
+              className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-100 hover:bg-gray-900 hover:text-white transition-smooth dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
+            >
+              <FcGoogle className="w-5 h-5" />
+              google
+            </button>
           </form>
 
-          <div className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400 md:text-md ">
+          <div className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400 md:text-md">
             {t("auth.no_account")}{" "}
             <a
               href={"/SignUp"}

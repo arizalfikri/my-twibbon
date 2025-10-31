@@ -133,7 +133,7 @@ function Navbar() {
   return (
     <>
       <nav className="bg-[#4C0D68] text-white py-5 relative z-40 dark:bg-gray-900 dark:border-b dark:border-gray-600">
-        <div className="px-4 mx-auto max-w-screen-2xl">
+        <div className="max-w-screen-lg px-4 mx-auto">
           <div className="flex items-center justify-between">
             {isMobileSearchMode ? (
               <div className="flex items-center w-full space-x-3 md:hidden">
@@ -172,7 +172,7 @@ function Navbar() {
                       className="object-contain w-20 h-20"
                     />
                   </div>
-                  <span className="text-lg font-semibold">Gypem Twibone</span>
+                  <span className="text-lg font-semibold">Gypem Twibbon</span>
                 </Link>
 
                 {/* Desktop Search */}

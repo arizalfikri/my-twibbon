@@ -373,14 +373,10 @@ function EditorPage() {
             </div>
           </div>
         </div>
-
-        {/* Desktop Layout  */}
-
-        <div className="hidden md:grid md:grid-cols-[2fr_1fr] max-w-screen-2xl p-6 gap-12 justify-between">
-          <div ref={editorRef} className="flex items-center justify-center">
-            <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl">
-              {" "}
-              {/* ← ubah ini */}
+        <div className="hidden md:grid md:grid-cols-[minmax(350px,450px)_1fr] max-w-screen-lg p-6 gap-8 mx-auto w-full">
+          {/* Card Editor */}
+          <div className="flex flex-col items-center justify-center">
+            <div className="w-full max-w-[400px]">
               <CardEditor
                 frameImage={frameImage}
                 filters={filters}
@@ -391,8 +387,8 @@ function EditorPage() {
           </div>
 
           {/* Enhanced Settings Panel - Light/Dark */}
-          <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl overflow-y-auto max-h-[calc(100vh-12rem)]">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl overflow-y-auto max-h-[calc(100vh-10rem)] p-8">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold text-gray-900 truncate dark:text-gray-200">
                 🎨 {t("editor.filter_settings")}
               </h2>
@@ -404,7 +400,7 @@ function EditorPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-6 bg-white dark:bg-gray-900">
+            <div className="space-y-8">
               {/* Preset Filters - Light/Dark */}
               <div className="flex flex-col bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700 max-h-80">
                 <h3 className="mb-4 text-lg font-medium text-gray-900 truncate dark:text-gray-200">

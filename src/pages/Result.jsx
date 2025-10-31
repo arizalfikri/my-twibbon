@@ -160,17 +160,15 @@ function Result() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <NavbarEditor title={twibbonData?.title} />
 
-      <div className="items-center justify-center gap-6 p-6 mx-auto md:grid md:grid-cols-2 max-w-7xl">
+      <div className="items-center justify-center max-w-screen-lg gap-6 p-6 mx-auto md:grid md:grid-cols-2">
         {/* Result photo section */}
         <div className="md:col-span-1">
-          <div className="relative max-w-xl mx-auto w-fit">
-            <div className="relative w-fit">
-              <img
-                src={resultImage}
-                alt={t("result.twibbon_result")}
-                className="object-contain h-auto rounded-lg shadow w-fit"
-              />
-            </div>
+          <div className="relative mx-auto w-fit max-w-[250px] md:max-w-[350px]">
+            <img
+              src={resultImage}
+              alt={t("result.twibbon_result")}
+              className="object-contain w-full h-auto rounded-lg shadow"
+            />
           </div>
 
           {/* Download link */}
@@ -187,7 +185,6 @@ function Result() {
             </span>
           </div>
         </div>
-
         {/* Desktop Control Panel */}
         <div className="hidden p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 md:block">
           {isPosted ? (

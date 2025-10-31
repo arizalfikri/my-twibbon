@@ -231,7 +231,7 @@ function TwiboneCreatePage() {
     <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
       <NavbarEditor title={t("create.page_title")} />
 
-      <div className="flex flex-col flex-1 md:flex-row md:overflow-hidden">
+      <div className="flex flex-col flex-1 md:flex-row md:overflow-hidden ">
         {/* Sidebar Gambar (desktop) */}
         <div className="hidden w-1/2 border-r border-gray-200 dark:border-gray-700 md:block bg-gray-50 dark:bg-gray-800">
           <ImageUploadArea
