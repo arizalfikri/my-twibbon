@@ -13,6 +13,19 @@ const theme = localStorage.getItem("theme") || "light";
 if (theme === "dark") {
   document.documentElement.classList.add("dark");
 }
+
+const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+if (!window.__themeListenerAdded) {
+  mediaQuery.addEventListener("change", (e) => {
+    if (!localStorage.getItem("theme")) {
+      const newTheme = e.matches ? "dark" : "light";
+      set({ theme: newTheme });
+      document.documentElement.classList.toggle("dark", newTheme === "dark");
+    }
+  });
+  window.__themeListenerAdded = true;
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
