@@ -262,12 +262,14 @@ function Navbar() {
       </nav>
 
       {/* Overlay */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50"
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
+    {isSidebarOpen && (
+  <div
+  className="fixed inset-0 z-40 transition-all duration-300 bg-black/20 backdrop-blur-sm "
+  onClick={() => setIsSidebarOpen(false)}
+></div>
+
+)}
+
 
       {/* Sidebar */}
       <div
