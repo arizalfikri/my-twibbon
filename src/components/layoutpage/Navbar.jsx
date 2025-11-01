@@ -132,7 +132,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="bg-[#4C0D68] text-white py-5 relative z-40 dark:bg-gray-900 dark:border-b dark:border-gray-600">
+      <nav className="bg-[#4C0D68] text-white py-5  z-40 dark:bg-gray-900 dark:border-b dark:border-gray-600 sticky top-0">
         <div className="max-w-screen-lg px-4 mx-auto">
           <div className="flex items-center justify-between">
             {isMobileSearchMode ? (
