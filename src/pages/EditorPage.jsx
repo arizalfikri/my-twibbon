@@ -460,7 +460,7 @@ function EditorPage() {
                     className="flex items-center p-4 space-x-3 transition-all border-2 border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-pink-200 hover:to-purple-200 dark:hover:from-pink-800/40 dark:hover:to-purple-800/40 hover:border-pink-400 dark:hover:border-pink-500/70"
                   >
                     <span className="text-2xl">🌈</span>
-                    <span className="font-medium text-gray-900 dark:text-gray-200">
+                    <span className="font-medium text-gray-900 truncate dark:text-gray-200">
                       {t("editor.vivid")}
                     </span>
                   </button>
@@ -479,7 +479,7 @@ function EditorPage() {
                     className="flex items-center p-4 space-x-3 transition-all border-2 border-gray-300 rounded-lg dark:border-gray-600/50 bg-gradient-to-br from-gray-100 to-slate-100 dark:from-gray-800/30 dark:to-slate-800/30 hover:from-gray-200 hover:to-slate-200 dark:hover:from-gray-700/40 dark:hover:to-slate-700/40 hover:border-gray-400 dark:hover:border-gray-500/70"
                   >
                     <span className="text-2xl">⚫</span>
-                    <span className="font-medium text-gray-900 dark:text-gray-200">
+                    <span className="font-medium text-gray-900 truncate dark:text-gray-200">
                       {t("editor.bw")}
                     </span>
                   </button>

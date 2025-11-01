@@ -10,7 +10,7 @@ import {
   Share2,
   CheckCircle,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom"; // Assuming you're using React Router
+import { Link } from "react-router-dom"; // Assuming you're using React Router
 import Navbar from "../components/layoutpage/Navbar";
 import Footer from "../components/layoutpage/Footer";
 import CardHome from "../components/cards/CardHome";
@@ -63,7 +63,6 @@ import { useTranslation } from "react-i18next";
 
 function TwiboneHomepage() {
   const { data, isLoading } = useGET("twibbons");
-  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [viewMode, setViewMode] = useState("grid");
 
@@ -88,9 +87,12 @@ function TwiboneHomepage() {
   }, []);
 
   const twibbonData = data?.data || [];
+  const pagination = data?.pagination || [];
+
+  const totalTwibbons = pagination.total || twibbonData.length;
 
   // 🔹 Limit to 8 twibones for homepage
-  const filteredTwibbons = twibbonData.filter(() => true).slice(0, 8);
+  const filteredTwibbons = twibbonData.slice(0, 8);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white ">
@@ -247,7 +249,7 @@ function TwiboneHomepage() {
                   ? t("homepage.loading_latest")
                   : t("homepage.showing_count", {
                       filtered: filteredTwibbons.length,
-                      total: twibbonData.length,
+                      total: pagination.total || "0",
                     })}
               </p>
             </div>
@@ -317,16 +319,16 @@ function TwiboneHomepage() {
           ) : filteredTwibbons.length === 0 ? (
             <EmptyTwibbon />
           ) : (
-            filteredTwibbons.map((twibon) => (
+            filteredTwibbons.map((twibbon) => (
               <CardHome
-                key={twibon.id}
+                key={twibbon.id}
                 twibon={{
-                  id: twibon.id,
-                  title: twibon.title || t("homepage.untitled"),
-                  author: twibon?.contributor?.fullname || "Gypem",
-                  supports: twibon.supports || 0,
-                  slug: twibon.slug_event_twibbon,
-                  image: twibon.template_twibbon,
+                  id: twibbon.id,
+                  title: twibbon.title || t("homepage.untitled"),
+                  author: twibbon?.contributor?.fullname || "Gypem",
+                  supports: twibbon.supports || 0,
+                  slug: twibbon.slug_event_twibbon,
+                  image: twibbon.template_twibbon,
                   isNew: false,
                   isTrending: false,
                 }}
@@ -337,27 +339,28 @@ function TwiboneHomepage() {
         </div>
 
         {/* View More Section */}
-        {filteredTwibbons.length > 0 && twibbonData.length > 8 && (
-          <div className="mt-12 text-center">
-            <div className="p-8 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-2xl">
-              <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-                {t("homepage.more_twibone_available", {
-                  count: twibbonData.length - 8,
-                })}
-              </h3>
-              <p className="mb-6 text-gray-600 dark:text-gray-400">
-                {t("homepage.explore_collection")}
-              </p>
-              <Link
-                to="/explore"
-                className="bg-[#4C0D68] dark:bg-[#6B1E7A] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#6B1E7A] dark:hover:bg-[#7B2D8A] transition-colors inline-flex items-center gap-2"
-              >
-                {t("homepage.explore_all_twibone")}
-                <ArrowRight className="w-5 h-5" />
-              </Link>
+        {filteredTwibbons.length > 0 &&
+          totalTwibbons > filteredTwibbons.length && (
+            <div className="mt-12 text-center">
+              <div className="p-8 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-2xl">
+                <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
+                  {t("homepage.more_twibone_available", {
+                    count: totalTwibbons - filteredTwibbons.length,
+                  })}
+                </h3>
+                <p className="mb-6 text-gray-600 dark:text-gray-400">
+                  {t("homepage.explore_collection")}
+                </p>
+                <Link
+                  to="/explore"
+                  className="bg-[#4C0D68] dark:bg-[#6B1E7A] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#6B1E7A] dark:hover:bg-[#7B2D8A] transition-colors inline-flex items-center gap-2"
+                >
+                  {t("homepage.explore_all_twibone")}
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Enhanced Tutorial Section */}
         <section className="py-20 mt-16 bg-gradient-to-r from-gray-50 to-purple-50 dark:from-gray-800 dark:to-purple-900/30 rounded-3xl">

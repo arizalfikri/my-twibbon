@@ -15,15 +15,15 @@ const ControlPanel = ({ onDownload, hasImage = false }) => {
   return (
     <>
       {/* 🔹 Mobile Controls (tetap fixed di bawah) */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-900 md:hidden">
-        <div className="flex justify-center gap-4">
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-gray-200 shadow-lg md:hidden dark:border-gray-700 dark:bg-gray-900">
+        <div className="flex justify-center gap-4 mx-auto">
           <UploadButton variant="icon" />
-          <DownloadButton onClick={onDownload} />
-        </div>
+          <DownloadButton onClick={onDownload}   fullWidth={true}/>
+        </div>  
       </div>
 
       {/* 🔹 Desktop Controls (rapi & proporsional) */}
-      <div className="flex justify-center gap-6 mt-6 md:mt-8">
+      <div className="justify-center hidden gap-6 mt-6 md:flex md:mt-8">
         <UploadButton variant="icon" />
         <DownloadButton onClick={onDownload} />
       </div>
