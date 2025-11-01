@@ -34,7 +34,7 @@ function Navbar() {
   const { email, token, fullname, role } = useGlobalStore();
   const { theme, toggleTheme } = useThemeStore();
   const { t, i18n } = useTranslation();
-  
+
   useEffect(() => {
     if (!email && localStorage.getItem("email")) {
       useGlobalStore.setState({
@@ -262,14 +262,12 @@ function Navbar() {
       </nav>
 
       {/* Overlay */}
-    {isSidebarOpen && (
-  <div
-  className="fixed inset-0 z-40 transition-all duration-300 bg-black/20 backdrop-blur-sm "
-  onClick={() => setIsSidebarOpen(false)}
-></div>
-
-)}
-
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 transition-all duration-300 bg-black/20 backdrop-blur-sm "
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
 
       {/* Sidebar */}
       <div
@@ -413,10 +411,10 @@ function Navbar() {
             />
             <div>
               <p className="text-sm font-semibold text-gray-800 dark:text-white">
-                Gypem Twibone
+                Gypem Twibbon
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-300">
-                © 2024 All rights reserved
+                © {new Date().getFullYear()} All rights reserved
               </p>
             </div>
           </div>
