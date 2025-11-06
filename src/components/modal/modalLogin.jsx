@@ -126,10 +126,10 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
   return (
     <ModalAlert onClose={onClose}>
       <div className="relative w-[97vw] -mx-[2.5vw] sm:w-[90vw] sm:mx-auto md:w-[420px] max-w-lg overflow-hidden bg-white rounded-md shadow-2xl dark:bg-gray-900">
-        <div className="relative px-8 py-6 bg-gradient-to-r from-purple-600 to-purple-700">
+        <div className="relative px-8 py-6 bg-gradient-to-r from-primary-600 to-primary-700">
           <button
             onClick={onClose}
-            className="absolute p-2 text-white transition-colors rounded-full top-5 right-3 hover:text-purple-200 hover:bg-white/10"
+            className="absolute p-2 text-white transition-colors rounded-full top-5 right-3 hover:text-primary-200 hover:bg-white/10"
           >
             <X size={20} />
           </button>
@@ -189,7 +189,7 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
             <div className="flex items-center justify-end text-sm">
               <button
                 type="button"
-                className="font-medium text-purple-600 hover:text-purple-700"
+                className="font-medium text-primary-600 hover:text-primary-700"
               >
                 {t("auth.forgot_password")}
               </button>
@@ -202,7 +202,7 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
               className={`w-full py-3 rounded-lg text-white font-semibold transition-all duration-200 ${
                 isLoading
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  : "bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               }`}
             >
               {isLoading ? (
@@ -251,7 +251,7 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
               href="https://gypem.com/register"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-purple-600 hover:text-purple-700"
+              className="font-medium text-primary-600 hover:text-primary-700"
             >
               {t("auth.register_now")}
             </a>

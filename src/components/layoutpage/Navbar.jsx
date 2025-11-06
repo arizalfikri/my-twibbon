@@ -132,7 +132,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="bg-[#4C0D68] text-white py-5  z-40 dark:bg-gray-900 dark:border-b dark:border-gray-600 sticky top-0">
+      <nav className="sticky top-0 z-40 py-5 text-white bg-primary-400 dark:bg-gray-900 dark:border-b dark:border-gray-600">
         <div className="max-w-screen-lg px-4 mx-auto">
           <div className="flex items-center justify-between">
             {isMobileSearchMode ? (
@@ -145,7 +145,7 @@ function Navbar() {
                     onChange={handleSearchInputChange}
                     onKeyPress={handleSearchKeyPress}
                     autoFocus
-                    className="w-full bg-[#6B1E7A] border border-[#8B2E9B] rounded-full px-4 py-2 pl-10 pr-4 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                    className="w-full px-4 py-2 pl-10 pr-4 text-white placeholder-gray-300 border rounded-full bg-primary-500 border-primary-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                   />
                   <button
                     type="submit"
@@ -172,7 +172,7 @@ function Navbar() {
                       className="object-contain w-20 h-20"
                     />
                   </div>
-                  <span className="text-lg font-semibold">Gypem Twibbon</span>
+                  <span className="text-lg font-semibold">MyTwibbon</span>
                 </Link>
 
                 {/* Desktop Search */}
@@ -186,7 +186,7 @@ function Navbar() {
                       placeholder={t("search_placeholder")}
                       value={searchQuery}
                       onChange={handleSearchInputChange}
-                      className="w-full bg-[#6B1E7A] border border-[#8B2E9B] rounded-full px-4 py-2 pl-10 pr-10 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                      className="w-full px-4 py-2 pl-10 pr-10 text-white placeholder-gray-300 border rounded-full bg-primary-500 border-primary-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                     />
                     <button
                       type="submit"
@@ -210,7 +210,7 @@ function Navbar() {
                 <div className="items-center hidden space-x-2 md:flex">
                   <Link
                     to="/create"
-                    className="bg-yellow-400 text-[#4C0D68] px-4 py-2 rounded-full font-semibold flex items-center space-x-2 hover:bg-yellow-300 transition-colors"
+                    className="flex items-center px-4 py-2 space-x-2 font-semibold transition-colors bg-yellow-400 rounded-full text-primary-600 hover:bg-yellow-300"
                   >
                     <Plus className="w-4 h-4" />
                     <span className="hidden capitalize lg:inline">
@@ -226,7 +226,7 @@ function Navbar() {
                     />
                   </button>
                   <button
-                    className="p-2 hover:bg-[#6B1E7A] rounded-full transition-colors"
+                    className="p-2 transition-colors rounded-full hover:bg-primary-600"
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                   >
                     <Menu className="w-5 h-5" />
@@ -237,7 +237,7 @@ function Navbar() {
                 <div className="flex items-center space-x-2 md:hidden">
                   <button
                     onClick={handleMobileSearchToggle}
-                    className="p-2 hover:bg-[#6B1E7A] rounded-full transition-colors"
+                    className="p-2 transition-colors rounded-full hover:bg-primary-700"
                   >
                     <Search className="w-5 h-5" />
                   </button>
@@ -250,7 +250,7 @@ function Navbar() {
                   </button>
                   <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-2 hover:bg-[#6B1E7A] rounded-full transition-colors"
+                    className="p-2 transition-colors rounded-full hover:bg-primary-700"
                   >
                     <Menu className="w-5 h-5" />
                   </button>
@@ -276,11 +276,11 @@ function Navbar() {
         } flex flex-col`}
       >
         {/* Sidebar Header */}
-        <div className="bg-[#4C0D68] text-white p-4 flex items-center justify-between dark:bg-gray-700">
+        <div className="flex items-center justify-between p-4 text-white bg-primary-400 dark:bg-gray-700">
           <h2 className="text-lg font-semibold">Menu</h2>
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="p-2 hover:bg-[#6B1E7A] rounded-full transition-colors dark:hover:bg-gray-600"
+            className="p-2 transition-colors rounded-full hover:bg-primary-600 dark:hover:bg-gray-600"
           >
             <X className="w-5 h-5" />
           </button>
@@ -297,14 +297,14 @@ function Navbar() {
             {token && fullname && role ? (
               <Link
                 to="/DetailProfile"
-                className="grid grid-cols-[auto_1fr] gap-4 items-center bg-[#F4EBFF] px-4 py-3 rounded-lg dark:bg-gray-700"
+                className="grid grid-cols-[auto_1fr] gap-4 items-center bg-primary-100 px-4 py-3 rounded-lg dark:bg-gray-700"
                 onClick={() => setIsSidebarOpen(false)}
               >
-                <div className="bg-[#4C0D68] p-2 rounded-full w-10 h-10 flex items-center justify-center">
+                <div className="flex items-center justify-center w-10 h-10 p-2 rounded-full bg-primary-500">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-[#4C0D68] dark:text-white">
+                  <p className="text-sm font-semibold text-primary-600 dark:text-white">
                     {fullname}
                   </p>
                   <p className="text-xs text-gray-600 dark:text-gray-300">
@@ -315,7 +315,7 @@ function Navbar() {
             ) : (
               <>
                 <button
-                  className="w-full bg-[#4C0D68] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-[#6B1E7A] transition-colors"
+                  className="flex items-center justify-center w-full px-6 py-3 space-x-2 font-semibold text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
                   onClick={() => {
                     navigate("/SignIn");
                     setIsSidebarOpen(false);
@@ -325,7 +325,7 @@ function Navbar() {
                   <span>Sign In</span>
                 </button>
                 <button
-                  className="w-full bg-yellow-400 text-[#4C0D68] px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-colors"
+                  className="flex items-center justify-center w-full px-6 py-3 space-x-2 font-semibold transition-colors bg-yellow-400 rounded-lg text-primary-600 hover:bg-yellow-300"
                   onClick={() => {
                     navigate("/SignUp");
                     setIsSidebarOpen(false);
@@ -363,7 +363,7 @@ function Navbar() {
             <li>
               <Link
                 to="/create"
-                className="bg-yellow-400 text-[#4C0D68] px-4 py-2 rounded-full font-semibold flex items-center space-x-2 hover:bg-yellow-300 transition-colors md:hidden mb-5"
+                className="flex items-center px-4 py-2 mb-5 space-x-2 font-semibold transition-colors bg-yellow-400 rounded-full text-primary-600 hover:bg-yellow-300 md:hidden"
               >
                 <Plus className="w-4 h-4" />
                 <span>{t("add_twibone")}</span>
@@ -411,7 +411,7 @@ function Navbar() {
             />
             <div>
               <p className="text-sm font-semibold text-gray-800 dark:text-white">
-                Gypem Twibbon
+                My Twibbon
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-300">
                 © {new Date().getFullYear()} All rights reserved

@@ -15,7 +15,7 @@ export default function ModalFileTypeError() {
 
   return (
     <ModalAlert onClose={handleClose}>
-      <div className="bg-[#4C0D68] rounded-lg p-8 max-w-md mx-auto">
+      <div className="max-w-md p-8 mx-auto rounded-lg bg-primary-600">
         {/* Header dengan tombol close */}
         <div className="flex items-center justify-end mb-6">
           <button
@@ -47,14 +47,14 @@ export default function ModalFileTypeError() {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <rect width="64" height="64" rx="32" fill="#FFD8E4" />
+            <rect width="64" height="64" rx="32" fill="#D5DEEF" />
             {/* Background pattern to show transparency */}
             <defs>
               <pattern id="checkerboard" patternUnits="userSpaceOnUse" width="4" height="4">
-                <rect width="2" height="2" fill="#f0f0f0"/>
-                <rect x="2" y="2" width="2" height="2" fill="#f0f0f0"/>
-                <rect x="2" y="0" width="2" height="2" fill="#d0d0d0"/>
-                <rect x="0" y="2" width="2" height="2" fill="#d0d0d0"/>
+                <rect width="2" height="2" fill="#D5DEEF"/>
+                <rect x="2" y="2" width="2" height="2" fill="#D5DEEF"/>
+                <rect x="2" y="0" width="2" height="2" fill="#D5DEEF"/>
+                <rect x="0" y="2" width="2" height="2" fill="#D5DEEF"/>
               </pattern>
             </defs>
             
@@ -64,17 +64,13 @@ export default function ModalFileTypeError() {
             {/* Error X mark */}
             <circle cx="32" cy="31" r="8" fill="#E81212"/>
             <path d="M28 27L36 35M36 27L28 35" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            
-            {/* Warning triangle at bottom */}
-            <path d="M32 42L28 48H36L32 42Z" fill="#FFB020"/>
-            <path d="M31 44H33V46H31V44ZM31 47H33V48H31V47Z" fill="white"/>
           </svg>
         </div>
 
         {/* Content */}
         <div className="mb-8 text-center text-white">
           <h3 className="mb-3 text-xl font-medium">{t('modalerror.transparent_image_required')}</h3>
-          <p className="text-sm leading-relaxed text-purple-200">
+          <p className="text-sm leading-relaxed text-primary-100">
             {t('modalerror.transparent_image_message')} <span className="font-semibold">{t('modalerror.png_transparent_format')}</span> {t('modalerror.or_edit_background')}
           </p>
         </div>

@@ -259,7 +259,7 @@ function TwiboneCreatePage() {
                     key={idx}
                     className={`h-2 flex-1 rounded-full ${
                       idx <= currentStep
-                        ? "bg-purple-600"
+                        ? "bg-primary-600"
                         : "bg-gray-200 dark:bg-gray-700"
                     }`}
                   />
@@ -303,8 +303,8 @@ function TwiboneCreatePage() {
                     className={`flex items-center justify-center flex-1 px-6 py-3 text-white rounded-lg transition-colors
     ${
       isSubmitDisabled
-        ? "bg-purple-400 cursor-not-allowed"
-        : "bg-purple-600 hover:bg-purple-700"
+        ? "bg-primary-400 cursor-not-allowed"
+        : "bg-primary-600 hover:bg-primary-700"
     }`}
                   >
                     {isPending ? (

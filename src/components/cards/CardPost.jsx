@@ -82,7 +82,7 @@ function CardPost({
             {/* Share Button */}
             <button
               onClick={handleShare}
-              className="flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 hover:bg-[#4C0D68] hover:text-white rounded-lg transition-all duration-200 w-full"
+              className="flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 hover:bg-primary-500 hover:text-white rounded-lg transition-all duration-200 w-full"
               title={t("main.share")}
             >
               <Share2 className="w-3 h-3 dark:text-white" />

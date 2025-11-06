@@ -128,8 +128,8 @@ function ExploreTwibone() {
       return (
         <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
           <div className="max-w-md space-y-6 text-center">
-            <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30">
-              <div className="w-16 h-16 border-4 border-purple-400 rounded-full dark:border-purple-500 border-t-transparent animate-spin"></div>
+            <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary-100 to-pink-100 dark:from-primary-900/30 dark:to-pink-900/30">
+              <div className="w-16 h-16 border-4 rounded-full border-primary-400 dark:border-primary-500 border-t-transparent animate-spin"></div>
             </div>
             <div className="space-y-3">
               <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
@@ -150,7 +150,7 @@ function ExploreTwibone() {
         <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
           <div className="max-w-md space-y-6 text-center">
             <div className="relative">
-              <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30">
+              <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-blue-100 to-primary-100 dark:from-blue-900/30 dark:to-primary-900/30">
                 <Search className="w-16 h-16 text-blue-400 dark:text-blue-500" />
               </div>
             </div>
@@ -164,7 +164,7 @@ function ExploreTwibone() {
             </div>
             <button
               onClick={clearSearch}
-              className="px-6 py-3 font-semibold text-purple-700 transition-all duration-300 border-2 border-purple-200 rounded-full dark:text-purple-400 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              className="px-6 py-3 font-semibold transition-all duration-300 border-2 rounded-full text-primary-700 border-primary-200 dark:text-primary-400 dark:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20"
             >
               {t("explore.clear_search")}
             </button>
@@ -183,7 +183,7 @@ function ExploreTwibone() {
     return (
       <div className="flex items-center justify-center py-8 col-span-full">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 border-purple-400 rounded-full dark:border-purple-500 border-t-transparent animate-spin"></div>
+          <div className="w-8 h-8 border-4 rounded-full border-primary-400 dark:border-primary-500 border-t-transparent animate-spin"></div>
           <span className="text-gray-600 dark:text-gray-400">
             {t("explore.loading_more") || "Loading more..."}
           </span>
@@ -236,7 +236,7 @@ function ExploreTwibone() {
                 {searchFromUrl && (
                   <button
                     onClick={clearSearch}
-                    className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300"
+                    className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
                   >
                     {t("explore.clear_search")}
                   </button>
@@ -251,7 +251,7 @@ function ExploreTwibone() {
                   onClick={() => setViewMode("grid")}
                   className={`p-2 rounded-lg transition-colors ${
                     viewMode === "grid"
-                      ? "bg-[#4C0D68] dark:bg-[#6B1E7A] text-white"
+                        ? "bg-primary-500 dark:bg-primary-600 text-white shadow-md"
                       : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`}
                 >
@@ -261,7 +261,7 @@ function ExploreTwibone() {
                   onClick={() => setViewMode("list")}
                   className={`p-2 rounded-lg transition-colors ${
                     viewMode === "list"
-                      ? "bg-[#4C0D68] dark:bg-[#6B1E7A] text-white"
+                         ? "bg-primary-500 dark:bg-primary-600 text-white shadow-md"
                       : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`}
                 >
@@ -286,7 +286,7 @@ function ExploreTwibone() {
             {searchFromUrl && (
               <button
                 onClick={clearSearch}
-                className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300"
+                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
               >
                 {t("explore.clear_search")}
               </button>

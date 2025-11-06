@@ -85,7 +85,7 @@ function SetPassword() {
           <div className="">
             <Link
               to="/SignIn"
-              className="inline-block mt-10 text-sm font-medium text-purple-700 rounded-lg dark:hover:text-purple-500 hover:text-purple-800 transition-smooth"
+              className="inline-block mt-10 text-sm font-medium rounded-lg text-primary-700 dark:hover:text-primary-500 hover:text-primary-800 transition-smooth"
             >
               ← {t("common.back", { defaultValue: "Kembali Ke Login" })}
             </Link>
@@ -135,7 +135,7 @@ function SetPassword() {
             <div className="flex flex-col gap-2 mt-4 md:flex-row">
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold bg-purple-700 text-white px-4 py-2.5 w-full rounded-xl hover:bg-purple-900"
+                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold bg-primary-500 text-white px-4 py-2.5 w-full rounded-xl hover:bg-primary-600"
               >
                 {t("common.submit", { defaultValue: "Submit" })}
               </button>

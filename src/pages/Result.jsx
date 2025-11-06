@@ -178,7 +178,7 @@ function Result() {
               <a
                 href={resultImage}
                 download="twibbon-result.png"
-                className="font-semibold text-purple-600 dark:text-purple-400 hover:underline"
+                className="font-semibold text-primary-600 dark:text-primary-400 hover:underline"
               >
                 {t("result.redownload")}
               </a>
@@ -221,7 +221,7 @@ function Result() {
                       <button
                         type="button"
                         onClick={handleCopyCaption}
-                        className="px-2 py-1 text-xs text-purple-600 border rounded dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-gray-700"
+                        className="px-2 py-1 text-xs border rounded text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-gray-700"
                       >
                         <Copy className="w-5 h-5" />
                       </button>
@@ -242,7 +242,7 @@ function Result() {
                     type="button"
                     onClick={handlePostClick}
                     disabled={isPending || isSubmitting}
-                    className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-purple-500 dark:hover:bg-purple-600"
+                    className="w-full px-4 py-2 font-medium text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-500 dark:hover:bg-primary-600"
                   >
                     {isPending || isSubmitting
                       ? t("result.posting")
@@ -298,7 +298,7 @@ function Result() {
                     <button
                       type="button"
                       onClick={handleCopyCaption}
-                      className="px-2 py-1 text-xs text-purple-600 border rounded dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-gray-700"
+                      className="px-2 py-1 text-xs border rounded text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-gray-700"
                     >
                       <Copy className="w-5" />
                     </button>
@@ -321,7 +321,7 @@ function Result() {
                 type="button"
                 onClick={handlePostClick}
                 disabled={isPending || isSubmitting}
-                className="w-full px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-purple-500 dark:hover:bg-purple-600"
+                className="w-full px-4 py-2 font-medium text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-500 dark:hover:bg-primary-600"
               >
                 {isPending || isSubmitting
                   ? t("result.posting")

@@ -134,7 +134,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
         return <Zap size={20} className="text-yellow-500" />;
       case "mount":
       case "monthly":
-        return <Crown size={20} className="text-purple-500" />;
+        return <Crown size={20} className="text-primary-300" />;
       default:
         return <Crown size={20} className="text-blue-500" />;
     }
@@ -146,7 +146,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
         return "from-yellow-500 to-orange-600";
       case "mount":
       case "monthly":
-        return "from-purple-600 to-purple-700";
+        return "from-primary-300 to-primary-400";
       default:
         return "from-blue-600 to-blue-700";
     }
@@ -159,10 +159,10 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
       <ModalAlert onClose={onClose}>
         <div className="relative w-full max-w-md mx-auto overflow-hidden bg-white rounded-md shadow-2xl md:w-96 dark:bg-gray-900">
           {/* Header */}
-          <div className="relative px-8 py-6 bg-gradient-to-r from-purple-600 to-purple-700">
+          <div className="relative px-8 py-6 bg-gradient-to-r from-primary-400 to-primary-500">
             <button
               onClick={onClose}
-              className="absolute p-2 text-white transition-colors rounded-full top-5 right-3 hover:text-purple-200 hover:bg-white/10"
+              className="absolute p-2 text-white transition-colors rounded-full top-5 right-3 hover:text-primary-200 hover:bg-white/10"
             >
               <X size={20} />
             </button>
@@ -184,7 +184,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
           <div className="px-8 py-6">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="w-8 h-8 border-2 border-purple-600 rounded-full border-t-transparent animate-spin"></div>
+                <div className="w-8 h-8 border-2 rounded-full border-primary-600 border-t-transparent animate-spin"></div>
               </div>
             ) : (
               <div className="space-y-4">
@@ -198,7 +198,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
                       className={`w-full p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 ${
                         isProcessing
                           ? "opacity-50 cursor-not-allowed"
-                          : "hover:border-purple-400 border-gray-200 dark:border-gray-700"
+                          : "hover:border-primary-400 border-gray-200 dark:border-gray-700"
                       }`}
                     >
                       <div className="flex items-center justify-between">

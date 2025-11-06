@@ -190,7 +190,7 @@ function EditorPage() {
                           grayscale: 0,
                         })
                       }
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-pink-200 hover:to-purple-200 dark:hover:from-pink-800/40 dark:hover:to-purple-800/40"
+                      className="flex items-center justify-center p-3 space-x-2 transition-all border border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-primary-100 dark:from-pink-900/30 dark:to-primary-900/30 hover:from-pink-200 hover:to-primary-200 dark:hover:from-pink-800/40 dark:hover:to-primary-800/40"
                     >
                       <span>🌈</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
@@ -247,13 +247,13 @@ function EditorPage() {
                     </div>
                   </div>
                   {/* Contrast Control - Light/Dark */}
-                  <div className="p-3 border border-purple-200 rounded-lg dark:border-purple-600/30 bg-purple-50 dark:bg-purple-900/20">
+                  <div className="p-3 border rounded-lg border-primary-200 dark:border-primary-600/30 bg-primary-50 dark:bg-primary-900/20">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
                           🔳 {t("editor.contrast")}
                         </span>
-                        <span className="px-2 py-1 text-sm font-bold text-purple-700 bg-purple-200 rounded dark:text-purple-300 dark:bg-purple-800/50">
+                        <span className="px-2 py-1 text-sm font-bold rounded text-primary-700 bg-primary-200 dark:text-primary-300 dark:bg-primary-800/50">
                           {filters.contrast}%
                         </span>
                       </div>
@@ -265,7 +265,7 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("contrast", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-purple"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-primary"
                       />
                     </div>
                   </div>
@@ -457,7 +457,7 @@ function EditorPage() {
                         grayscale: 0,
                       })
                     }
-                    className="flex items-center p-4 space-x-3 transition-all border-2 border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-pink-200 hover:to-purple-200 dark:hover:from-pink-800/40 dark:hover:to-purple-800/40 hover:border-pink-400 dark:hover:border-pink-500/70"
+                    className="flex items-center p-4 space-x-3 transition-all border-2 border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-primary-100 dark:from-pink-900/30 dark:to-primary-900/30 hover:from-pink-200 hover:to-primary-200 dark:hover:from-pink-800/40 dark:hover:to-primary-800/40 hover:border-pink-400 dark:hover:border-pink-500/70"
                   >
                     <span className="text-2xl">🌈</span>
                     <span className="font-medium text-gray-900 truncate dark:text-gray-200">
@@ -519,7 +519,7 @@ function EditorPage() {
                   </div>
 
                   {/* Contrast Control - Light/Dark */}
-                  <div className="p-4 border border-purple-200 rounded-lg dark:border-purple-600/30 bg-purple-50 dark:bg-purple-900/20">
+                  <div className="p-4 border rounded-lg border-primary-200 dark:border-primary-600/30 bg-primary-50 dark:bg-primary-900/20">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
                       🔳 {t("editor.contrast")}
                     </h4>
@@ -528,7 +528,7 @@ function EditorPage() {
                         <span className="text-sm text-gray-600 dark:text-gray-300">
                           {t("editor.contrast_desc")}
                         </span>
-                        <span className="px-2 py-1 text-sm font-medium text-purple-700 bg-purple-200 rounded dark:text-purple-300 dark:bg-purple-800/50">
+                        <span className="px-2 py-1 text-sm font-medium rounded text-primary-700 bg-primary-200 dark:text-primary-300 dark:bg-primary-800/50">
                           {filters.contrast}%
                         </span>
                       </div>
@@ -540,7 +540,7 @@ function EditorPage() {
                         onChange={(e) =>
                           updateFilter("contrast", Number(e.target.value))
                         }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-purple"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-primary"
                       />
                     </div>
                   </div>

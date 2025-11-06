@@ -75,7 +75,7 @@ const CardProfile = ({ twibon, isGrid = true, onEdit, onDelete }) => {
           {/* Edit Button */}
           <button
             onClick={handleEdit}
-            className={`flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 hover:bg-[#4C0D68] hover:text-white rounded-lg transition-all duration-200 ${
+            className={`flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 hover:bg-primary-500 hover:text-white rounded-lg transition-all duration-200 ${
               isGrid ? "w-full" : "w-full sm:w-28"
             }`}
             title="Edit"

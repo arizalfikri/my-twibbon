@@ -32,8 +32,10 @@ function CheckoutPage() {
   }, [isLoading, payment, navigate, openToast, t]);
 
   const handleUpload = async () => {
-    if (!file) return;
-
+    if (!file) {
+      openToast({ message: t("checkout.upload_fail"), type: "error" });
+      return;
+    }
     try {
       await uploadProof.mutateAsync({
         url: `/pay-subscription`,
@@ -113,7 +115,7 @@ function CheckoutPage() {
               </h3>
               <p className="text-sm font-medium">
                 {t("checkout.total")}:{" "}
-                <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                <span className="text-xl font-bold text-primary-600 dark:text-primary-400">
                   Rp{detail?.amount.toLocaleString("id-ID")}
                 </span>
               </p>
@@ -153,7 +155,7 @@ function CheckoutPage() {
                   type="file"
                   accept="image/*"
                   onChange={(e) => setFile(e.target.files[0])}
-                  className="block w-full text-sm text-gray-700 border-2 border-gray-300 rounded-lg dark:border-gray-400 dark:text-gray-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 dark:file:bg-purple-500 dark:file:text-black "
+                  className="block w-full text-sm text-gray-700 border-2 border-gray-300 rounded-lg dark:border-gray-400 dark:text-gray-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-500 file:text-white hover:file:bg-primary-600 dark:file:bg-primary-500 dark:file:text-black "
                 />
                 {file && (
                   <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -165,11 +167,11 @@ function CheckoutPage() {
               <div className="mt-6">
                 <button
                   onClick={handleUpload}
-                  disabled={uploadProof.isPending}
+                  disabled={!file || uploadProof.isPending}
                   className={`w-full py-3 mt-4 font-medium text-white rounded-lg ${
-                    uploadProof.isPending
-                      ? "bg-purple-400 cursor-not-allowed"
-                      : "bg-purple-700 hover:bg-purple-800"
+                    !file || uploadProof.isPending
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-primary-500 hover:bg-primary-600"
                   }`}
                 >
                   {uploadProof.isPending

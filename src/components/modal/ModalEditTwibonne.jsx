@@ -202,11 +202,11 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
         <div className="w-full max-w-lg max-h-[95vh] bg-white dark:bg-gray-900 shadow-2xl rounded-2xl overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-800">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary-50 to-pink-50 dark:from-gray-800 dark:to-gray-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-purple-100 dark:bg-gray-700 rounded-xl">
-                  <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <div className="p-2.5 bg-primary-100 dark:bg-gray-700 rounded-xl">
+                  <FileText className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
@@ -266,7 +266,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     htmlFor="title"
                     className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
-                    <Type className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <Type className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                     {t("modaledit.form.campaign_title")}
                     <span className="text-red-500">*</span>
                     {isCheckingDuplicates && (
@@ -279,7 +279,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     type="text"
                     id="title"
                     {...register("title")}
-                    className={`w-full px-4 py-3 text-sm border rounded-xl transition-all duration-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
+                    className={`w-full px-4 py-3 text-sm border rounded-xl transition-all duration-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
                       errors.title
                         ? "border-red-300 bg-red-50 dark:bg-red-900/30"
                         : "border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
@@ -300,14 +300,14 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     htmlFor="caption"
                     className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
-                    <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <FileText className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                     {t("modaledit.form.caption")}
                   </label>
                   <textarea
                     id="caption"
                     {...register("caption")}
                     rows={4}
-                    className="w-full px-4 py-3 text-sm text-gray-900 transition-all duration-200 bg-white border border-gray-300 resize-none rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
+                    className="w-full px-4 py-3 text-sm text-gray-900 transition-all duration-200 bg-white border border-gray-300 resize-none rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
                     placeholder={t("modaledit.form.caption_placeholder")}
                   />
                   <p className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
@@ -322,7 +322,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     htmlFor="link"
                     className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
-                    <Link className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <Link className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                     {t("modaledit.form.campaign_link")}
                     <span className="text-red-500">*</span>
                     {isCheckingDuplicates && (
@@ -334,14 +334,14 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                       <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        twibbo.nz/
+                        MyTwibbon/
                       </span>
                     </div>
                     <input
                       type="text"
                       id="link"
                       {...register("link")}
-                      className={`w-full px-4 py-3 pl-[90px] pr-12 text-sm border rounded-xl transition-all duration-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
+                      className={`w-full px-4 py-3 pl-[96px] pr-12 text-sm border rounded-xl transition-all duration-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
                         errors.link
                           ? "border-red-300 bg-red-50 dark:bg-red-900/30"
                           : "border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
@@ -382,8 +382,8 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                 disabled={isSubmitDisabled}
                 className={`flex-1 px-6 py-3 font-semibold text-white text-sm rounded-xl transition-all duration-200 shadow-lg ${
                   isSubmitDisabled
-                    ? "bg-purple-400 cursor-not-allowed"
-                    : "bg-purple-600 hover:bg-purple-700"
+                    ? "bg-primary-400 cursor-not-allowed"
+                    : "bg-primary-600 hover:bg-primary-700"
                 }`}
               >
                 {isPending

@@ -24,7 +24,7 @@
     const finalClasses = `${baseClasses} ${widthClass} ${className} ${
       isDisabled
         ? "bg-gray-400 cursor-not-allowed hover:bg-gray-400"
-        : "bg-purple-600 hover:bg-purple-700"
+        : "bg-primary-600 hover:bg-primary-700"
     }`;
 
     return (

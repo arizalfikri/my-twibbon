@@ -127,7 +127,7 @@ function SignUp() {
                     setSelectedRole("contributor");
                     localStorage.setItem("selectedRole", "contributor");
                   }}
-                  className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-purple-700 gap-x-1 transition-smooth rounded-xl hover:bg-purple-900"
+                  className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-primary-500 gap-x-1 transition-smooth rounded-xl hover:bg-primary-600"
                 >
                   {t("auth.register_as_contributor")}
                 </button>
@@ -138,7 +138,7 @@ function SignUp() {
                     setSelectedRole("participant");
                     localStorage.setItem("selectedRole", "participant");
                   }}
-                  className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-yellow-400 gap-x-1 transition-smooth rounded-xl hover:bg-yellow-600"
+                  className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-black bg-yellow-400 gap-x-1 transition-smooth rounded-xl hover:bg-yellow-600"
                 >
                   {t("auth.register_as_participant")}
                 </button>
@@ -181,7 +181,7 @@ function SignUp() {
               <button
                 type="button"
                 onClick={() => setSelectedRole(null)}
-                className="inline-block text-sm font-medium text-purple-700 rounded-lg dark:hover:text-purple-500 hover:text-purple-800 transition-smooth"
+                className="inline-block text-sm font-medium rounded-lg text-primary-700 dark:hover:text-primary-500 hover:text-primary-600 transition-smooth"
               >
                 ←{" "}
                 {t("common.back", { defaultValue: "Kembali ke Pilihan Role" })}
@@ -244,8 +244,8 @@ function SignUp() {
                 type="submit"
                 disabled={isPending}
                 className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold 
-                       bg-purple-700 text-white px-4 py-2.5 w-full rounded-xl 
-                       hover:bg-purple-900 disabled:opacity-50"
+                       bg-primary-500 text-white px-4 py-2.5 w-full rounded-xl 
+                       hover:bg-primary-600 disabled:opacity-50"
               >
                 {isPending ? t("auth.registering") : t("auth.register")}
               </button>
@@ -257,7 +257,7 @@ function SignUp() {
               {t("auth.already_have_account")}{" "}
               <a
                 href="/SignIn"
-                className="font-medium text-purple-700 underline dark:text-purple-400"
+                className="font-medium underline text-primary-700 dark:text-primary-400"
               >
                 {t("auth.login")}
               </a>

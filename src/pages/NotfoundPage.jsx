@@ -19,12 +19,12 @@ export default function NotFound() {
           {/* 404 Hero Section */}
           <div className="relative mb-12">
             {/* Background decoration */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#4C0D68]/20 to-[#6B1E7A]/20 dark:from-[#6B1E7A]/30 dark:to-[#8B3A9C]/30 rounded-full blur-3xl"></div>
+            <div className="absolute inset-0 rounded-full bg-primary-400/20 dark:bg-primary-500/30 blur-3xl"></div>
             
             <div className="relative">
               {/* Large 404 Text */}
               <div className="mb-8">
-                <h1 className="text-8xl md:text-9xl lg:text-[12rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] dark:from-[#8B3A9C] dark:to-[#B84CC7] leading-none">
+                <h1 className="text-8xl md:text-9xl lg:text-[12rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-600 dark:from-primary-500 dark:to-primary-700 leading-none">
                   404
                 </h1>
               </div>
@@ -42,14 +42,14 @@ export default function NotFound() {
               {/* Action Buttons */}
               <div className="flex flex-col items-center justify-center gap-4 mb-16 sm:flex-row">
                 <Link to="/">
-                  <button className="bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] dark:from-[#6B1E7A] dark:to-[#8B3A9C] text-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center gap-3 min-w-[200px] justify-center">
+                  <button className="bg-primary-400 dark:bg-primary-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-primary-500 dark:hover:bg-primary-600 hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center gap-3 min-w-[200px] justify-center">
                     <Home className="w-5 h-5" />
                     {t("notfound.back_home", "Kembali ke Beranda")}
                   </button>
                 </Link>
                 
                 <Link to="/explore">
-                  <button className="border-2 border-[#4C0D68] dark:border-[#8B3A9C] text-[#4C0D68] dark:text-[#8B3A9C] px-8 py-4 rounded-full font-semibold text-lg hover:bg-[#4C0D68] hover:text-white dark:hover:bg-[#8B3A9C] dark:hover:text-white transition-all duration-300 flex items-center gap-3 min-w-[200px] justify-center">
+                  <button className="border-2 border-primary-400 dark:border-primary-500 text-primary-600 dark:text-primary-400 px-8 py-4 rounded-full font-semibold text-lg hover:bg-primary-400 hover:text-white dark:hover:bg-primary-500 dark:hover:text-white transition-all duration-300 flex items-center gap-3 min-w-[200px] justify-center">
                     <Search className="w-5 h-5" />
                     {t("notfound.explore", "Jelajahi Twibbon")}
                   </button>
@@ -67,8 +67,8 @@ export default function NotFound() {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {/* Home Link */}
               <Link to="/" className="group">
-                <div className="p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-gradient-to-r hover:from-[#4C0D68] hover:to-[#6B1E7A] dark:hover:from-[#6B1E7A] dark:hover:to-[#8B3A9C] hover:text-white transition-all duration-300 transform hover:scale-105">
-                  <Home className="w-8 h-8 mb-4 mx-auto text-[#4C0D68] dark:text-[#8B3A9C] group-hover:text-white" />
+                <div className="p-6 transition-all duration-300 transform bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-primary-400 dark:hover:bg-primary-500 hover:text-white hover:scale-105">
+                  <Home className="w-8 h-8 mx-auto mb-4 text-primary-600 dark:text-primary-400 group-hover:text-white" />
                   <h4 className="mb-2 text-lg font-semibold">
                     {t("notfound.home_title", "Beranda")}
                   </h4>
@@ -80,8 +80,8 @@ export default function NotFound() {
 
               {/* Explore Link */}
               <Link to="/explore" className="group">
-                <div className="p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-gradient-to-r hover:from-[#4C0D68] hover:to-[#6B1E7A] dark:hover:from-[#6B1E7A] dark:hover:to-[#8B3A9C] hover:text-white transition-all duration-300 transform hover:scale-105">
-                  <Search className="w-8 h-8 mb-4 mx-auto text-[#4C0D68] dark:text-[#8B3A9C] group-hover:text-white" />
+                <div className="p-6 transition-all duration-300 transform bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-primary-400 dark:hover:bg-primary-500 hover:text-white hover:scale-105">
+                  <Search className="w-8 h-8 mx-auto mb-4 text-primary-600 dark:text-primary-400 group-hover:text-white" />
                   <h4 className="mb-2 text-lg font-semibold">
                     {t("notfound.explore_title", "Jelajahi")}
                   </h4>
@@ -93,8 +93,8 @@ export default function NotFound() {
 
               {/* Create Link */}
               <Link to="/create" className="group">
-                <div className="p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-gradient-to-r hover:from-[#4C0D68] hover:to-[#6B1E7A] dark:hover:from-[#6B1E7A] dark:hover:to-[#8B3A9C] hover:text-white transition-all duration-300 transform hover:scale-105">
-                  <Sparkles className="w-8 h-8 mb-4 mx-auto text-[#4C0D68] dark:text-[#8B3A9C] group-hover:text-white" />
+                <div className="p-6 transition-all duration-300 transform bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-primary-400 dark:hover:bg-primary-500 hover:text-white hover:scale-105">
+                  <Sparkles className="w-8 h-8 mx-auto mb-4 text-primary-600 dark:text-primary-400 group-hover:text-white" />
                   <h4 className="mb-2 text-lg font-semibold">
                     {t("notfound.create_title", "Buat Twibbon")}
                   </h4>
@@ -110,7 +110,7 @@ export default function NotFound() {
           <div className="mt-12 text-center">
             <p className="text-gray-500 dark:text-gray-400">
               {t("notfound.help_text", "Jika Anda yakin ini adalah kesalahan, silakan")} 
-              <a href="mailto:support@example.com" className="text-[#4C0D68] dark:text-[#8B3A9C] hover:underline ml-1">
+              <a href="mailto:support@example.com" className="ml-1 text-primary-600 dark:text-primary-400 hover:underline">
                 {t("notfound.contact_support", "hubungi dukungan")}
               </a>
             </p>

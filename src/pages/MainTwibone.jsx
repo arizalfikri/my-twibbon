@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import Navbar from "../components/layoutpage/Navbar";
 import NavbarEditor from "../components/layoutpage/NavbarEditor";
@@ -32,7 +32,7 @@ function MainTwibone() {
   const { image, setImage, setFrameImage, frameImage } = useImageStore();
   const navigate = useNavigate();
   const { slug } = useParams();
-  const { data: twibbon, isLoading, refetch } = useGET(`twibbon/${slug}`);
+  const { data: twibbon, isLoading, refetch } = useGET(`twibbon/${slug}?page=1&perPage=20`);
   const { data: bookmark, refetch: refetchBookmarks } = useGET(`bookmarks`);
 
   const { openToast } = useModalStore();
@@ -46,6 +46,19 @@ function MainTwibone() {
   const [bookmarked, setBookmarked] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // State untuk infinite scroll fullscreen
+  const [fullscreenPage, setFullscreenPage] = useState(1);
+  const [allFullscreenCards, setAllFullscreenCards] = useState([]);
+  const [hasNextPageFullscreen, setHasNextPageFullscreen] = useState(false);
+  const [isLoadingMoreFullscreen, setIsLoadingMoreFullscreen] = useState(false);
+  const observerTarget = useRef(null);
+
+  // API call untuk fullscreen dengan pagination
+  const fullscreenApiUrl = `twibbon/${slug}?page=${fullscreenPage}&perPage=20`;
+  const { data: fullscreenData, isLoading: isLoadingFullscreen } = useGET(
+    isFullscreen ? fullscreenApiUrl : null
+  );
 
   useEffect(() => {
     refetch();
@@ -114,8 +127,80 @@ function MainTwibone() {
     }
   }, [image, navigate]);
 
+  // Reset pagination saat buka fullscreen
+  useEffect(() => {
+    if (isFullscreen) {
+      setFullscreenPage(1);
+      setAllFullscreenCards([]);
+    }
+  }, [isFullscreen]);
+
+  // Update data fullscreen saat response datang
+  useEffect(() => {
+    if (fullscreenData?.data) {
+      const baseURL = "https://api-twibbon-dev.digiduindo.com";
+      const newCards = fullscreenData.data.user_twibbons.map((utw) => ({
+        id: utw.id,
+        image: `${baseURL}${utw.image_url}`,
+        description: utw.caption || "",
+        title: fullscreenData.data.title,
+        status: "",
+        eventTitle: fullscreenData.data.title,
+        creator: utw.user_id,
+        user_twibbon_id: utw.id,
+      }));
+
+      const pagination = fullscreenData.pagination;
+
+      if (fullscreenPage === 1) {
+        setAllFullscreenCards(newCards);
+      } else {
+        setAllFullscreenCards((prev) => [...prev, ...newCards]);
+      }
+
+      setHasNextPageFullscreen(pagination?.has_next || false);
+      setIsLoadingMoreFullscreen(false);
+    }
+  }, [fullscreenData, fullscreenPage]);
+
+  // Intersection Observer untuk infinite scroll fullscreen
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          hasNextPageFullscreen &&
+          !isLoadingFullscreen &&
+          !isLoadingMoreFullscreen
+        ) {
+          setIsLoadingMoreFullscreen(true);
+          setFullscreenPage((prev) => prev + 1);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "100px",
+      }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [isFullscreen, hasNextPageFullscreen, isLoadingFullscreen, isLoadingMoreFullscreen]);
+
   const handleCardClick = (cardId) => {
-    const card = cards.find((c) => c.id === cardId);
+    const card = isFullscreen
+      ? allFullscreenCards.find((c) => c.id === cardId)
+      : cards.find((c) => c.id === cardId);
     if (card) {
       setSelectedCard(card);
       setShowDetailModal(true);
@@ -247,6 +332,7 @@ function MainTwibone() {
     await Promise.all([refetch(), refetchBookmarks()]);
     setShowLoginModal(false);
   };
+
   if (isLoading) return <LoadingPage />;
   if (!isLoading && !twibbon?.data) {
     return <NotFound />;
@@ -291,8 +377,8 @@ function MainTwibone() {
             <div className="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full dark:bg-gray-800">
               <ImageOff className="w-10 h-10 text-gray-400 dark:text-gray-500" />
             </div>
-            <div className="absolute flex items-center justify-center w-8 h-8 bg-purple-100 rounded-full dark:bg-purple-900 -bottom-1 -right-1">
-              <Users className="w-4 h-4 text-purple-500 dark:text-purple-400" />
+            <div className="absolute flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 -bottom-1 -right-1">
+              <Users className="w-4 h-4 text-primary-500 dark:text-primary-400" />
             </div>
           </div>
 
@@ -308,10 +394,25 @@ function MainTwibone() {
 
           {/* Decorative Elements */}
           <div className="flex mt-6 space-x-2">
-            <div className="w-2 h-2 bg-purple-200 rounded-full dark:bg-purple-600 animate-pulse"></div>
-            <div className="w-2 h-2 delay-100 bg-purple-300 rounded-full dark:bg-purple-500 animate-pulse"></div>
-            <div className="w-2 h-2 delay-200 bg-purple-400 rounded-full dark:bg-purple-400 animate-pulse"></div>
+            <div className="w-2 h-2 rounded-full bg-primary-200 dark:bg-primary-600 animate-pulse"></div>
+            <div className="w-2 h-2 delay-100 rounded-full bg-primary-300 dark:bg-primary-500 animate-pulse"></div>
+            <div className="w-2 h-2 delay-200 rounded-full bg-primary-400 dark:bg-primary-400 animate-pulse"></div>
           </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderLoadingMore = () => {
+    if (!isLoadingMoreFullscreen) return null;
+
+    return (
+      <div className="flex items-center justify-center py-8 col-span-full">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 border-4 rounded-full border-primary-400 dark:border-primary-500 border-t-transparent animate-spin"></div>
+          <span className="text-gray-600 dark:text-gray-400">
+            {t("explore.loading_more") || "Loading more..."}
+          </span>
         </div>
       </div>
     );
@@ -332,8 +433,36 @@ function MainTwibone() {
         <div className="h-[calc(100vh-64px)] overflow-y-auto p-6">
           <div className="mx-auto">
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-8">
-              {renderCards(true)}
+              {allFullscreenCards.map((card) => (
+                <div key={card.id} className="w-full aspect-square">
+                  <CardResult
+                    src={card.image}
+                    onClick={() => handleCardClick(card.id)}
+                    onShare={() => handleShare(card)}
+                  />
+                </div>
+              ))}
+
+              {/* Loading More Indicator */}
+              {renderLoadingMore()}
             </div>
+
+            {/* Intersection Observer Target */}
+            {hasNextPageFullscreen && allFullscreenCards.length > 0 && (
+              <div ref={observerTarget} className="h-10" />
+            )}
+
+            {/* End of Results Message */}
+            {!hasNextPageFullscreen &&
+              allFullscreenCards.length > 0 &&
+              !isLoadingMoreFullscreen && (
+                <div className="py-8 text-center">
+                  <p className="text-gray-500 dark:text-gray-400">
+                    {t("explore.end_of_results") ||
+                      "You've reached the end of the results"}
+                  </p>
+                </div>
+              )}
           </div>
         </div>
       </div>
@@ -389,7 +518,7 @@ function MainTwibone() {
                 size={18}
                 className={
                   bookmarked
-                    ? "fill-purple-500 text-purple-500"
+                    ? "fill-primary-500 text-primary-500"
                     : "text-gray-500 dark:text-gray-300"
                 }
               />
@@ -420,7 +549,7 @@ function MainTwibone() {
           {cards.length > 9 && (
             <button
               onClick={toggleFullscreen}
-              className="absolute z-10 flex items-center justify-center p-3 text-white transition-colors duration-200 bg-purple-600 rounded-full shadow-lg opacity-85 top-4 right-4 hover:bg-purple-700 hover:opacity-100"
+              className="absolute z-10 flex items-center justify-center p-3 text-white transition-colors duration-200 rounded-full shadow-lg bg-primary-600 opacity-85 top-4 right-4 hover:bg-primary-700 hover:opacity-100"
               aria-label={t("main.view_all_images")}
               title={t("main.view_all_images")}
             >
@@ -483,7 +612,7 @@ function MainTwibone() {
               size={18}
               className={
                 bookmarked
-                  ? "fill-purple-500 text-purple-500"
+                  ? "fill-primary-500 text-primary-500"
                   : "text-gray-500 dark:text-gray-300"
               }
             />

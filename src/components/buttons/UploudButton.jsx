@@ -17,7 +17,7 @@ const UploadButton = ({
     "flex items-center justify-center font-medium transition-colors rounded-lg";
 
   const variants = {
-    primary: `px-6 py-3 text-white bg-purple-600 hover:bg-purple-700 gap-2 ${className}`,
+    primary: `px-6 py-3 text-white bg-primary-500 hover:bg-primary-600 gap-2 ${className}`,
     icon: `px-4 py-3 text-gray-700 bg-yellow-400 hover:bg-yellow-600 ${className}`,
   };
 

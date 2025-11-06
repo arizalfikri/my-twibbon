@@ -265,8 +265,8 @@ const DetailProfile = () => {
               <div className="flex items-end mb-8 -mt-20">
                 <div className="relative">
                   <div className="flex items-center justify-center w-32 h-32 bg-white border-4 border-white rounded-full shadow-lg dark:bg-gray-800 dark:border-gray-700">
-                    <div className="flex items-center justify-center w-20 h-20 bg-purple-100 rounded-full dark:bg-purple-900">
-                      <Users className="w-10 h-10 text-purple-600 dark:text-purple-400" />
+                    <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary-100 dark:bg-primary-900">
+                      <Users className="w-10 h-10 text-primary-600 dark:text-primary-400" />
                     </div>
                   </div>
                 </div>
@@ -363,7 +363,7 @@ const DetailProfile = () => {
                         </p>
                         <button
                           onClick={() => navigate("/checkout")}
-                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-purple-700 rounded-lg hover:bg-purple-800"
+                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
                         >
                           {t("profile.membership_status.continue_payment")}
                         </button>
@@ -375,7 +375,7 @@ const DetailProfile = () => {
                         </p>
                         <button
                           onClick={() => navigate("/membership")}
-                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-purple-700 rounded-lg hover:bg-purple-800"
+                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
                         >
                           {t("profile.membership_status.subscribe_now")}
                         </button>
@@ -387,7 +387,7 @@ const DetailProfile = () => {
                         </p>
                         <button
                           onClick={() => navigate("/membership")}
-                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-purple-700 rounded-lg hover:bg-purple-800"
+                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
                         >
                           {t("profile.membership_status.renew_subscription")}
                         </button>
@@ -399,7 +399,7 @@ const DetailProfile = () => {
                         </p>
                         <button
                           onClick={() => navigate("/membership")}
-                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-purple-700 rounded-lg hover:bg-purple-800"
+                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
                         >
                           {t("profile.membership_status.subscribe_now")}
                         </button>

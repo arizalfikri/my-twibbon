@@ -55,14 +55,14 @@ const UploadModal = ({ isOpen, onClose, onFileSelect, onCameraSelect }) => {
           />
           <label
             htmlFor="fileInput"
-            className="flex items-center w-full gap-3 p-4 transition-colors rounded-lg cursor-pointer bg-purple-50 hover:bg-purple-100 dark:bg-gray-800"
+            className="flex items-center w-full gap-3 p-4 transition-colors rounded-lg cursor-pointer bg-primary-50 hover:bg-primary-100 dark:bg-gray-800"
           >
-            <Upload size={24} className="text-purple-600" />
+            <Upload size={24} className="text-primary-600" />
             <div className="text-left">
-              <div className="font-medium text-purple-800 dark:text-purple-400">
+              <div className="font-medium text-primary-800 dark:text-primary-400">
                 {t("uploadModal.upload.title")}
               </div>
-              <div className="text-sm text-purple-600 dark:text-purple-500">
+              <div className="text-sm text-primary-600 dark:text-primary-500">
                 {t("uploadModal.upload.desc")}
               </div>
             </div>

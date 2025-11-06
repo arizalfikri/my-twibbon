@@ -25,7 +25,7 @@ export default function ModalKeluarEditor() {
 
   return (
     <ModalAlert onClose={() => openModal("modalLogout", false)}>
-      <div className="bg-[#4C0D68] rounded-lg p-8 max-w-md mx-auto">
+      <div className="max-w-md p-8 mx-auto rounded-lg bg-primary-500">
         {/* Header dengan judul dan tombol close */}
         <div className="flex items-center justify-end mb-6">
           <button
@@ -70,7 +70,7 @@ export default function ModalKeluarEditor() {
         {/* Content */}
         <div className="mb-8 text-center text-white">
           <h3 className="mb-3 text-xl font-medium">{t('modaleditor.confirm_exit')}</h3>
-          <p className="text-sm leading-relaxed text-purple-200">
+          <p className="text-sm leading-relaxed text-white">
             {t('modaleditor.exit_warning')}
           </p>
         </div>

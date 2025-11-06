@@ -199,7 +199,7 @@ const SignIn = () => {
               <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
                 <Link
                   to="/Forgot-Password"
-                  className="font-medium text-purple-700 hover:underline"
+                  className="font-medium text-primary-400 hover:underline"
                 >
                   {t("auth.forgot_password")}{" "}
                 </Link>
@@ -210,7 +210,7 @@ const SignIn = () => {
               <button
                 type="submit"
                 disabled={isPending}
-                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold bg-purple-700 text-white px-4 py-2.5 w-full rounded-xl hover:bg-purple-900 disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold bg-primary-500 text-white px-4 py-2.5 w-full rounded-xl hover:bg-primary-600 disabled:opacity-50"
               >
                 {isPending ? t("common.loading") : t("login")}
               </button>
@@ -230,7 +230,7 @@ const SignIn = () => {
             {t("auth.no_account")}{" "}
             <a
               href={"/SignUp"}
-              className="font-semibold text-purple-700 hover:underline dark:text-purple-400"
+              className="font-semibold text-primary-700 hover:underline dark:text-primary-400"
             >
               {t("auth.click_here")}
             </a>

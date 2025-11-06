@@ -145,8 +145,8 @@ const EditProfile = () => {
           </Link>
 
           <div className="flex items-center gap-3 mb-2">
-            <div className="flex items-center justify-center w-10 h-10 bg-purple-100 rounded-full">
-              <User className="w-5 h-5 text-purple-600" />
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-100">
+              <User className="w-5 h-5 text-primary-600" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               {t('profile.edit_profile')}
@@ -196,7 +196,7 @@ const EditProfile = () => {
                         type="text"
                         id="fullname"
                         {...register("fullname")}
-                        className={`w-full py-3 pl-10 pr-4 transition-all border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white ${
+                        className={`w-full py-3 pl-10 pr-4 transition-all border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white ${
                           errors.fullname
                             ? "border-red-300 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
@@ -240,7 +240,7 @@ const EditProfile = () => {
                     <button
                       type="submit"
                       disabled={isPending}
-                      className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#4C0D68] to-[#6B1E7A] text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center justify-center gap-2 px-6 py-3 font-semibold text-white transition-all duration-300 rounded-lg bg-gradient-to-r bg-primary-500 hover:bg-primary-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isPending ? (
                         <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />

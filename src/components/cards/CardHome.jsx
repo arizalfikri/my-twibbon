@@ -16,7 +16,6 @@ const CardHome = ({ twibon, isGrid = true }) => {
           isGrid ? "aspect-[1/1] " : "w-48 flex-shrink-0"
         }`}
       >
-
         <img
           src={`${import.meta.env.VITE_FILE_URL}${twibon.image}`}
           alt={twibon.title}
@@ -39,7 +38,7 @@ const CardHome = ({ twibon, isGrid = true }) => {
 
       <div className={`p-4 ${isGrid ? "" : "flex-1"}`}>
         <div className="flex items-start justify-between mb-2 h-[48px]">
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-[#4C0D68] dark:group-hover:text-[#f2b0ff] transition-colors">
+          <h3 className="font-semibold text-gray-900 transition-colors dark:text-gray-100 line-clamp-2 group-hover:text-primary-500 dark:group-hover:text-primary-300">
             {twibon.title}
           </h3>
         </div>
