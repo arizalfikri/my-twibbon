@@ -146,19 +146,19 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
       case "monthly":
         return <Crown size={20} className="text-primary-300" />;
       default:
-        return <Crown size={20} className="text-blue-500" />;
+        return <Crown size={20} className="text-blue-400" />;
     }
   };
 
   const getPlanColor = (name) => {
     switch (name.toLowerCase()) {
       case "daily":
-        return "from-yellow-500 to-orange-600";
+        return "from-yellow-400 to-orange-500";
       case "mount":
       case "monthly":
         return "from-primary-300 to-primary-400";
       default:
-        return "from-blue-600 to-blue-700";
+        return "from-blue-400 to-blue-500";
     }
   };
 

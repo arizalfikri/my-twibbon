@@ -34,6 +34,8 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
       link: "",
     },
     resolver: yupResolver(editTwiboneSchema),
+    mode: "onChange", 
+    reValidateMode: "onChange",
   });
 
   useEffect(() => {

@@ -4,34 +4,47 @@ export default function ModalDeleteLayout({ children }) {
   const { t } = useTranslation();
 
   return (
-    <div className="m-10 mb-2 -mt-2 text-end">
-      <div className="flex justify-center mt-7">
-        {/* Icon */}
-        <svg
-          width="44"
-          height="44"
-          viewBox="0 0 44 44"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect width="44" height="44" rx="22" fill="#FFD8E4" />
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M21.99 11.9683C21.4541 11.9683 20.928 12.1118 20.4664 12.384C20.0079 12.6543 19.6296 13.0417 19.3703 13.5063L12.2748 25.7486C12.2515 25.7888 12.231 25.8306 12.2135 25.8737C12.0334 26.3171 11.962 26.7971 12.0052 27.2737C12.0485 27.7502 12.2051 28.2096 12.462 28.6133C12.7189 29.017 13.0687 29.3534 13.4821 29.5944C13.8955 29.8354 14.3606 29.9741 14.8385 29.9987C14.8746 30.0005 14.9103 30.0005 14.9455 29.9986C14.9636 29.9995 14.9817 30 15 30H29L29.007 30C29.4965 29.9966 29.9777 29.8734 30.4086 29.6413C30.8395 29.4092 31.2071 29.0752 31.4793 28.6683C31.7515 28.2615 31.92 27.7943 31.9702 27.3074C32.0203 26.8205 31.9506 26.3287 31.767 25.875C31.7494 25.8314 31.7287 25.7892 31.7052 25.7486L24.6097 13.5063C24.3504 13.0417 23.9721 12.6543 23.5136 12.384C23.052 12.1118 22.5259 11.9683 21.99 11.9683ZM15 28C14.9815 28 14.963 28.0005 14.9448 28.0015L14.9415 28.0013C14.7822 27.9931 14.6272 27.9469 14.4894 27.8666C14.3515 27.7863 14.235 27.6741 14.1493 27.5395C14.0637 27.405 14.0115 27.2519 13.9971 27.093C13.9844 26.9534 14.0013 26.8129 14.0463 26.6806L21.1052 14.5015L21.115 14.4841C21.2015 14.3278 21.3283 14.1976 21.4821 14.1068C21.636 14.0161 21.8114 13.9683 21.99 13.9683C22.1686 13.9683 22.344 14.0161 22.4979 14.1068C22.6518 14.1976 22.7785 14.3278 22.865 14.4841L22.8748 14.5015L29.9333 26.6799C29.9792 26.8155 29.9954 26.9596 29.9807 27.1025C29.964 27.2648 29.9078 27.4206 29.8171 27.5562C29.7264 27.6918 29.6038 27.8031 29.4602 27.8805C29.3174 27.9574 29.1581 27.9984 28.9959 28H15ZM23 19C23 18.4477 22.5523 18 22 18C21.4477 18 21 18.4477 21 19V21C21 21.5523 21.4477 22 22 22C22.5523 22 23 21.5523 23 21V19ZM23 25C23 24.4477 22.5523 24 22 24C21.4477 24 21 24.4477 21 25V25.01C21 25.5623 21.4477 26.01 22 26.01C22.5523 26.01 23 25.5623 23 25.01V25Z"
-            fill="#E81212"
-          />
-        </svg>
+    <div className="max-w-lg mx-auto overflow-hidden bg-white border border-gray-200 shadow-2xl dark:bg-gray-900 rounded-3xl dark:border-gray-700">
+      {/* Header Section */}
+      <div className="relative px-8 pt-8 pb-6 border-b border-gray-200 dark:border-gray-800">
+        <div className="flex items-center gap-4">
+          {/* Icon Warning */}
+          <div className="flex-shrink-0">
+            <div className="flex items-center justify-center border border-red-200 w-14 h-14 bg-red-50 dark:bg-red-500/10 rounded-2xl dark:border-red-500/20">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 9V13M12 17H12.01M10.29 3.86L1.82 18C1.64537 18.3024 1.55296 18.6453 1.55199 18.9945C1.55101 19.3437 1.64151 19.6871 1.81445 19.9905C1.98738 20.2939 2.23675 20.5467 2.53773 20.7239C2.83871 20.9011 3.18082 20.9962 3.53 21H20.47C20.8192 20.9962 21.1613 20.9011 21.4623 20.7239C21.7632 20.5467 22.0126 20.2939 22.1856 19.9905C22.3585 19.6871 22.449 19.3437 22.448 18.9945C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15448C12.6817 2.98585 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98585 11.0188 3.15448C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z"
+                  stroke="#EF4444"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* Title & Description */}
+          <div className="flex-1 text-left">
+            <h3 className="mb-1 text-xl font-bold text-gray-900 dark:text-white">
+              {t("deletelayout.title")}
+            </h3>
+            <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+              {t("deletelayout.subtitle")}
+            </p>
+          </div>
+        </div>
       </div>
-      <div className="text-center">
-        <p className="mt-3 mb-4 text-[20px] text-[#282828] font-semibold dark:text-white">
-          {t("deletelayout.title")}
-        </p>
-        <p className="text-[#5F6980] text-[16px] dark:text-gray-300">
-          {t("deletelayout.subtitle")}
-        </p>
+
+      {/* Button Section */}
+      <div className="">
+        {children}
       </div>
-      {children}
     </div>
   );
 }
