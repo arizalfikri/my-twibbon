@@ -163,7 +163,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
   };
 
   if (!isOpen) return null;
-
+ 
   return (
     <>
       <ModalAlert onClose={onClose}>
