@@ -112,7 +112,7 @@ function CheckoutPage() {
                 <h3 className="mb-4 text-lg font-semibold">
                   {t("checkout.detail_title")}
                 </h3>
-                
+
                 <div className="p-4 mb-6 text-white shadow-md bg-gradient-to-br to-[#7ecd67] from-[#11cefe] rounded-lg">
                   <h2 className="mb-3 text-xl font-semibold">
                     {t("checkout.premium_title")}
@@ -129,7 +129,8 @@ function CheckoutPage() {
                       {t("checkout.duration")}:
                     </span>
                     <span className="font-medium">
-                      {detail?.subscription?.plan?.duration_days} {t("checkout.days")}
+                      {detail?.subscription?.plan?.duration_days}{" "}
+                      {t("checkout.days")}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -152,7 +153,9 @@ function CheckoutPage() {
 
                 <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex justify-between">
-                    <span className="font-semibold">{t("checkout.total")}:</span>
+                    <span className="font-semibold">
+                      {t("checkout.total")}:
+                    </span>
                     <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">
                       Rp{detail?.total_amount.toLocaleString("id-ID")}
                     </span>
@@ -182,7 +185,15 @@ function CheckoutPage() {
                       {t("checkout.expired_at")}:
                     </span>
                     <span className="font-medium">
-                      {new Date(detail?.expiredAt).toLocaleString("id-ID")}
+                      {new Date(detail?.expiredAt)
+                        .toLocaleString("id-ID", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                        .replace(".", ":")}
                     </span>
                   </div>
                 </div>
