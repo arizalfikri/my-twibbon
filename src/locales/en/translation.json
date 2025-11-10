@@ -69,7 +69,7 @@
       "caption": "Description",
       "caption_placeholder": "Write a short description about your campaign",
       "campaign_link": "Campaign Link",
-      "link_placeholder": "Enter a unique link for the campaign"
+      "link_placeholder": "Enter a unique link for the campaign (example: lof6 )"
     },
     "buttons": {
       "back": "Back",

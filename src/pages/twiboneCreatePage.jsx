@@ -50,10 +50,14 @@ function TwiboneCreatePage() {
     setError,
     clearErrors,
     trigger,
-  } = useForm({ resolver: yupResolver(createTwiboneSchema) });
+  } = useForm({
+    resolver: yupResolver(createTwiboneSchema),
+    mode: "onChange", 
+    reValidateMode: "onChange",
+  });
 
   const descValue = watch("caption") || "";
-  const imageValue = watch("image"); // ✅ Watch image value
+  const imageValue = watch("image");
 
   // Watch for title and link changes
   const watchTitle = watch("title");

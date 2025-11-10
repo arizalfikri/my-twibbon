@@ -69,7 +69,7 @@
       "caption": "Deskripsi",
       "caption_placeholder": "Tulis deskripsi singkat tentang kampanye Anda",
       "campaign_link": "Tautan Kampanye",
-      "link_placeholder": "Masukkan tautan unik untuk kampanye"
+      "link_placeholder": "Masukkan tautan unik untuk kampanye (contoh: lof6)"
     },
     "buttons": {
       "back": "Kembali",
