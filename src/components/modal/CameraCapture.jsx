@@ -1,4 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, RotateCcw, Download, Camera } from "lucide-react";
 import Webcam from "react-webcam";
 import { useTranslation } from "react-i18next";
@@ -19,17 +20,15 @@ const CameraCapture = ({ onCapture, onClose }) => {
   const videoConstraints = {
     width: 1280,
     height: 720,
-    facingMode: facingMode,
+    facingMode,
   };
 
-  const capturePhoto = useCallback(() => {
+  const capturePhoto = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setCapturedImage(imageSrc);
-  }, [webcamRef]);
-
-  const retakePhoto = () => {
-    setCapturedImage(null);
   };
+
+  const retakePhoto = () => setCapturedImage(null);
 
   const confirmPhoto = () => {
     if (capturedImage) {
@@ -38,16 +37,13 @@ const CameraCapture = ({ onCapture, onClose }) => {
     }
   };
 
-  const switchCamera = () => {
-    setFacingMode((prevState) =>
-      prevState === "user" ? "environment" : "user"
-    );
-  };
+  const switchCamera = () =>
+    setFacingMode((p) => (p === "user" ? "environment" : "user"));
 
-  return (
-    <div className="fixed inset-0 z-[9999] flex flex-col bg-black">
+  return createPortal(
+    <div className="fixed inset-0 z-[999999] flex flex-col bg-black">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 text-white bg-black ">
+      <div className="flex items-center justify-between p-4 text-white bg-black">
         <h3 className="text-lg font-semibold">
           {capturedImage ? "Preview Foto" : "Ambil Foto"}
         </h3>
@@ -56,7 +52,7 @@ const CameraCapture = ({ onCapture, onClose }) => {
         </button>
       </div>
 
-      {/* Camera/Preview Area */}
+      {/* Camera Area */}
       <div className="flex items-center justify-center flex-1 bg-black">
         {capturedImage ? (
           <img
@@ -77,19 +73,19 @@ const CameraCapture = ({ onCapture, onClose }) => {
 
       {/* Controls */}
       <div className="p-6 bg-black">
-        {/* Kontrol untuk ambil ulang / gunakan foto */}
         {capturedImage ? (
           <div className="flex justify-center gap-4 p-6 bg-black">
             <button
               onClick={retakePhoto}
-              className="flex items-center gap-2 px-6 py-3 text-white transition-colors bg-gray-600 rounded-lg hover:bg-gray-700"
+              className="flex items-center gap-2 px-6 py-3 text-white bg-gray-600 rounded-lg hover:bg-gray-700"
             >
               <RotateCcw size={20} />
               {t("camera.retake")}
             </button>
+
             <button
               onClick={confirmPhoto}
-              className="flex items-center gap-2 px-6 py-3 text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
+              className="flex items-center gap-2 px-6 py-3 text-white bg-green-600 rounded-lg hover:bg-green-700"
             >
               <Download size={20} />
               {t("camera.usePhoto")}
@@ -97,19 +93,18 @@ const CameraCapture = ({ onCapture, onClose }) => {
           </div>
         ) : (
           <>
-            {/* Tombol kamera di bawah (mobile) */}
+            {/* Mobile Camera Button */}
             <div className="flex items-center justify-center gap-4 p-6 bg-black md:hidden">
               <button
                 onClick={switchCamera}
-                className="p-3 text-white transition-colors bg-gray-600 rounded-full hover:bg-gray-700"
-                title={t("camera.switchCamera")}
+                className="p-3 text-white bg-gray-600 rounded-full hover:bg-gray-700"
               >
                 <RotateCcw size={20} />
               </button>
 
               <button
                 onClick={capturePhoto}
-                className="flex items-center justify-center w-16 h-16 transition-colors bg-white rounded-full hover:bg-gray-200"
+                className="flex items-center justify-center w-16 h-16 bg-white rounded-full hover:bg-gray-200"
               >
                 <div className="flex items-center justify-center w-12 h-12 bg-white border-4 border-gray-400 rounded-full">
                   <Camera />
@@ -117,11 +112,11 @@ const CameraCapture = ({ onCapture, onClose }) => {
               </button>
             </div>
 
-            {/* Tombol kamera di kanan bawah (desktop) */}
-            <div className="fixed z-50 flex-col hidden gap-4 md:flex bottom-80 right-6">
+            {/* Desktop Camera Button */}
+            <div className="fixed flex-col hidden gap-4 bottom-80 right-6 md:flex">
               <button
                 onClick={capturePhoto}
-                className="flex items-center justify-center w-16 h-16 transition-colors bg-white rounded-full hover:bg-gray-200"
+                className="flex items-center justify-center w-16 h-16 bg-white rounded-full hover:bg-gray-200"
               >
                 <div className="flex items-center justify-center w-12 h-12 bg-white border-4 border-gray-400 rounded-full">
                   <Camera />
@@ -131,7 +126,8 @@ const CameraCapture = ({ onCapture, onClose }) => {
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
