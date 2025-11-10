@@ -4,26 +4,32 @@ import NoWatermark from "../assets/vidios/Vidio_Remove_Watermark2.mp4";
 import Footer from "../components/layoutpage/Footer";
 import AOS from "aos";
 import { useNavigate } from "react-router-dom";
-import { useGET, usePOST } from "../services/api";
+import { useGET, usePOST, useDELETE, usePATCH } from "../services/api";
 import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
 import ModalLogin from "../components/modal/modalLogin";
 import LoadingPage from "../components/layoutpage/LoadingPage";
 import { useTranslation } from "react-i18next";
+import ModalPendingSubscription from "../components/modal/ModalPendingSubscription";
 
 export default function MembershipPage() {
   const { t } = useTranslation();
   const { data, isLoading } = useGET("/plans");
   const { refetch: refetchPayment } = useGET("/payment");
+  const { data: subscriptionData, refetch: refetchSubscription } =
+    useGET("/subscription");
   const [selectedPlan, setSelectedPlan] = useState(null);
   const navigate = useNavigate();
   const CheckoutMutation = usePOST("/subscribe");
+  const DeleteSubscriptionMutation = usePATCH();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { token, role } = useGlobalStore();
   const { openToast } = useModalStore();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showPendingModal, setShowPendingModal] = useState(false);
+  const [pendingSubscriptionData, setPendingSubscriptionData] = useState(null);
 
   useEffect(() => {
     if (data?.data?.length > 0 && !selectedPlan) {
@@ -45,18 +51,35 @@ export default function MembershipPage() {
       return;
     }
 
+    const { data: newSubscription } = await refetchSubscription();
     const { data: newPayment } = await refetchPayment();
+
     const paymentStatus = newPayment?.data?.status;
     const paymentPlanId = newPayment?.data?.subscription?.plan_id;
-
-    if (paymentStatus === "active") {
+    const subscriptionStatus = newSubscription?.data?.status;
+    if (subscriptionStatus === "ACTIVE") {
       openToast("toast", true, t("membership.active_subscription"), "info");
       return;
     }
 
-    if (paymentStatus === "pending") {
+    if (paymentStatus === "PENDING") {
+      setPendingSubscriptionData({
+        subscription: newPayment?.data?.subscription,
+        payment: newPayment?.data,
+        selectedPlan: selectedPlan,
+      });
+      setShowPendingModal(true);
+      return;
+    }
+
+    if (paymentStatus === "PENDING") {
       if (paymentPlanId === selectedPlan.id) {
-        openToast("toast", true, t("membership.processing_subscription"), "warning");
+        openToast(
+          "toast",
+          true,
+          t("membership.processing_subscription"),
+          "warning"
+        );
         navigate("/checkout");
         return;
       } else {
@@ -68,7 +91,12 @@ export default function MembershipPage() {
           });
 
           if (res.status === 201 || res.status === 200) {
-            openToast("toast", true, t("membership.redirecting_checkout"), "success");
+            openToast(
+              "toast",
+              true,
+              t("membership.redirecting_checkout"),
+              "success"
+            );
             navigate("/checkout");
           }
         } catch (error) {
@@ -94,7 +122,12 @@ export default function MembershipPage() {
       });
 
       if (res.status === 201 || res.status === 200) {
-        openToast("toast", true, t("membership.redirecting_checkout"), "success");
+        openToast(
+          "toast",
+          true,
+          t("membership.redirecting_checkout"),
+          "success"
+        );
         navigate("/checkout");
       }
     } catch (error) {
@@ -108,6 +141,34 @@ export default function MembershipPage() {
   const handleLoginSuccess = async () => {
     setShowLoginModal(false);
     await handleSubscribe();
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!pendingSubscriptionData?.subscription?.id) return;
+    try {
+      await DeleteSubscriptionMutation.mutateAsync({
+        url: `/cancel-subscription`,
+      });
+      openToast(
+        "toast",
+        true,
+        t("membership.subscription_cancelled"),
+        "success"
+      );
+      setShowPendingModal(false);
+      setPendingSubscriptionData(null);
+
+      await refetchPayment();
+    } catch (error) {
+      console.error("Cancel subscription error:", error);
+      openToast("toast", true, t("membership.cancel_failed"), "error");
+    }
+  };
+
+  const handleContinueSubscription = () => {
+    setShowPendingModal(false);
+    setPendingSubscriptionData(null);
+    navigate("/checkout");
   };
 
   if (isLoading) return <LoadingPage />;
@@ -168,7 +229,9 @@ export default function MembershipPage() {
                   Rp {selectedPlan.price.toLocaleString("id-ID")}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t("membership.for_days", { days: selectedPlan.duration_days })}
+                  {t("membership.for_days", {
+                    days: selectedPlan.duration_days,
+                  })}
                 </p>
               </div>
             )}
@@ -185,7 +248,9 @@ export default function MembershipPage() {
                 loop
                 playsInline
               />
-              <p className="font-semibold">{t("membership.remove_watermark")}</p>
+              <p className="font-semibold">
+                {t("membership.remove_watermark")}
+              </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {t("membership.on_your_account")}
               </p>
@@ -206,7 +271,9 @@ export default function MembershipPage() {
               disabled={isProcessing}
               className="block w-full py-3 font-semibold text-center text-white transition bg-black rounded-full hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 disabled:opacity-50"
             >
-              {isProcessing ? t("membership.processing") : t("membership.upgrade_button")}
+              {isProcessing
+                ? t("membership.processing")
+                : t("membership.upgrade_button")}
             </button>
           </div>
         </div>
@@ -219,6 +286,19 @@ export default function MembershipPage() {
           isOpen={showLoginModal}
           onClose={() => setShowLoginModal(false)}
           onLoginSuccess={handleLoginSuccess}
+        />
+      )}
+
+      {showPendingModal && (
+        <ModalPendingSubscription
+          visible={showPendingModal}
+          onClose={() => {
+            setShowPendingModal(false);
+            setPendingSubscriptionData(null);
+          }}
+          onCancel={handleCancelSubscription}
+          onContinue={handleContinueSubscription}
+          subscriptionData={pendingSubscriptionData}
         />
       )}
     </>

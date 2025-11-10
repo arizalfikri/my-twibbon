@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { setPasswordSchema } from "../helper/yup";
 import { usePOST } from "../services/api";
 import InputPassword from "../components/FormControl/InputPassword";
+import { Loader2 } from "lucide-react";
 
 function SetPassword() {
   const { t } = useTranslation();
@@ -20,7 +21,7 @@ function SetPassword() {
   const navigate = useNavigate();
   const { token } = useParams();
   const role = localStorage.getItem("selectedRole");
-  const { mutateAsync, isPending } = usePOST("/event-twibbon");
+  const { mutateAsync, isPending } = usePOST(`auth/reset-password/${token}`);
 
   const {
     control,
@@ -33,7 +34,7 @@ function SetPassword() {
       {
         response = await mutateAsync({
           url: `auth/reset-password/${token}`,
-          data: { password: data.password, role: role },
+          data: { password: data.password },
         });
       }
       console.log(response);
@@ -135,9 +136,21 @@ function SetPassword() {
             <div className="flex flex-col gap-2 mt-4 md:flex-row">
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold bg-primary-500 text-white px-4 py-2.5 w-full rounded-xl hover:bg-primary-600"
+                disabled={isPending}
+                className={`inline-flex items-center justify-center gap-x-2 transition-smooth font-semibold px-4 py-2.5 w-full rounded-xl ${
+                  isPending
+                    ? "bg-primary-300 cursor-not-allowed text-white"
+                    : "bg-primary-500 hover:bg-primary-600 text-white"
+                }`}
               >
-                {t("common.submit", { defaultValue: "Submit" })}
+                {isPending ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    loading
+                  </>
+                ) : (
+                  t("common.submit", { defaultValue: "Submit" })
+                )}
               </button>
             </div>
           </form>

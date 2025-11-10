@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Edit, Users, Trophy } from "lucide-react";
 import { useGET, useDELETE } from "../services/api.js";
 import Navbar from "../components/layoutpage/Navbar.jsx";
-import Bg1 from "../assets/images/background_hero.png";
+import Bg1 from "../assets/images/background_hero3.png";
 import CardProfile from "../components/cards/CardProfile.jsx";
 import CardPost from "../components/cards/CardPost.jsx"; // Import CardPost
 import DetailResult from "../components/modal/DetailResult.jsx"; // Import DetailResult untuk modal
@@ -350,13 +350,13 @@ const DetailProfile = () => {
                       {t("profile.membership_status.title")}
                     </h3>
 
-                    {SubscribeData?.data?.status === "active" ? (
+                    {SubscribeData?.data?.status === "ACTIVE" ? (
                       <div>
                         <p className="mb-3 text-lg font-medium text-green-600 dark:text-green-400">
                           {t("profile.membership_status.active")}
                         </p>
                       </div>
-                    ) : SubscribeData?.data?.status === "pending" ? (
+                    ) : SubscribeData?.data?.status === "PENDING" ? (
                       <div>
                         <p className="mb-3 text-lg font-medium text-yellow-600 dark:text-yellow-400">
                           {t("profile.membership_status.pending")}
@@ -368,7 +368,7 @@ const DetailProfile = () => {
                           {t("profile.membership_status.continue_payment")}
                         </button>
                       </div>
-                    ) : SubscribeData?.data?.status === "canceled" ? (
+                    ) : SubscribeData?.data?.status === "FAILED" ? (
                       <div>
                         <p className="mb-3 text-lg font-medium text-red-600 dark:text-red-400">
                           {t("profile.membership_status.canceled")}
@@ -380,7 +380,7 @@ const DetailProfile = () => {
                           {t("profile.membership_status.subscribe_now")}
                         </button>
                       </div>
-                    ) : SubscribeData?.data?.status === "expired" ? (
+                    ) : SubscribeData?.data?.status === "EXPIRED" ? (
                       <div>
                         <p className="mb-3 text-lg font-medium text-gray-600 dark:text-gray-400">
                           {t("profile.membership_status.expired")}

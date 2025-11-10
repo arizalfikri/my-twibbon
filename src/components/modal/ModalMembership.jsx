@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore } from "../../helper/store/global.store";
 import { useNavigate } from "react-router-dom";
-import { useGET, usePOST } from "../../services/api";
+import { useGET, usePOST, usePATCH } from "../../services/api";
 import { useModalStore } from "../../helper/store/modal.store";
 import ModalLogin from "./modalLogin";
 import ModalAlert from "../../layout/ModalAlert";
+import ModalPendingSubscription from "./ModalPendingSubscription";
 import { X, Crown, Download, Zap } from "lucide-react";
 
 const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
@@ -14,14 +15,14 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
   const { token, role } = useGlobalStore();
   const { openToast } = useModalStore();
   const CheckoutMutation = usePOST("/subscribe");
+  const CancelSubscriptionMutation = usePATCH();
 
-  // API calls
-  const { data: plansData, isLoading } = useGET("/plans", {
-    enabled: isOpen,
-  });
-  const { data: dataSubscription } = useGET("/subscription", {
-    enabled: isOpen,
-  });
+  // API
+  const { data: plansData, isLoading } = useGET("/plans", { enabled: isOpen });
+  const { data: dataSubscription, refetch: refetchSubscription } = useGET(
+    "/subscription",
+    { enabled: isOpen }
+  );
   const { data: dataPayment, refetch: refetchPayment } = useGET("/payment", {
     enabled: isOpen,
   });
@@ -31,6 +32,9 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
   const [selectedPlanId, setSelectedPlanId] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const [showPendingModal, setShowPendingModal] = useState(false);
+  const [pendingSubscriptionData, setPendingSubscriptionData] = useState(null);
+
   useEffect(() => {
     if (dataSubscription?.data?.status === "expired") {
       openToast("toast", true, "Langganan kamu sudah berakhir", "info");
@@ -38,51 +42,34 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
   }, [dataSubscription, openToast]);
 
   const handleSubscribe = async (planId) => {
-    // cek login dulu
-    if (!token) {
+    if (!token || role !== "participant") {
       openToast("toast", true, "Login Peserta Terlebih dahulu", "warning");
       setSelectedPlanId(planId);
       setShowLoginModal(true);
       return;
     }
 
-    // refetch data payment terbaru
+    const { data: newSubscription } = await refetchSubscription();
     const { data: newPayment } = await refetchPayment();
+
     const paymentStatus = newPayment?.data?.status;
     const paymentPlanId = newPayment?.data?.subscription?.plan_id;
+    const subscriptionStatus = newSubscription?.data?.status;
 
-    if (paymentStatus === "active") {
+    if (subscriptionStatus === "ACTIVE") {
       openToast("toast", true, "Kamu sudah memiliki langganan aktif", "info");
       return;
     }
 
-    if (paymentStatus === "pending") {
-      if (paymentPlanId === planId) {
-        // plan sama → jangan post ulang, langsung redirect
-        openToast("toast", true, "Langganan kamu sedang diproses", "warning");
-        navigate("/checkout");
-        return;
-      } else {
-        // plan beda → bikin subscribe baru
-        setIsProcessing(true);
-        try {
-          const res = await CheckoutMutation.mutateAsync({
-            url: "/subscribe",
-            data: { plan_id: planId.toString() },
-          });
-
-          if (res.status === 201 || res.status === 200) {
-            openToast("toast", true, "Redirecting to checkout...", "success");
-            navigate("/checkout");
-          }
-        } catch (error) {
-          console.error("Subscription failed:", error);
-          openToast("toast", true, "Subscription failed", "error");
-        } finally {
-          setIsProcessing(false);
-        }
-        return;
-      }
+    // --- Handle Pending Subscription ---
+    if (paymentStatus === "PENDING") {
+      setPendingSubscriptionData({
+        subscription: newPayment?.data?.subscription,
+        payment: newPayment?.data,
+        selectedPlan: plans.find((p) => p.id === planId),
+      });
+      setShowPendingModal(true);
+      return;
     }
 
     if (paymentStatus === "waiting_verification") {
@@ -95,6 +82,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
       return;
     }
 
+    // --- Normal Subscribe Flow ---
     setIsProcessing(true);
     try {
       const res = await CheckoutMutation.mutateAsync({
@@ -119,6 +107,28 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
     if (selectedPlanId) {
       await handleSubscribe(selectedPlanId);
     }
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!pendingSubscriptionData?.subscription?.id) return;
+    try {
+      await CancelSubscriptionMutation.mutateAsync({
+        url: `/cancel-subscription`,
+      });
+      openToast("toast", true, "Langganan dibatalkan", "success");
+      setShowPendingModal(false);
+      setPendingSubscriptionData(null);
+      await refetchPayment();
+    } catch (error) {
+      console.error("Cancel subscription error:", error);
+      openToast("toast", true, "Gagal membatalkan langganan", "error");
+    }
+  };
+
+  const handleContinueSubscription = () => {
+    setShowPendingModal(false);
+    setPendingSubscriptionData(null);
+    navigate("/checkout");
   };
 
   const formatPrice = (price) =>
@@ -188,7 +198,6 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
               </div>
             ) : (
               <div className="space-y-4">
-                {/* Membership Plans */}
                 <div className="pr-2 space-y-3 overflow-y-auto max-h-72 ">
                   {plans.map((plan) => (
                     <button
@@ -248,7 +257,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
                   </div>
                 </div>
 
-                {/* Free Download with Watermark */}
+                {/* Free Download */}
                 <button
                   onClick={() => {
                     onDownloadWatermark();
@@ -269,7 +278,6 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
                   </div>
                 </button>
 
-                {/* Cancel Button */}
                 <button
                   onClick={onClose}
                   className="w-full mt-4 text-sm text-center text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -292,6 +300,20 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
             setIsProcessing(false);
           }}
           onLoginSuccess={handleLoginSuccess}
+        />
+      )}
+
+      {/* Modal Pending Subscription */}
+      {showPendingModal && (
+        <ModalPendingSubscription
+          visible={showPendingModal}
+          onClose={() => {
+            setShowPendingModal(false);
+            setPendingSubscriptionData(null);
+          }}
+          onCancel={handleCancelSubscription}
+          onContinue={handleContinueSubscription}
+          subscriptionData={pendingSubscriptionData}
         />
       )}
     </>

@@ -181,10 +181,10 @@ function SignUp() {
               <button
                 type="button"
                 onClick={() => setSelectedRole(null)}
-                className="inline-block text-sm font-medium rounded-lg text-primary-700 dark:hover:text-primary-500 hover:text-primary-600 transition-smooth"
+                className="inline-block text-sm font-medium rounded-lg text-primary-400 dark:hover:text-primary-500 hover:text-primary-500 transition-smooth"
               >
                 ←{" "}
-                {t("common.back", { defaultValue: "Kembali ke Pilihan Role" })}
+                {t("common.back_role", { defaultValue: "Kembali ke Pilihan Role" })}
               </button>
             </div>
 

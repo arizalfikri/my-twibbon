@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import CardEditor from "../components/cards/CardEditor";
 import CardResult from "../components/cards/CardResult";
-import Bg1 from "../assets/images/background_hero.png";
+import Bg1 from "../assets/images/background_hero3.png";
 import Footer from "../components/layoutpage/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import useImageStore from "../helper/store/imagestore";
@@ -495,7 +495,7 @@ function MainTwibone() {
           <div className="items-center justify-end hidden space-x-4 lg:flex">
             <div className="flex overflow-hidden bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600">
               <span className="px-3 py-2 text-sm text-gray-500 bg-gray-200 select-none dark:bg-gray-700 dark:text-gray-300">
-                TwibbonGypem/
+                MyTwibbon/
               </span>
               <input
                 type="text"

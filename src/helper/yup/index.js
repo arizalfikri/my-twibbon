@@ -44,7 +44,7 @@ export const createTwiboneSchema = yup.object({
         .test("fileType", () => t('validation.image_format_unsupported'), (value) => {
             return value && ["image/png"].includes(value.type);
         }),
-    link: yup
+    link: yup   
         .string()
         .required(() => t('validation.link_required'))
         .matches(/^\S*$/, () => t('validation.link_no_spaces')),

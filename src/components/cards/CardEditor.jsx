@@ -269,7 +269,7 @@ function CardEditor({
 
           <ControlPanel
             onDownload={() => {
-              if (SubscribeData?.status === "active") {
+              if (SubscribeData?.status === "ACTIVE") {
                 handleDownload(false);
               } else {
                 setShowMembershipModal(true);

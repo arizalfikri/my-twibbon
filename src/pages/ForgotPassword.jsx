@@ -11,6 +11,7 @@ import { usePOST } from "../services/api";
 import { useForm } from "react-hook-form";
 import { InputType } from "../components/FormControl";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { forgotPasswordSchema } from "../helper/yup";
 
 function ForgotPassword() {
   const { t } = useTranslation();
@@ -25,7 +26,7 @@ function ForgotPassword() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: yupResolver(forgotPasswordSchema) });
 
   const onSubmit = async (data) => {
     try {
