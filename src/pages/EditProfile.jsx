@@ -191,7 +191,7 @@ const EditProfile = () => {
                       {t('edit_profile.full_name')}
                     </label>
                     <div className="relative">
-                      <User className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                      <User className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" /> 
                       <input
                         type="text"
                         id="fullname"
@@ -201,7 +201,7 @@ const EditProfile = () => {
                             ? "border-red-300 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
                         }`}
-                        placeholder={t('edit_profile.enter_full_name')}
+                        placeholder={t('edit_profile.enter_full_name') }
                       />
                     </div>
                     {errors.fullname && (
