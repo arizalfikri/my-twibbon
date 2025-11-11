@@ -71,7 +71,7 @@ function SignUp() {
         data: { ...rest, role: selectedRole },
       });
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         openToast("toast", true, t("auth.register_success"), "success");
         navigate("/signin");
       }
@@ -175,27 +175,23 @@ function SignUp() {
               className="block w-20 h-full mx-auto md:w-28 md:h-28"
             />
           </a>
-          <div className="relative flex items-center justify-center mt-4">
-            {/* Tombol Back di kiri */}
-            <div className="absolute left-0">
-              <button
-                type="button"
-                onClick={() => setSelectedRole(null)}
-                className="inline-block text-sm font-medium rounded-lg text-primary-400 dark:hover:text-primary-500 hover:text-primary-500 transition-smooth"
-              >
-                ←{" "}
-                {t("common.back_role", { defaultValue: "Kembali ke Pilihan Role" })}
-              </button>
-            </div>
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => setSelectedRole(null)}
+              className="inline-block text-sm font-medium rounded-lg text-primary-400 dark:hover:text-primary-400 hover:text-primary-500 transition-smooth"
+            >
+              ←{" "}
+              {t("common.back_role", {
+                defaultValue: "Kembali Ke Pilihan Role",
+              })}
+            </button>
 
-            {/* Judul tetap di center */}
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+            <h2 className="mt-4 text-2xl font-semibold text-gray-800 dark:text-gray-200">
               {t("auth.register")}{" "}
               {selectedRole === "contributor"
                 ? t("auth.contributor")
-                : selectedRole === "participant"
-                ? t("auth.participant")
-                : ""}
+                : t("auth.participant")}
             </h2>
           </div>
 

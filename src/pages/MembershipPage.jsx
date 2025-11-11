@@ -21,7 +21,7 @@ export default function MembershipPage() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const navigate = useNavigate();
   const CheckoutMutation = usePOST("/subscribe");
-  const DeleteSubscriptionMutation = usePATCH();
+  const PatchSubscriptionMutation = usePATCH();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { token, role } = useGlobalStore();
@@ -63,16 +63,6 @@ export default function MembershipPage() {
     }
 
     if (paymentStatus === "PENDING") {
-      setPendingSubscriptionData({
-        subscription: newPayment?.data?.subscription,
-        payment: newPayment?.data,
-        selectedPlan: selectedPlan,
-      });
-      setShowPendingModal(true);
-      return;
-    }
-
-    if (paymentStatus === "PENDING") {
       if (paymentPlanId === selectedPlan.id) {
         openToast(
           "toast",
@@ -81,32 +71,15 @@ export default function MembershipPage() {
           "warning"
         );
         navigate("/checkout");
-        return;
       } else {
-        setIsProcessing(true);
-        try {
-          const res = await CheckoutMutation.mutateAsync({
-            url: "/subscribe",
-            data: { plan_id: selectedPlan.id.toString() },
-          });
-
-          if (res.status === 201 || res.status === 200) {
-            openToast(
-              "toast",
-              true,
-              t("membership.redirecting_checkout"),
-              "success"
-            );
-            navigate("/checkout");
-          }
-        } catch (error) {
-          console.error("Subscription failed:", error);
-          openToast("toast", true, t("membership.subscribe_failed"), "error");
-        } finally {
-          setIsProcessing(false);
-        }
-        return;
+        setPendingSubscriptionData({
+          subscription: newPayment?.data?.subscription,
+          payment: newPayment?.data,
+          selectedPlan,
+        });
+        setShowPendingModal(true);
       }
+      return;
     }
 
     if (paymentStatus === "waiting_verification") {
@@ -128,6 +101,8 @@ export default function MembershipPage() {
           t("membership.redirecting_checkout"),
           "success"
         );
+        await Promise.all([refetchPayment(), refetchSubscription()]);
+
         navigate("/checkout");
       }
     } catch (error) {
@@ -146,7 +121,7 @@ export default function MembershipPage() {
   const handleCancelSubscription = async () => {
     if (!pendingSubscriptionData?.subscription?.id) return;
     try {
-      await DeleteSubscriptionMutation.mutateAsync({
+      await PatchSubscriptionMutation.mutateAsync({
         url: `/cancel-subscription`,
       });
       openToast(
