@@ -31,14 +31,7 @@ function ModalDeleteCollection({
   return (
     <ModalAlert onClose={onClose}>
       <ModalDeleteLayout>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-center dark:text-white">
-            {t("modaldeletecollection.title")}
-          </h3>
-          <p className="mt-2 text-center text-gray-600 dark:text-white">
-            {t("modaldeletecollection.message")}
-          </p>
-        </div>
+      
         <div className="flex flex-col md:flex-row justify-center gap-5 text-[16px] mb-5">
           <button
             onClick={onClose}
