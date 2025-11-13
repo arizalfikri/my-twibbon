@@ -133,7 +133,7 @@ function Navbar() {
   return (
     <>
       <nav className="sticky top-0 z-40 py-5 text-white bg-primary-400 dark:bg-gray-900 dark:border-b dark:border-gray-600">
-        <div className="max-w-screen-lg px-4 mx-auto">
+        <div className="container ">
           <div className="flex items-center justify-between">
             {isMobileSearchMode ? (
               <div className="flex items-center w-full space-x-3 md:hidden">
@@ -218,13 +218,13 @@ function Navbar() {
                     </span>
                     <span className="lg:hidden ">{t("add")}</span>
                   </Link>
-                  <button onClick={toggleLanguage}>
+                  {/* <button onClick={toggleLanguage}>
                     <img
                       src={i18n.language.startsWith("id") ? FLAGID : FLAGEN}
                       alt={i18n.language}
                       className="w-8 h-8 rounded-full"
                     />
-                  </button>
+                  </button> */}
                   <button
                     className="p-2 transition-colors rounded-full hover:bg-primary-600"
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -241,7 +241,7 @@ function Navbar() {
                   >
                     <Search className="w-5 h-5" />
                   </button>
-                  <button onClick={toggleLanguage}>
+                  {/* <button onClick={toggleLanguage}>
                     <img
                       src={i18n.language.startsWith("id") ? FLAGID : FLAGEN}
                       alt={i18n.language}
@@ -253,7 +253,7 @@ function Navbar() {
                     className="p-2 transition-colors rounded-full hover:bg-primary-700"
                   >
                     <Menu className="w-5 h-5" />
-                  </button>
+                  </button> */}
                 </div>
               </>
             )}
