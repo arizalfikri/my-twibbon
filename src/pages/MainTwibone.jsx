@@ -472,7 +472,7 @@ function MainTwibone() {
   return (
     <div className="bg-white dark:bg-gray-900 dark:text-white">
       <Navbar />
-      <header className="max-w-screen-lg px-3 py-3 m-5 mx-auto bg-white dark:bg-gray-900 dark:text-white">
+      <header className="container px-3 py-3 m-5 mx-auto bg-white dark:bg-gray-900 dark:text-white">
         <div className="grid items-center grid-cols-1 lg:grid-cols-3">
           <div className="flex flex-col min-w-0">
             <h1 className="text-lg font-medium capitalize truncate">
@@ -509,20 +509,7 @@ function MainTwibone() {
                 title={twibbon?.data?.link}
               />
             </div>
-            <button
-              onClick={toggleBookmark}
-              className="flex items-center justify-center w-10 h-10 transition bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
-              aria-label="Bookmark"
-            >
-              <Bookmark
-                size={18}
-                className={
-                  bookmarked
-                    ? "fill-primary-500 text-primary-500"
-                    : "text-gray-500 dark:text-gray-300"
-                }
-              />
-            </button>
+            
           </div>
         </div>
       </header>

@@ -7,14 +7,10 @@ const CardHome = ({ twibon, isGrid = true }) => {
   return (
     <Link
       to={`/${twibon.slug}`}
-      className={`block bg-white dark:bg-gray-800 rounded-xl shadow-md\ border-2  border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all duration-300 cursor-pointer group  ${
-        isGrid ? "" : "flex"
-      }`}
+      className={`block bg-white dark:bg-gray-800 rounded-xl shadow-md\ border-2  border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all duration-300 cursor-pointer group   `}
     >
       <div
-        className={`relative ${
-          isGrid ? "aspect-[1/1] " : "w-48 flex-shrink-0"
-        }`}
+        className={`relative aspect-[1/1] `}
       >
         <img
           src={`${import.meta.env.VITE_FILE_URL}${twibon.image}`}

@@ -15,6 +15,7 @@ import CheckoutPage from "../pages/CheckoutPage.jsx";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
 import VerifyCode from "../pages/VerifyCode.jsx";
 import SetPassword from "../pages/SetPassword.jsx";
+import PrivacyPolicy from "../pages/PrivacyPolice.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -25,11 +26,15 @@ export const router = createBrowserRouter([
         element: <TwiboneHomepage />,
       },
       {
+        path: "privacy-policy",
+        element: <PrivacyPolicy />,
+      },
+      {
         path: "Explore",
         element: <ExploreTwibone />,
       },
       {
-        path: "EditorPage",
+        path: ":slug/EditorPage",
         element: <EditorPage />,
       },
       {

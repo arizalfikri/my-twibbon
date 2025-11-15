@@ -4,9 +4,7 @@ import { useNavigate, Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
 import LoginImage from "../assets/images/login_image.png";
-import LogoGypem from "../assets/images/gypem_logo.png";
-import LogoGypemPutih from "../assets/images/gypem_logo_putih.png";
-
+import LogoGypem from "../assets/images/Logo_Icon.png";
 import { InputType } from "../components/FormControl";
 import { useModalStore } from "../helper/store/modal.store";
 import { yupResolver } from "@hookform/resolvers/yup";

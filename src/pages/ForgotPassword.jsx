@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
 import LoginImage from "../assets/images/login_image.png";
-import LogoGypem from "../assets/images/gypem_logo.png";
-import LogoGypemPutih from "../assets/images/gypem_logo_putih.png";
+import LogoGypem from "../assets/images/Logo_Icon.png";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";

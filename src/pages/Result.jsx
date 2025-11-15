@@ -58,6 +58,7 @@ function Result() {
     handleSubmit,
     formState: { errors },
     setValue,
+    getValues,
   } = useForm({
     defaultValues: {
       caption: twibbonData?.caption || "",
@@ -145,9 +146,7 @@ function Result() {
   };
 
   const handleCopyCaption = async () => {
-    const captionValue = document.querySelector(
-      "textarea[name='caption']"
-    )?.value;
+    const captionValue = getValues("caption");
     if (captionValue) {
       await navigator.clipboard.writeText(captionValue);
       openToast("toast", true, t("result.caption_copied"), "success");
@@ -160,7 +159,7 @@ function Result() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <NavbarEditor title={twibbonData?.title} />
 
-      <div className="items-center justify-center max-w-screen-lg gap-6 p-6 mx-auto md:grid md:grid-cols-2">
+      <div className="container items-center justify-center gap-6 p-6 mx-auto md:grid md:grid-cols-2">
         {/* Result photo section */}
         <div className="md:col-span-1">
           <div className="relative mx-auto w-fit max-w-[250px] md:max-w-[350px]">

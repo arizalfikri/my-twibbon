@@ -18,7 +18,7 @@ function ExploreTwibone() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [allTwibbons, setAllTwibbons] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(false);
@@ -71,7 +71,7 @@ function ExploreTwibone() {
       if (currentPage === 1) {
         setAllTwibbons(newTwibbons);
       } else {
-        setAllTwibbons(prev => [...prev, ...newTwibbons]);
+        setAllTwibbons((prev) => [...prev, ...newTwibbons]);
       }
 
       setHasNextPage(pagination?.has_next || false);
@@ -82,15 +82,20 @@ function ExploreTwibone() {
   // Intersection Observer untuk infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && hasNextPage && !isLoading && !isLoadingMore) {
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          hasNextPage &&
+          !isLoading &&
+          !isLoadingMore
+        ) {
           setIsLoadingMore(true);
-          setCurrentPage(prev => prev + 1);
+          setCurrentPage((prev) => prev + 1);
         }
       },
       {
         threshold: 0.1,
-        rootMargin: '100px' 
+        rootMargin: "100px",
       }
     );
 
@@ -196,112 +201,16 @@ function ExploreTwibone() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white">
       <Navbar />
 
-      <main className="max-w-screen-lg px-4 py-8 mx-auto">
+      <main className="container px-4 py-8 mx-auto">
         {/* Search and Filters */}
         <div className="mb-8">
-          <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex-1 max-w-xl">
-              <div className="relative md:hidden">
-                <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-3 top-1/2" />
-                <input
-                  type="text"
-                  placeholder={t("search_placeholder")}
-                  value={searchQuery}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#4C0D68] dark:focus:ring-[#8B3A9C] focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={clearSearch}
-                    className="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 right-3 top-1/2 hover:text-gray-600 dark:hover:text-gray-300"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-              <div className="items-center hidden gap-8 mb-4 md:flex">
-                <p className="text-xl font-bold text-gray-600 dark:text-gray-300">
-                  {isLoading && currentPage === 1
-                    ? t("explore.loading")
-                    : searchFromUrl
-                    ? t("explore.showing_search_results", {
-                        count: allTwibbons.length,
-                        query: displaySearchQuery,
-                      })
-                    : t("explore.showing_twibone", {
-                        count: allTwibbons.length,
-                      })}
-                </p>
-                {searchFromUrl && (
-                  <button
-                    onClick={clearSearch}
-                    className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
-                  >
-                    {t("explore.clear_search")}
-                  </button>
-                )}
-              </div>
-            </div>
+         
 
-            <div className="flex items-center gap-4">
-              {/* View Mode Toggle */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "grid"
-                        ? "bg-primary-500 dark:bg-primary-600 text-white shadow-md"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <Grid className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "list"
-                         ? "bg-primary-500 dark:bg-primary-600 text-white shadow-md"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <List className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Results Count */}
-          <div className="flex items-center justify-between mb-4 md:hidden ">
-            <p className="text-gray-600 dark:text-gray-300">
-              {isLoading && currentPage === 1
-                ? t("explore.loading")
-                : searchFromUrl
-                ? t("explore.showing_search_results", {
-                    count: allTwibbons.length,
-                    query: displaySearchQuery,
-                  })
-                : t("explore.showing_twibone", { count: allTwibbons.length })}
-            </p>
-            {searchFromUrl && (
-              <button
-                onClick={clearSearch}
-                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
-              >
-                {t("explore.clear_search")}
-              </button>
-            )}
-          </div>
+          
         </div>
 
         {/* Twibon Grid/List */}
-        <div
-          className={`${
-            viewMode === "grid"
-              ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-              : "space-y-4"
-          }`}
-        >
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-5 ">
           {allTwibbons.length === 0
             ? renderEmptyState()
             : allTwibbons.map((twibon) => (
@@ -320,7 +229,7 @@ function ExploreTwibone() {
                   isGrid={viewMode === "grid"}
                 />
               ))}
-          
+
           {/* Loading More Indicator */}
           {renderLoadingMore()}
         </div>
@@ -334,7 +243,8 @@ function ExploreTwibone() {
         {!hasNextPage && allTwibbons.length > 0 && !isLoadingMore && (
           <div className="py-8 text-center">
             <p className="text-gray-500 dark:text-gray-400">
-              {t("explore.end_of_results") || "You've reached the end of the results"}
+              {t("explore.end_of_results") ||
+                "You've reached the end of the results"}
             </p>
           </div>
         )}

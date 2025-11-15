@@ -58,7 +58,10 @@ import "swiper/css/autoplay";
 import { Autoplay, FreeMode } from "swiper/modules";
 import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
 import { useTranslation } from "react-i18next";
-
+import FAQSection from "../components/sections/FAQSection.jsx";
+import CTASection from "../components/sections/CTASection.jsx";
+import TUTORIALSection from "../components/sections/TUTORIALSection.jsx";
+import CreatorSection from "../components/sections/CREATORSection.jsx";
 function TwiboneHomepage() {
   const { data, isLoading } = useGET("twibbons");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
@@ -87,31 +90,72 @@ function TwiboneHomepage() {
   const pagination = data?.pagination || [];
 
   const totalTwibbons = pagination.total || twibbonData.length;
-  const filteredTwibbons = twibbonData.slice(0, 8);
+  const filteredTwibbons = twibbonData.slice(0, 5);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white ">
       <Navbar />
 
       {/* Header Section with Diagonal Scrolling Photos - TIDAK DIUBAH */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary-400 via-primary-300 to-primary-300    dark:from-primary-600 dark:via-primary-500 dark:to-primary-700 text-white h-[440px] md:h-[640px] ">
-        <div className="relative z-20 grid h-full max-w-screen-lg px-4 mx-auto">
+      <section
+        className="relative overflow-hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+ from-primary-300 via-primary-300 to-primary-600    dark:from-primary-600 dark:via-primary-500 dark:to-primary-700 text-white h-[440px] md:h-[640px] "
+      >
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden z-[1] pointer-events-none">
+          <svg
+            width="100%"
+            height="100%"
+            id="svg"
+            viewBox="0 0 1440 390"
+            xmlns="http://www.w3.org/2000/svg"
+            class="transition duration-300 ease-in-out delay-150"
+          >
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="50%" x2="100%" y2="50%">
+                <stop offset="5%" stop-color="#facc15"></stop>
+                <stop offset="95%" stop-color="#ff6700"></stop>
+              </linearGradient>
+            </defs>
+            <path
+              d="M 0,400 L 0,100 C 129.27272727272728,91.377990430622 258.54545454545456,82.75598086124401 340,108 C 421.45454545454544,133.244019138756 455.0909090909091,192.35406698564597 529,209 C 602.9090909090909,225.64593301435403 717.0909090909091,199.82775119617222 828,226 C 938.9090909090909,252.17224880382778 1046.5454545454545,330.3349282296651 1148,368 C 1249.4545454545455,405.6650717703349 1344.7272727272727,402.83253588516743 1440,400 L 1440,400 L 0,400 Z"
+              stroke="none"
+              stroke-width="0"
+              fill="url(#gradient)"
+              fill-opacity="0.53"
+              class="transition-all duration-300 ease-in-out delay-150 path-0"
+            ></path>
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="50%" x2="100%" y2="50%">
+                <stop offset="5%" stop-color="#facc15"></stop>
+                <stop offset="95%" stop-color="#ff6700"></stop>
+              </linearGradient>
+            </defs>
+            <path
+              d="M 0,400 L 0,233 C 117.15789473684208,211.99521531100478 234.31578947368416,190.99043062200957 316,205 C 397.68421052631584,219.00956937799043 443.8947368421053,268.03349282296654 546,298 C 648.1052631578947,327.96650717703346 806.1052631578947,338.8755980861244 912,376 C 1017.8947368421053,413.1244019138756 1071.6842105263158,476.46411483253587 1151,507 C 1230.3157894736842,537.5358851674641 1335.157894736842,535.2679425837321 1440,533 L 1440,400 L 0,400 Z"
+              stroke="none"
+              stroke-width="0"
+              fill="url(#gradient)"
+              fill-opacity="1"
+              class="transition-all duration-300 ease-in-out delay-150 path-1"
+            ></path>
+          </svg>
+        </div>
+        <div className="container relative z-30 grid h-full px-4 mx-auto">
           <div className="relative grid items-center h-full gap-8 md:grid-cols-2 lg:gap-16">
             {/* Left Column - Text Content */}
             <div className="items-center justify-center space-y-4 text-center md:text-left md:space-y-6">
               <div className="flex items-center justify-center mb-4 md:justify-start">
-                <Sparkles className="w-6 h-6 mr-2 text-yellow-300 sm:w-7 sm:h-7 md:w-8 md:h-8 animate-pulse" />
-                <h1 className="text-3xl font-bold sm:text-4xl md:text-2xl lg:text-4xl">
-                  {t("title")}
+                <h1 className="text-3xl font-bold sm:text-4xl md:text-2xl lg:text-5xl font-outfit">
+                  Tunjukkan Gayamu, Sebarkan Semangatmu.{" "}
                 </h1>
               </div>
-              <p className="flex items-center justify-center text-lg text-blue-50 sm:text-xl md:text-lg ">
+              <p className="flex items-center justify-center text-lg text-blue-50 sm:text-xl md:text-lg md:items-start md:justify-start ">
                 {t("homepage.hero_subtitle")}
               </p>
               <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row md:items-start md:justify-start lg:ps-0">
                 <Link
                   to="/create"
-                  className="bg-yellow-400 dark:bg-yellow-500 text-primary-600 dark:text-primary-700 px-6 py-3 sm:px-8 sm:py-4 md:px-5 md:py-2.5 rounded-full font-bold text-base sm:text-lg md:text-base hover:bg-yellow-300 dark:hover:bg-yellow-400 transition-all hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 whitespace-nowrap"
+                  className="bg-primary-400 border-primary-400 hover:border-primary-600 border text-white px-6 py-3 sm:px-8 sm:py-4 md:px-5 md:py-2.5 rounded-full font-bold text-base sm:text-lg md:text-base hover:bg-primary-600 transition-allshadow-lg inline-flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                   {t("homepage.start_creating")}
@@ -119,7 +163,7 @@ function TwiboneHomepage() {
 
                 <Link
                   to="/explore"
-                  className="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 md:px-5 md:py-2.5 rounded-full font-semibold text-base sm:text-lg md:text-base  hover:bg-white hover:text-primary-500 dark:hover:bg-gray-100 dark:hover:text-primary-600 transition-all hover:scale-105 inline-flex items-center justify-center gap-2 whitespace-nowrap"
+                  className="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 md:px-5 md:py-2.5 rounded-full font-semibold text-base sm:text-lg md:text-base  hover:bg-white hover:text-primary-500 dark:hover:bg-gray-100 dark:hover:text-primary-600 transition-all inline-flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   {t("homepage.explore_twibone")}
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -128,7 +172,7 @@ function TwiboneHomepage() {
             </div>
           </div>
         </div>
-        <div className="absolute bottom-0 w-full h-40 md:top-0 md:h-full md:-right-96">
+        <div className="absolute bottom-0 z-20 w-full h-40 md:top-0 md:h-full md:-right-96">
           <div className="absolute inset-0 rotate-[-110deg] md:origin-center w-[120%] h-[120%]  md:left-[-10%] md:top-[-20%] left-[-40%]  top-[-30%] ">
             {/* Row 1 */}
             <Swiper
@@ -152,7 +196,7 @@ function TwiboneHomepage() {
             >
               {[...samplePhotos[0], ...samplePhotos[0]].map((photo, index) => (
                 <SwiperSlide key={`row1-${index}`} className="!w-auto">
-                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl md:h-40 md:w-40 lg:h-48 lg:w-48 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
+                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl md:h-40 md:w-40 lg:h-56 lg:w-56 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
                       className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover border-[6px] border-white hover:scale-110 rounded-xl"
                       style={{ backgroundImage: `url(${photo})` }}
@@ -184,7 +228,7 @@ function TwiboneHomepage() {
             >
               {[...samplePhotos[1], ...samplePhotos[1]].map((photo, index) => (
                 <SwiperSlide key={`row2-${index}`} className="!w-auto">
-                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl md:h-40 md:w-40 lg:h-48 lg:w-48 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
+                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl md:h-40 md:w-40 lg:h-52 lg:w-52 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
                       className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover border-[6px] border-white hover:scale-110 rounded-xl"
                       style={{ backgroundImage: `url(${photo})` }}
@@ -216,7 +260,7 @@ function TwiboneHomepage() {
             >
               {[...samplePhotos[2], ...samplePhotos[2]].map((photo, index) => (
                 <SwiperSlide key={`row3-${index}`} className="!w-auto">
-                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl md:h-40 md:w-40 lg:h-48 lg:w-48 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
+                  <div className="flex-shrink-0 w-32 h-32 overflow-hidden shadow-xl md:h-40 md:w-40 lg:h-56 lg:w-56 bg-white/10 dark:bg-white/20 backdrop-blur-sm rounded-xl">
                     <div
                       className="w-full h-full transition-transform duration-300 rotate-90 bg-center bg-cover border-[6px] border-white hover:scale-110 rounded-xl"
                       style={{ backgroundImage: `url(${photo})` }}
@@ -228,87 +272,33 @@ function TwiboneHomepage() {
           </div>
         </div>
 
-        <div className="absolute inset-0 z-10 pointer-events-none md:hidden bg-gradient-to-b from-primary-500/100 via-primary-500/100 to-transparent lg:from-primary-500/60 lg:via-transparent lg:to-transparent dark:from-primary-600/100 dark:via-primary-600/100 dark:lg:from-primary-600/60"></div>
-        <div className="absolute inset-0 z-10 hidden pointer-events-none nmd:block bg-gradient-to-b from-primary-500/100 via-primary-500/95 to-transparent lg:from-primary-500/40 lg:via-transparent lg:to-transparent dark:from-primary-600/100 dark:via-primary-600/95 dark:lg:from-primary-600/40"></div>
+        <div className="absolute inset-0 z-20 pointer-events-none md:hidden bg-gradient-to-b from-primary-500/100 via-primary-500/100 to-transparent lg:from-primary-500/60 lg:via-transparent lg:to-transparent dark:from-primary-600/100 dark:via-primary-600/100 dark:lg:from-primary-600/60"></div>
+        <div className="absolute inset-0 z-20 hidden pointer-events-none nmd:block bg-gradient-to-b from-primary-500/100 via-primary-500/95 to-transparent lg:from-primary-500/40 lg:via-transparent lg:to-transparent dark:from-primary-600/100 dark:via-primary-600/95 dark:lg:from-primary-600/40"></div>
       </section>
 
-      <main className="max-w-screen-lg px-4 py-8 mx-auto">
+      <main className="container px-4 py-8 mx-auto">
         <div className="mb-8">
-          <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col items-start justify-between gap-4 mb-6 sm:flex-row sm:items-center">
             <div className="flex flex-col gap-2">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {t("homepage.popular_twibone")}
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                {t("homepage.twibbon_title")}
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                {isLoading
-                  ? t("homepage.loading_latest")
-                  : t("homepage.showing_count", {
-                      filtered: filteredTwibbons.length,
-                      total: pagination.total || "0",
-                    })}
+                {t("homepage.twibbon_Subtitle")}
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-lg transition-all ${
-                    viewMode === "grid"
-                      ? "bg-primary-400 dark:bg-primary-500 text-white shadow-md"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <Grid className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-lg transition-all ${
-                    viewMode === "list"
-                      ? "bg-primary-400 dark:bg-primary-500 text-white shadow-md"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <List className="w-5 h-5" />
-                </button>
-              </div>
-              <Link
-                to="/explore"
-                className="flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-              >
-                <Search className="w-4 h-4" />
-                <span className="hidden sm:inline">
-                  {t("homepage.view_all")}
-                </span>
-              </Link>
-            </div>
-          </div>
 
-          {/* Category Pills */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  selectedCategory === category
-                    ? "bg-primary-400 dark:bg-primary-500 text-white shadow-md"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                }`}
-              >
-                {t("homepage.category_all")}
-              </button>
-            ))}
+            <Link
+              to="/explore"
+              className="flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              <span className="hidden sm:inline">{t("homepage.view_all")}</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
-
         {/* Twibbon Grid/List */}
-        <div
-          className={`${
-            viewMode === "grid"
-              ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              : "space-y-4"
-          }`}
-        >
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5">
           {isLoading ? (
             <p className="text-center col-span-full">{t("homepage.loading")}</p>
           ) : filteredTwibbons.length === 0 ? (
@@ -332,146 +322,11 @@ function TwiboneHomepage() {
             ))
           )}
         </div>
-
-        {/* View More Section */}
-        {filteredTwibbons.length > 0 &&
-          totalTwibbons > filteredTwibbons.length && (
-            <div className="mt-12 text-center">
-              <div className="p-8 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-2xl">
-                <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-                  {t("homepage.more_twibone_available", {
-                    count: totalTwibbons - filteredTwibbons.length,
-                  })}
-                </h3>
-                <p className="mb-6 text-gray-600 dark:text-gray-400">
-                  {t("homepage.explore_collection")}
-                </p>
-                <Link
-                  to="/explore"
-                  className="inline-flex items-center gap-2 px-8 py-3 font-semibold text-white transition-all rounded-full shadow-md bg-primary-400 dark:bg-primary-500 hover:bg-primary-500 dark:hover:bg-primary-600 hover:scale-105"
-                >
-                  {t("homepage.explore_all_twibone")}
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-              </div>
-            </div>
-          )}
-
-        {/* Enhanced Tutorial Section */}
-        <section className="py-20 mt-16 bg-gradient-to-r from-primary-50 via-primary-100 to-primary-50 dark:from-gray-800 dark:to-primary-900/30 rounded-3xl">
-          <div className="max-w-screen-xl px-6 mx-auto">
-            <div className="mb-16 text-center">
-              <h2 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white">
-                {t("homepage.tutorial_title")}
-              </h2>
-              <p className="max-w-2xl mx-auto text-xl text-gray-600 dark:text-gray-400">
-                {t("homepage.tutorial_subtitle")}
-              </p>
-            </div>
-
-            <div className="grid gap-12 lg:grid-cols-3">
-              {/* Step 1 */}
-              <div className="relative group">
-                <div className="absolute inset-0 transition-transform transform bg-gradient-to-r from-primary-400 to-primary-500 dark:from-primary-500 dark:to-primary-600 rounded-2xl rotate-1 group-hover:rotate-2"></div>
-                <div className="relative p-8 bg-white shadow-lg dark:bg-gray-800 rounded-2xl">
-                  <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 text-2xl font-bold text-white rounded-full shadow-lg bg-gradient-to-r from-primary-400 to-primary-500 dark:from-primary-500 dark:to-primary-600">
-                    <Search className="w-8 h-8" />
-                  </div>
-                  <div className="absolute px-3 py-1 text-sm font-bold text-white rounded-full top-4 right-4 bg-primary-500 dark:bg-primary-600">
-                    {t("homepage.step")} 1
-                  </div>
-                  <h3 className="mb-4 text-xl font-bold text-gray-800 dark:text-gray-200">
-                    {t("homepage.step1_title")}
-                  </h3>
-                  <p className="mb-6 leading-relaxed text-gray-600 dark:text-gray-400">
-                    {t("homepage.step1_description")}
-                  </p>
-                  <div className="flex items-center gap-2 text-sm font-medium text-primary-600 dark:text-primary-400">
-                    <CheckCircle className="w-4 h-4" />
-                    {t("homepage.step1_feature")}
-                  </div>
-                </div>
-              </div>
-
-              {/* Step 2 */}
-              <div className="relative group">
-                <div className="absolute inset-0 transition-transform transform bg-gradient-to-r from-primary-500 to-primary-400 dark:from-primary-600 dark:to-primary-500 rounded-2xl -rotate-1 group-hover:-rotate-2"></div>
-                <div className="relative p-8 bg-white shadow-lg dark:bg-gray-800 rounded-2xl">
-                  <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 text-2xl font-bold text-white rounded-full shadow-lg bg-gradient-to-r from-primary-500 to-primary-400 dark:from-primary-600 dark:to-primary-500">
-                    <Upload className="w-8 h-8" />
-                  </div>
-                  <div className="absolute px-3 py-1 text-sm font-bold text-white rounded-full top-4 right-4 bg-primary-500 dark:bg-primary-600">
-                    {t("homepage.step")} 2
-                  </div>
-                  <h3 className="mb-4 text-xl font-bold text-gray-800 dark:text-gray-200">
-                    {t("homepage.step2_title")}
-                  </h3>
-                  <p className="mb-6 leading-relaxed text-gray-600 dark:text-gray-400">
-                    {t("homepage.step2_description")}
-                  </p>
-                  <div className="flex items-center gap-2 text-sm font-medium text-primary-600 dark:text-primary-400">
-                    <CheckCircle className="w-4 h-4" />
-                    {t("homepage.step2_feature")}
-                  </div>
-                </div>
-              </div>
-
-              {/* Step 3 */}
-              <div className="relative group">
-                <div className="absolute inset-0 transition-transform transform bg-gradient-to-r from-primary-400 to-primary-500 dark:from-primary-500 dark:to-primary-600 rounded-2xl rotate-1 group-hover:rotate-2"></div>
-                <div className="relative p-8 bg-white shadow-lg dark:bg-gray-800 rounded-2xl">
-                  <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 text-2xl font-bold text-white rounded-full shadow-lg bg-gradient-to-r from-primary-400 to-primary-500 dark:from-primary-500 dark:to-primary-600">
-                    <Share2 className="w-8 h-8" />
-                  </div>
-                  <div className="absolute px-3 py-1 text-sm font-bold text-white rounded-full top-4 right-4 bg-primary-500 dark:bg-primary-600">
-                    {t("homepage.step")} 3
-                  </div>
-                  <h3 className="mb-4 text-xl font-bold text-gray-800 dark:text-gray-200">
-                    {t("homepage.step3_title")}
-                  </h3>
-                  <p className="mb-6 leading-relaxed text-gray-600 dark:text-gray-400">
-                    {t("homepage.step3_description")}
-                  </p>
-                  <div className="flex items-center gap-2 text-sm font-medium text-primary-600 dark:text-primary-400">
-                    <CheckCircle className="w-4 h-4" />
-                    {t("homepage.step3_feature")}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-16 mt-20 text-center">
-          <div className="w-full mx-auto">
-            <div className="p-12 text-white shadow-xl bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 dark:from-primary-500 dark:via-primary-600 dark:to-primary-500 rounded-3xl">
-              <Sparkles className="w-16 h-16 mx-auto mb-6 text-yellow-300 animate-pulse" />
-              <h2 className="mb-4 text-3xl font-bold">
-                {t("homepage.cta_title")}
-              </h2>
-              <p className="mb-8 text-xl text-blue-50">
-                {t("homepage.cta_subtitle")}
-              </p>
-              <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                <Link to="/create">
-                  <button className="flex items-center justify-center gap-2 px-8 py-4 text-lg font-bold transition-all bg-yellow-400 rounded-full shadow-lg dark:bg-yellow-500 text-primary-600 dark:text-primary-700 hover:bg-yellow-300 dark:hover:bg-yellow-400 hover:scale-105">
-                    <Plus className="w-5 h-5" />
-                    {t("homepage.start_now")}
-                  </button>
-                </Link>
-                <Link to="/explore">
-                  <button className="flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold text-white transition-all border-2 border-white rounded-full hover:bg-white hover:text-primary-500 dark:hover:bg-gray-100 dark:hover:text-primary-600 hover:scale-105">
-                    <Search className="w-5 h-5" />
-                    {t("homepage.view_templates")}
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
+        <TUTORIALSection />
+        <CTASection />
+        <FAQSection />
+        <CreatorSection />
       </main>
-
       <Footer />
     </div>
   );

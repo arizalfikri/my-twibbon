@@ -1,13 +1,13 @@
 import React, { useRef, useState, useEffect } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useImageStore from "../../helper/store/imagestore";
 import useUIStore from "../../helper/store/uiStore";
 import UploadModal from "../modal/UploudModal";
 import CameraCapture from "../modal/CameraCapture";
 import ControlPanel from "../ui/ControlPanel";
 import { toPng } from "html-to-image";
-import gypemLogo from "../../assets/images/Gypem_Watermark.png";
+import gypemLogo from "../../assets/images/Logo_Watermark.png";
 import { usePOST } from "../../services/api";
 import ModalMembership from "../modal/ModalMembership";
 
@@ -32,6 +32,7 @@ function CardEditor({
   const [showMembershipModal, setShowMembershipModal] = useState(false);
   const [downloadWithWatermark, setDownloadWithWatermark] = useState(false);
   const [isMember, setIsMember] = useState(false);
+  const { slug } = useParams();
 
   const {
     showUploadModal,
@@ -146,10 +147,10 @@ function CardEditor({
       setResultImage(dataUrl);
       navigate("/result");
 
-      await mutateAsync({
-        url: "/support",
-        data: { event_twibbon_id },
-      });
+      // await mutateAsync({
+      //   url: "/support",
+      //   data: { event_twibbon_id },
+      // });
     } catch (err) {
       console.error(err);
       alert("Download gagal. Silakan coba lagi.");
@@ -167,14 +168,14 @@ function CardEditor({
     const reader = new FileReader();
     reader.onload = () => {
       setImage(reader.result); // simpan base64 aman
-      navigate("/editorpage");
+      navigate(`/${slug}/editorpage`);
     };
     reader.readAsDataURL(file);
   };
 
   const handleCameraCapture = (dataUrl) => {
     setImage(dataUrl);
-    navigate("/editorpage");
+    navigate(`/${slug}/editorpage`);
   };
 
   const currentFilterString = generateFilterString(filters);
@@ -236,7 +237,7 @@ function CardEditor({
             {isExporting && downloadWithWatermark && (
               <div
                 id="watermark-fixed"
-                className="absolute flex items-center justify-center gap-1 px-2 py-[2px]
+                className="absolute flex items-center justify-center gap-1 px-2 py-[4px]
       text-gray-700 bg-white/95 rounded-lg shadow-md shadow-gray-600
       bottom-[10px] right-[10px]"
                 style={{
@@ -257,7 +258,7 @@ function CardEditor({
                   src={gypemLogo}
                   alt="Logo"
                   style={{
-                    height: "clamp(12px, 2vw, 20px)", // 🔥 logo fleksibel tapi proporsional
+                    height: "clamp(8px, 2vw, 13px)", // 🔥 logo fleksibel tapi proporsional
                     width: "auto",
                     objectFit: "contain",
                   }}

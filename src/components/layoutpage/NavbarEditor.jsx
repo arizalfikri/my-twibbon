@@ -2,7 +2,7 @@ import React from "react";
 import { X } from "lucide-react";
 import ModalKeluarEditor from "../modal/modalKeluarEditor";
 import { useModalStore } from "../../helper/store/modal.store";
-import LogoGypem from "../../assets/images/gypem_logo_putih.png";
+import LogoGypem from "../../assets/images/logo_Icon.png";
 
 function NavbarEditor({ title, onExit, disableModalExit = false }) {
   const { openModal } = useModalStore();
@@ -17,8 +17,8 @@ function NavbarEditor({ title, onExit, disableModalExit = false }) {
 
   return (
     <>
-      <nav className="border-b shadow-lg bg-primary-400 dark:bg-gray-900 border-prime-600 dark:border-gray-700">
-        <div className="max-w-screen-lg px-4 mx-auto sm:px-6 lg:px-8">
+      <nav className="border-b shadow-lg bg-primary-600 dark:bg-gray-900 border-prime-600 dark:border-gray-700">
+        <div className="container mx-auto sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Desktop */}
             <div className="items-center hidden md:flex">

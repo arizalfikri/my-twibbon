@@ -24,12 +24,12 @@
     "more_twibone_available": "Masih ada {{count}} Twibbon lainnya!",
     "explore_collection": "Jelajahi koleksi lengkap Twibbon dengan berbagai tema dan kategori menarik.",
     "explore_all_twibone": "Jelajahi Semua Twibbon",
-    "tutorial_title": "Cara Mudah Membuat Twibbon",
+    "tutorial_title": "Bikin Twibbon Instan",
     "tutorial_subtitle": "Ikuti langkah sederhana ini untuk menciptakan twibon yang memukau dalam waktu singkat",
     "step": "Langkah",
     "step1_title": "Pilih Template Favorit",
     "step1_description": "Jelajahi ribuan template menarik dari berbagai kategori seperti olimpiade dan event spesial lainnya.",
-    "step1_feature": "1000+ Template tersedia",
+    "step1_feature": "Banyak Template tersedia",
     "step2_title": "Upload & Edit Foto",
     "step2_description": "Unggah foto terbaik Anda, lalu sesuaikan posisi, ukuran, dan rotasi dengan editor yang user-friendly.",
     "step2_feature": "Editor drag & drop",
@@ -56,7 +56,8 @@
     "end_of_results": "Sudah mencapai akhir hasil pencarian"
   },
   "create": {
-    "page_title": "Buat Twibbon",
+    "page_title_frame": "Buat Frame Twibbon",
+    "page_title_background": "Buat Background Twibbon",
     "step_description": "Lengkapi informasi kampanye Anda",
     "step_counter": "Langkah {{current}} dari {{total}}",
     "steps": {
@@ -422,7 +423,7 @@
     "copyright": "© {{year}} Gypem by Digital Edu Indonesia. All rights reserved.",
     "privacy_policy": "Privacy Policy",
     "terms_of_service": "Terms of Service",
-    "contact_us": "Contact Us"
+    "contact_us": "WhatsApp"
   },
   "validation": {
     "email_required": "Email harus diisi",

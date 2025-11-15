@@ -16,6 +16,7 @@ const InputWithLabel = (props) => {
     onChange,
     error,
     disabled,
+    prefix
   } = props;
 
   return (
@@ -32,6 +33,7 @@ const InputWithLabel = (props) => {
         control={control}
         error={error}
         disabled={disabled}
+        prefix={prefix}
       />
     </div>
   );

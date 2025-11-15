@@ -9,7 +9,7 @@ import {
   Crown,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import LogoGypem from "../../assets/images/gypem_logo_putih.png";
+import LogoGypem from "../../assets/images/Logo_putih.png";
 import {
   useNavigate,
   Link,
@@ -132,7 +132,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-40 py-5 text-white bg-primary-400 dark:bg-gray-900 dark:border-b dark:border-gray-600">
+      <nav className="sticky top-0 z-40 py-4 text-white bg-primary-600 dark:bg-gray-900 dark:border-b dark:border-gray-600">
         <div className="container ">
           <div className="flex items-center justify-between">
             {isMobileSearchMode ? (
@@ -145,7 +145,7 @@ function Navbar() {
                     onChange={handleSearchInputChange}
                     onKeyPress={handleSearchKeyPress}
                     autoFocus
-                    className="w-full px-4 py-2 pl-10 pr-4 text-white placeholder-gray-300 border rounded-full bg-primary-500 border-primary-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                    className="w-full px-4 py-2 pl-10 pr-4 text-white placeholder-gray-300 border rounded-full bg-primary-500 border-primary-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
                   />
                   <button
                     type="submit"
@@ -165,14 +165,13 @@ function Navbar() {
               <>
                 {/* Logo */}
                 <Link to="/" className="flex items-center space-x-2">
-                  <div className="flex items-center justify-center w-12 h-12 rounded">
+                  <div className="flex items-center justify-center w-56 h-10 ">
                     <img
                       src={LogoGypem}
                       alt="Logo Gypem"
-                      className="object-contain w-20 h-20"
+                      className="object-contain h-48"
                     />
                   </div>
-                  <span className="text-lg font-semibold">MyTwibbon</span>
                 </Link>
 
                 {/* Desktop Search */}
@@ -186,7 +185,7 @@ function Navbar() {
                       placeholder={t("search_placeholder")}
                       value={searchQuery}
                       onChange={handleSearchInputChange}
-                      className="w-full px-4 py-2 pl-10 pr-10 text-white placeholder-gray-300 border rounded-full bg-primary-500 border-primary-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                      className="w-full px-4 py-2 pl-10 pr-10 text-black placeholder-black bg-white border rounded-full border-primary-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                     />
                     <button
                       type="submit"
@@ -210,7 +209,7 @@ function Navbar() {
                 <div className="items-center hidden space-x-2 md:flex">
                   <Link
                     to="/create"
-                    className="flex items-center px-4 py-2 space-x-2 font-semibold transition-colors bg-yellow-400 rounded-full text-primary-600 hover:bg-yellow-300"
+                    className="flex items-center px-4 py-2 mx-1 space-x-2 font-semibold text-black transition-colors bg-white rounded-full hover:bg-gray-50"
                   >
                     <Plus className="w-4 h-4" />
                     <span className="hidden capitalize lg:inline">
@@ -226,7 +225,7 @@ function Navbar() {
                     />
                   </button> */}
                   <button
-                    className="p-2 transition-colors rounded-full hover:bg-primary-600"
+                    className="p-2 transition-colors rounded-full hover:bg-primary-700"
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                   >
                     <Menu className="w-5 h-5" />
@@ -241,19 +240,19 @@ function Navbar() {
                   >
                     <Search className="w-5 h-5" />
                   </button>
-                  {/* <button onClick={toggleLanguage}>
+                  {/*  <button onClick={toggleLanguage}>
                     <img
                       src={i18n.language.startsWith("id") ? FLAGID : FLAGEN}
                       alt={i18n.language}
                       className="w-6 h-6 rounded-full"
                     />
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                     className="p-2 transition-colors rounded-full hover:bg-primary-700"
                   >
                     <Menu className="w-5 h-5" />
-                  </button> */}
+                  </button>{" "}
                 </div>
               </>
             )}
@@ -325,7 +324,7 @@ function Navbar() {
                   <span>Sign In</span>
                 </button>
                 <button
-                  className="flex items-center justify-center w-full px-6 py-3 space-x-2 font-semibold transition-colors bg-yellow-400 rounded-lg text-primary-600 hover:bg-yellow-300"
+                  className="flex items-center justify-center w-full px-6 py-3 space-x-2 font-semibold text-black transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-300"
                   onClick={() => {
                     navigate("/SignUp");
                     setIsSidebarOpen(false);
@@ -363,7 +362,7 @@ function Navbar() {
             <li>
               <Link
                 to="/create"
-                className="flex items-center px-4 py-2 mb-5 space-x-2 font-semibold transition-colors bg-yellow-400 rounded-full text-primary-600 hover:bg-yellow-300 md:hidden"
+                className="flex items-center px-4 py-2 mb-5 space-x-2 font-semibold transition-colors bg-yellow-400 rounded-full text-blag hover:bg-yellow-300 md:hidden"
               >
                 <Plus className="w-4 h-4" />
                 <span>{t("add_twibone")}</span>

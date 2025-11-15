@@ -2,19 +2,21 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CardEditor from "../components/cards/CardEditor";
 import useImageStore from "../helper/store/imagestore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NavbarEditor from "../components/layoutpage/NavbarEditor";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useTwibbonStore from "../helper/store/TwiboneUser";
-import ControlPanel from "../components/ui/ControlPanel"; // ✅ tambahin
-import * as htmlToImage from "html-to-image"; //
+import ControlPanel from "../components/ui/ControlPanel";
+import * as htmlToImage from "html-to-image";
 import { useGET } from "../services/api";
-// Create a client
+import LoadingPage from "../components/layoutpage/LoadingPage";
+import NotFound from "./NotfoundPage";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 2,
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
     },
     mutations: {
       retry: 1,
@@ -24,14 +26,19 @@ const queryClient = new QueryClient({
 
 function EditorPage() {
   const { t } = useTranslation();
-  const { image, frameImage } = useImageStore();
+  const { image, setImage, setFrameImage, frameImage } = useImageStore();
   const navigate = useNavigate();
+  const { slug } = useParams();
   const { twibbonData } = useTwibbonStore();
   const { data } = useGET("/subscription");
   const SubscribeData = data?.data;
   const editorRef = useRef(null);
 
-  // Enhanced filter states
+  // Fetch twibbon data jika tidak ada image
+  const { data: twibbon, isLoading: isTwibbonLoading, error: twibbonError } = useGET(
+    !image && slug ? `twibbon/${slug}?page=1&perPage=20` : null
+  );
+
   const [filters, setFilters] = useState({
     brightness: 100,
     contrast: 100,
@@ -42,7 +49,7 @@ function EditorPage() {
   });
 
   const [activeTab, setActiveTab] = useState("basic");
-  console.log(twibbonData);
+
   // Update individual filter
   const updateFilter = (filterName, value) => {
     setFilters((prev) => ({
@@ -63,11 +70,47 @@ function EditorPage() {
     });
   };
 
+  // Effect untuk handle ketika tidak ada image
   useEffect(() => {
     if (!image) {
-      navigate("/");
+      // Jika ada slug dan twibbon data sudah di-load
+      if (slug && twibbon?.data && !isTwibbonLoading) {
+        // Set twibbon data ke store
+        useTwibbonStore.getState().setTwibbonData(twibbon.data);
+
+        // Set frame image jika ada template
+        if (twibbon.data?.template_twibbon) {
+          const imageURL = `${import.meta.env.VITE_FILE_URL}${
+            twibbon.data.template_twibbon
+          }`;
+          setFrameImage(imageURL);
+        }
+
+        // Tidak perlu navigate, stay di halaman ini
+      } else if (!slug || (isTwibbonLoading === false && !twibbon?.data)) {
+        // Jika tidak ada slug atau twibbon tidak ditemukan, baru navigate ke home
+        navigate("/");
+      }
     }
-  }, [image, navigate]);
+  }, [image, slug, twibbon, isTwibbonLoading, navigate, setFrameImage]);
+
+  // Loading state ketika fetch data
+  if (!image && slug && isTwibbonLoading) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <LoadingPage />
+      </QueryClientProvider>
+    );
+  }
+
+  // Not found state
+  if (!image && slug && !isTwibbonLoading && (!twibbon?.data || twibbonError)) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <NotFound />
+      </QueryClientProvider>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -94,7 +137,8 @@ function EditorPage() {
             <div className="flex flex-shrink-0 p-1 m-4 mb-2 bg-gray-100 rounded-lg dark:bg-gray-700">
               <button
                 onClick={() => setActiveTab("presets")}
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+                disabled={!image}
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   activeTab === "presets"
                     ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
                     : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
@@ -104,7 +148,8 @@ function EditorPage() {
               </button>
               <button
                 onClick={() => setActiveTab("basic")}
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+                disabled={!image}
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   activeTab === "basic"
                     ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
                     : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
@@ -114,7 +159,8 @@ function EditorPage() {
               </button>
               <button
                 onClick={() => setActiveTab("effects")}
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+                disabled={!image}
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   activeTab === "effects"
                     ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
                     : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
@@ -125,7 +171,7 @@ function EditorPage() {
             </div>
 
             {/* Mobile Content - Light/Dark Mode */}
-            <div className="flex-1 px-4 pb-4 overflow-y-auto">
+            <div className="flex-1 px-4 pb-4 overflow-y-auto" style={{ opacity: image ? 1 : 0.5, pointerEvents: image ? 'auto' : 'none' }}>
               {activeTab === "presets" && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between mb-3">
@@ -134,7 +180,8 @@ function EditorPage() {
                     </h3>
                     <button
                       onClick={resetFilters}
-                      className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                      disabled={!image}
+                      className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {t("editor.reset")}
                     </button>
@@ -152,7 +199,8 @@ function EditorPage() {
                           grayscale: 0,
                         })
                       }
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border border-yellow-300 rounded-lg dark:border-yellow-600/50 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 hover:from-yellow-200 hover:to-orange-200 dark:hover:from-yellow-800/40 dark:hover:to-orange-800/40"
+                      disabled={!image}
+                      className="flex items-center justify-center p-3 space-x-2 transition-all border border-yellow-300 rounded-lg dark:border-yellow-600/50 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 hover:from-yellow-200 hover:to-orange-200 dark:hover:from-yellow-800/40 dark:hover:to-orange-800/40 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span>☀️</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
@@ -171,7 +219,8 @@ function EditorPage() {
                           grayscale: 0,
                         })
                       }
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border rounded-lg bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 border-amber-300 dark:border-amber-600/50 hover:from-amber-200 hover:to-yellow-200 dark:hover:from-amber-800/40 dark:hover:to-yellow-800/40"
+                      disabled={!image}
+                      className="flex items-center justify-center p-3 space-x-2 transition-all border rounded-lg bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 border-amber-300 dark:border-amber-600/50 hover:from-amber-200 hover:to-yellow-200 dark:hover:from-amber-800/40 dark:hover:to-yellow-800/40 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span>📷</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
@@ -222,7 +271,6 @@ function EditorPage() {
 
               {activeTab === "basic" && (
                 <div className="space-y-4">
-                  {" "}
                   {/* Brightness Control - Light/Dark */}
                   <div className="p-3 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
                     <div className="space-y-3">
@@ -373,7 +421,9 @@ function EditorPage() {
             </div>
           </div>
         </div>
-        <div className="hidden md:grid md:grid-cols-[minmax(350px,450px)_1fr] max-w-screen-lg p-6 gap-8 mx-auto w-full">
+
+        {/* Desktop Layout */}
+        <div className="hidden md:grid md:grid-cols-[minmax(350px,450px)_1fr] container p-6 gap-8 mx-auto w-full">
           {/* Card Editor */}
           <div className="flex flex-col items-center justify-center">
             <div className="w-full max-w-[400px]">
@@ -387,14 +437,15 @@ function EditorPage() {
           </div>
 
           {/* Enhanced Settings Panel - Light/Dark */}
-          <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl overflow-y-auto max-h-[calc(100vh-10rem)] p-8">
+          <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl overflow-y-auto max-h-[calc(100vh-10rem)] p-8" style={{ opacity: image ? 1 : 0.5, pointerEvents: image ? 'auto' : 'none' }}>
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold text-gray-900 truncate dark:text-gray-200">
                 🎨 {t("editor.filter_settings")}
               </h2>
               <button
                 onClick={resetFilters}
-                className="px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+                disabled={!image}
+                className="px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("editor.reset")}
               </button>
@@ -485,13 +536,14 @@ function EditorPage() {
                   </button>
                 </div>
               </div>
+
               {/* Basic Controls - Light/Dark */}
               <div>
                 <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
                   {t("editor.basic_controls")}
                 </h3>
                 <div className="space-y-4">
-                  {/* Brightness Control - Light/Dark */}
+                  {/* Brightness Control */}
                   <div className="p-4 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
                       ☀️ {t("editor.brightness")}
@@ -518,7 +570,7 @@ function EditorPage() {
                     </div>
                   </div>
 
-                  {/* Contrast Control - Light/Dark */}
+                  {/* Contrast Control */}
                   <div className="p-4 border rounded-lg border-primary-200 dark:border-primary-600/30 bg-primary-50 dark:bg-primary-900/20">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
                       🔳 {t("editor.contrast")}
@@ -545,7 +597,7 @@ function EditorPage() {
                     </div>
                   </div>
 
-                  {/* Saturation Control - Light/Dark */}
+                  {/* Saturation Control */}
                   <div className="p-4 border border-pink-200 rounded-lg dark:border-pink-600/30 bg-pink-50 dark:bg-pink-900/20">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
                       🎨 {t("editor.saturation")}
@@ -573,13 +625,14 @@ function EditorPage() {
                   </div>
                 </div>
               </div>
+
               {/* Advanced Controls - Light/Dark */}
               <div>
                 <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
                   {t("editor.advanced_controls")}
                 </h3>
                 <div className="space-y-4">
-                  {/* Hue Control - Light/Dark */}
+                  {/* Hue Control */}
                   <div className="p-4 border border-indigo-200 rounded-lg dark:border-indigo-600/30 bg-indigo-50 dark:bg-indigo-900/20">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
                       🌀 {t("editor.hue")}
@@ -606,13 +659,13 @@ function EditorPage() {
                     </div>
                   </div>
 
-                  {/* Effect Controls - Light/Dark */}
+                  {/* Effect Controls */}
                   <div className="p-4 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-600/30">
                     <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
                       ✨ {t("editor.effects")}
                     </h4>
 
-                    {/* Sepia - Light/Dark */}
+                    {/* Sepia */}
                     <div className="mb-3 space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-300">
@@ -634,7 +687,7 @@ function EditorPage() {
                       />
                     </div>
 
-                    {/* Grayscale - Light/Dark */}
+                    {/* Grayscale */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-300">

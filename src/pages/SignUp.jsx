@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import LogoGypem from "../assets/images/gypem_logo.png";
-import LogoGypemPutih from "../assets/images/gypem_logo_putih.png";
+import LogoGypemPutih from "../assets/images/Logo_Icon.png";
 import LoginImage from "../assets/images/login_image.png";
 import { Eye, EyeOff } from "lucide-react";
 import InputWithLabel from "../components/FormControl/InputWithLabel";

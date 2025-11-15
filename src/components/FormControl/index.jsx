@@ -28,58 +28,75 @@ const Input = (props) => {
     theme = InputTheme.DEFAULT,
     size = InputSize.SMALL,
     onClick,
-    children,
     className,
     disabled,
     placeholder,
     name,
     control,
     error,
+    prefix,
   } = props;
 
   const isTextarea = type === InputType.TEXTAREA;
-
-  const classProps = twMerge(
-    "w-full py-2 px-3 border focus:outline-none",
-    "bg-white text-black placeholder-gray-500 dark:bg-gray-900 dark:text-white dark:placeholder-gray-400",
-    theme,
-    size,
-    isTextarea && "min-h-[10rem] resize-none",
-    className
-  );
 
   return (
     <Controller
       control={control}
       name={name}
       render={({ field: { value = "", onChange, ref } }) => (
-        <>
-          {isTextarea ? (
-            <textarea
-              ref={ref}
-              onClick={onClick}
-              disabled={disabled}
-              className={classProps}
-              placeholder={placeholder}
-              name={name}
-              value={value}
-              onChange={onChange}
-            />
-          ) : (
-            <input
-              ref={ref}
-              type={type}
-              onClick={onClick}
-              disabled={disabled}
-              className={classProps}
-              placeholder={placeholder}
-              name={name}
-              value={value}
-              onChange={onChange}
-            />
-          )}
+        <div>
+          {/* WRAPPER */}
+          <div
+            className={twMerge(
+              "flex w-full border bg-white dark:bg-gray-900 dark:border-gray-700",
+              "focus-within:ring-2 focus-within:ring-primary-400",
+              theme,
+              className
+            )}
+          >
+            {/* PREFIX */}
+            {prefix && (
+              <div className="flex items-center px-3 text-gray-700 bg-gray-200 border-r dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+                {prefix}
+              </div>
+            )}
+
+            {/* INPUT / TEXTAREA */}
+            {isTextarea ? (
+              <textarea
+                ref={ref}
+                disabled={disabled}
+                onClick={onClick}
+                className={twMerge(
+                  "w-full py-2 px-3 focus:outline-none resize-none min-h-[10rem]",
+                  "bg-white dark:bg-gray-900 text-black dark:text-white",
+                  size
+                )}
+                placeholder={placeholder}
+                value={value}
+                onChange={onChange}
+              />
+            ) : (
+              <input
+                ref={ref}
+                type={type}
+                disabled={disabled}
+                onClick={onClick}
+                className={twMerge(
+                  "w-full py-2 px-3 focus:outline-none",
+                  "bg-white dark:bg-gray-900 text-black dark:text-white",
+                  size
+                )}
+                placeholder={placeholder}
+                value={value}
+                onChange={onChange}
+              />
+            )}
+          </div>
+
+          {/* ERROR TEXT */}
           <p className="mt-1 text-xs text-red-500">{error?.[name]?.message}</p>
-        </>
+        </div>
       )}
     />
   );
