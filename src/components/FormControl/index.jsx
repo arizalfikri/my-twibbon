@@ -46,17 +46,18 @@ const Input = (props) => {
       render={({ field: { value = "", onChange, ref } }) => (
         <div>
           {/* WRAPPER */}
-          <div
-            className={twMerge(
-              "flex w-full border bg-white dark:bg-gray-900 dark:border-gray-700",
-              "focus-within:ring-2 focus-within:ring-primary-400",
-              theme,
-              className
-            )}
-          >
+         <div
+  className={twMerge(
+    "flex w-full border bg-white dark:bg-gray-900 dark:border-gray-700",
+    "focus-within:ring-2 focus-within:ring-primary-400",
+    "rounded-md overflow-hidden",
+    className
+  )}
+>
+
             {/* PREFIX */}
             {prefix && (
-              <div className="flex items-center px-3 text-gray-700 bg-gray-200 border-r dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+              <div className="flex items-center px-3 text-xs text-gray-700 bg-white border-r dark:bg-gray-900 rounded-l-md dark:border-gray-700">
                 {prefix}
               </div>
             )}
@@ -82,11 +83,11 @@ const Input = (props) => {
                 type={type}
                 disabled={disabled}
                 onClick={onClick}
-                className={twMerge(
-                  "w-full py-2 px-3 focus:outline-none",
-                  "bg-white dark:bg-gray-900 text-black dark:text-white",
-                  size
-                )}
+                 className={twMerge(
+    "w-full py-2 px-3 focus:outline-none",
+    "bg-transparent text-black dark:text-white",
+    size
+  )}
                 placeholder={placeholder}
                 value={value}
                 onChange={onChange}

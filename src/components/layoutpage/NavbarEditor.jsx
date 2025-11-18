@@ -2,7 +2,7 @@ import React from "react";
 import { X } from "lucide-react";
 import ModalKeluarEditor from "../modal/modalKeluarEditor";
 import { useModalStore } from "../../helper/store/modal.store";
-import LogoGypem from "../../assets/images/logo_Icon.png";
+import LogoGypem from "../../assets/images/logo/logo_Icon.png";
 
 function NavbarEditor({ title, onExit, disableModalExit = false }) {
   const { openModal } = useModalStore();

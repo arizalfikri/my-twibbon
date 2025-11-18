@@ -21,15 +21,7 @@ function CheckoutPage() {
     refetch();
   }, [refetch]);
 
-  useEffect(() => {
-    if (!isLoading && (!payment || !payment.data)) {
-      openToast({
-        message: t("checkout.no_payment"),
-        type: "error",
-      });
-      navigate("/membership");
-    }
-  }, [isLoading, payment, navigate, openToast, t]);
+ 
 
   const handleCreateInvoice = async () => {
     try {

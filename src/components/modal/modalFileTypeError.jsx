@@ -47,14 +47,14 @@ export default function ModalFileTypeError() {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <rect width="64" height="64" rx="32" fill="#D5DEEF" />
+            <rect width="64" height="64" rx="32" fill="#FFD7B5" />
             {/* Background pattern to show transparency */}
             <defs>
               <pattern id="checkerboard" patternUnits="userSpaceOnUse" width="4" height="4">
-                <rect width="2" height="2" fill="#D5DEEF"/>
-                <rect x="2" y="2" width="2" height="2" fill="#D5DEEF"/>
-                <rect x="2" y="0" width="2" height="2" fill="#D5DEEF"/>
-                <rect x="0" y="2" width="2" height="2" fill="#D5DEEF"/>
+                <rect width="2" height="2" fill="#FFD7B5"/>
+                <rect x="2" y="2" width="2" height="2" fill="#FFD7B5"/>
+                <rect x="2" y="0" width="2" height="2" fill="#FFD7B5"/>
+                <rect x="0" y="2" width="2" height="2" fill="#FFD7B5"/>
               </pattern>
             </defs>
             
@@ -98,7 +98,7 @@ export default function ModalFileTypeError() {
 
         {/* Help text */}
         <div className="p-3 mb-6 rounded-lg bg-blue-500/20">
-          <div className="text-xs text-blue-200">
+          <div className="text-xs text-orange-200">
             <span className="font-medium">💡 {t('modalerror.tips')}:</span> {t('modalerror.tools_suggestion')}
           </div>
         </div>

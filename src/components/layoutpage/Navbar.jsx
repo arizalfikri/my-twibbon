@@ -9,7 +9,9 @@ import {
   Crown,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import LogoGypem from "../../assets/images/Logo_putih.png";
+import logoIcon from "../../assets/images/logo/Logo_Icon.png";
+import logo from "../../assets/images/logo/Logo_putih.png";
+
 import {
   useNavigate,
   Link,
@@ -22,6 +24,7 @@ import { useThemeStore } from "../../helper/store/theme.store";
 import { useTranslation } from "react-i18next";
 import FLAGID from "../../assets/images/indonesiaflag.png";
 import FLAGEN from "../../assets/images/amerikaflag.png";
+import ModalTwibbonChoice from "../modal/ModalTwibbonChoise";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -34,6 +37,7 @@ function Navbar() {
   const { email, token, fullname, role } = useGlobalStore();
   const { theme, toggleTheme } = useThemeStore();
   const { t, i18n } = useTranslation();
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     if (!email && localStorage.getItem("email")) {
@@ -165,10 +169,10 @@ function Navbar() {
               <>
                 {/* Logo */}
                 <Link to="/" className="flex items-center space-x-2">
-                  <div className="flex items-center justify-center w-56 h-10 ">
+                  <div className="flex items-center justify-center w-32 h-10 md:w-56 ">
                     <img
-                      src={LogoGypem}
-                      alt="Logo Gypem"
+                      src={logo}
+                      alt="Logo"
                       className="object-contain h-48"
                     />
                   </div>
@@ -185,7 +189,7 @@ function Navbar() {
                       placeholder={t("search_placeholder")}
                       value={searchQuery}
                       onChange={handleSearchInputChange}
-                      className="w-full px-4 py-2 pl-10 pr-10 text-black placeholder-black bg-white border rounded-full border-primary-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                      className="w-full px-4 py-2 pl-10 pr-10 text-gray-500 placeholder-gray-500 bg-white border rounded-full border-primary-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                     />
                     <button
                       type="submit"
@@ -207,16 +211,17 @@ function Navbar() {
 
                 {/* Desktop Right */}
                 <div className="items-center hidden space-x-2 md:flex">
-                  <Link
-                    to="/create"
-                    className="flex items-center px-4 py-2 mx-1 space-x-2 font-semibold text-black transition-colors bg-white rounded-full hover:bg-gray-50"
+                  <button
+                    onClick={() => setOpenModal(true)}
+                    className="flex items-center px-4 py-2 mx-1 space-x-2 font-semibold text-white transition-colors rounded-full bg-primary-300 hover:bg-primary-500"
                   >
                     <Plus className="w-4 h-4" />
                     <span className="hidden capitalize lg:inline">
                       {t("add_twibone")}
                     </span>
                     <span className="lg:hidden ">{t("add")}</span>
-                  </Link>
+                  </button>
+
                   {/* <button onClick={toggleLanguage}>
                     <img
                       src={i18n.language.startsWith("id") ? FLAGID : FLAGEN}
@@ -360,13 +365,16 @@ function Navbar() {
               </Link>
             </li>
             <li>
-              <Link
-                to="/create"
-                className="flex items-center px-4 py-2 mb-5 space-x-2 font-semibold transition-colors bg-yellow-400 rounded-full text-blag hover:bg-yellow-300 md:hidden"
+              <button
+                onClick={() => {
+                  setOpenModal(true);
+                  setIsSidebarOpen(false);
+                }}
+                className="flex items-center w-full px-4 py-2 mb-5 space-x-2 font-semibold text-white transition-colors rounded-full bg-primary-300 hover:bg-primary-600 md:hidden"
               >
                 <Plus className="w-4 h-4" />
                 <span>{t("add_twibone")}</span>
-              </Link>
+              </button>
             </li>
           </ul>
         </div>
@@ -404,13 +412,13 @@ function Navbar() {
 
           <div className="flex items-center space-x-2">
             <img
-              src={LogoGypem}
-              alt="Gypem Logo"
+              src={logoIcon}
+              alt=" Logo"
               className="object-contain w-8 h-8"
             />
             <div>
               <p className="text-sm font-semibold text-gray-800 dark:text-white">
-                My Twibbon
+                MyTwibbon
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-300">
                 © {new Date().getFullYear()} All rights reserved
@@ -432,6 +440,10 @@ function Navbar() {
       <ModalLogout
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
+      />
+      <ModalTwibbonChoice
+        open={openModal}
+        onClose={() => setOpenModal(false)}
       />
     </>
   );

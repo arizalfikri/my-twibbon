@@ -203,11 +203,7 @@ function ExploreTwibone() {
 
       <main className="container px-4 py-8 mx-auto">
         {/* Search and Filters */}
-        <div className="mb-8">
-         
-
-          
-        </div>
+        <div className="mb-8"></div>
 
         {/* Twibon Grid/List */}
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-5 ">
@@ -223,10 +219,9 @@ function ExploreTwibone() {
                     supports: twibon?.supports || 0,
                     slug: twibon.slug_event_twibbon,
                     image: twibon.template_twibbon,
-                    isNew: false,
-                    isTrending: false,
+
+                    date: twibon.createdAt,
                   }}
-                  isGrid={viewMode === "grid"}
                 />
               ))}
 

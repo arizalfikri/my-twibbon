@@ -34,7 +34,6 @@ function EditorPage() {
   const SubscribeData = data?.data;
   const editorRef = useRef(null);
 
-  // Fetch twibbon data jika tidak ada image
   const { data: twibbon, isLoading: isTwibbonLoading, error: twibbonError } = useGET(
     !image && slug ? `twibbon/${slug}?page=1&perPage=20` : null
   );
@@ -50,7 +49,6 @@ function EditorPage() {
 
   const [activeTab, setActiveTab] = useState("basic");
 
-  // Update individual filter
   const updateFilter = (filterName, value) => {
     setFilters((prev) => ({
       ...prev,
@@ -58,7 +56,6 @@ function EditorPage() {
     }));
   };
 
-  // Reset all filters
   const resetFilters = () => {
     setFilters({
       brightness: 100,
@@ -70,31 +67,20 @@ function EditorPage() {
     });
   };
 
-  // Effect untuk handle ketika tidak ada image
   useEffect(() => {
     if (!image) {
-      // Jika ada slug dan twibbon data sudah di-load
       if (slug && twibbon?.data && !isTwibbonLoading) {
-        // Set twibbon data ke store
         useTwibbonStore.getState().setTwibbonData(twibbon.data);
-
-        // Set frame image jika ada template
         if (twibbon.data?.template_twibbon) {
-          const imageURL = `${import.meta.env.VITE_FILE_URL}${
-            twibbon.data.template_twibbon
-          }`;
+          const imageURL = `${import.meta.env.VITE_FILE_URL}${twibbon.data.template_twibbon}`;
           setFrameImage(imageURL);
         }
-
-        // Tidak perlu navigate, stay di halaman ini
       } else if (!slug || (isTwibbonLoading === false && !twibbon?.data)) {
-        // Jika tidak ada slug atau twibbon tidak ditemukan, baru navigate ke home
         navigate("/");
       }
     }
   }, [image, slug, twibbon, isTwibbonLoading, navigate, setFrameImage]);
 
-  // Loading state ketika fetch data
   if (!image && slug && isTwibbonLoading) {
     return (
       <QueryClientProvider client={queryClient}>
@@ -103,7 +89,6 @@ function EditorPage() {
     );
   }
 
-  // Not found state
   if (!image && slug && !isTwibbonLoading && (!twibbon?.data || twibbonError)) {
     return (
       <QueryClientProvider client={queryClient}>
@@ -119,8 +104,7 @@ function EditorPage() {
       <div className="flex flex-col items-center justify-between min-h-screen bg-white dark:bg-gray-900 md:max-h-screen md:overflow-hidden">
         {/* Mobile Layout */}
         <div className="flex flex-col flex-1 w-full md:hidden">
-          {/* CardEditor Area - Full width dengan padding yang cukup */}
-          <div className="flex items-center justify-center flex-1 min-h-0 p-6 bg-gray-50 dark:bg-gray-900">
+          <div className="flex items-center justify-center flex-1 min-h-0 p-4 bg-gray-50 dark:bg-gray-900">
             <div ref={editorRef} className="w-full max-w-md">
               <CardEditor
                 frameImage={frameImage}
@@ -131,17 +115,16 @@ function EditorPage() {
             </div>
           </div>
 
-          {/* Mobile Filter Panel - Light/Dark */}
-          <div className="flex flex-col pb-20 bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700 h-96">
-            {/* Mobile Tabs - Light/Dark */}
-            <div className="flex flex-shrink-0 p-1 m-4 mb-2 bg-gray-100 rounded-lg dark:bg-gray-700">
+          {/* Mobile Filter Panel */}
+          <div className="flex flex-col pb-20 bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700 h-80">
+            <div className="flex flex-shrink-0 p-1 m-3 mb-2 bg-gray-100 rounded-lg dark:bg-gray-700">
               <button
                 onClick={() => setActiveTab("presets")}
                 disabled={!image}
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   activeTab === "presets"
                     ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                    : "text-gray-600 dark:text-gray-300"
                 }`}
               >
                 🎨 Preset
@@ -149,10 +132,10 @@ function EditorPage() {
               <button
                 onClick={() => setActiveTab("basic")}
                 disabled={!image}
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   activeTab === "basic"
                     ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                    : "text-gray-600 dark:text-gray-300"
                 }`}
               >
                 ⚙️ {t("editor.basic")}
@@ -160,183 +143,115 @@ function EditorPage() {
               <button
                 onClick={() => setActiveTab("effects")}
                 disabled={!image}
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   activeTab === "effects"
                     ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                    : "text-gray-600 dark:text-gray-300"
                 }`}
               >
                 ✨ {t("editor.effects")}
               </button>
             </div>
 
-            {/* Mobile Content - Light/Dark Mode */}
-            <div className="flex-1 px-4 pb-4 overflow-y-auto" style={{ opacity: image ? 1 : 0.5, pointerEvents: image ? 'auto' : 'none' }}>
+            <div className="flex-1 px-3 pb-3 overflow-y-auto" style={{ opacity: image ? 1 : 0.5, pointerEvents: image ? 'auto' : 'none' }}>
               {activeTab === "presets" && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-200">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-gray-200">
                       {t("editor.filter_preset")}
                     </h3>
                     <button
                       onClick={resetFilters}
                       disabled={!image}
-                      className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="text-xs font-medium text-blue-600 dark:text-blue-400 disabled:opacity-50"
                     >
                       {t("editor.reset")}
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
-                      onClick={() =>
-                        setFilters({
-                          brightness: 120,
-                          contrast: 110,
-                          saturation: 130,
-                          hue: 0,
-                          blur: 0,
-                          sepia: 0,
-                          grayscale: 0,
-                        })
-                      }
+                      onClick={() => setFilters({ brightness: 120, contrast: 110, saturation: 130, hue: 0, blur: 0, sepia: 0, grayscale: 0 })}
                       disabled={!image}
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border border-yellow-300 rounded-lg dark:border-yellow-600/50 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 hover:from-yellow-200 hover:to-orange-200 dark:hover:from-yellow-800/40 dark:hover:to-orange-800/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center justify-center p-2 space-x-1.5 text-xs border border-yellow-300 rounded-lg dark:border-yellow-600/50 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 disabled:opacity-50"
                     >
-                      <span>☀️</span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                        {t("editor.bright")}
-                      </span>
+                      <span className="text-base">☀️</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-200">{t("editor.bright")}</span>
                     </button>
                     <button
-                      onClick={() =>
-                        setFilters({
-                          brightness: 80,
-                          contrast: 120,
-                          saturation: 80,
-                          hue: 0,
-                          blur: 0,
-                          sepia: 30,
-                          grayscale: 0,
-                        })
-                      }
+                      onClick={() => setFilters({ brightness: 80, contrast: 120, saturation: 80, hue: 0, blur: 0, sepia: 30, grayscale: 0 })}
                       disabled={!image}
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border rounded-lg bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 border-amber-300 dark:border-amber-600/50 hover:from-amber-200 hover:to-yellow-200 dark:hover:from-amber-800/40 dark:hover:to-yellow-800/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center justify-center p-2 space-x-1.5 text-xs border rounded-lg bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 border-amber-300 dark:border-amber-600/50 disabled:opacity-50"
                     >
-                      <span>📷</span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                        {t("editor.vintage")}
-                      </span>
+                      <span className="text-base">📷</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-200">{t("editor.vintage")}</span>
                     </button>
                     <button
-                      onClick={() =>
-                        setFilters({
-                          brightness: 90,
-                          contrast: 110,
-                          saturation: 150,
-                          hue: -10,
-                          blur: 0,
-                          sepia: 0,
-                          grayscale: 0,
-                        })
-                      }
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-primary-100 dark:from-pink-900/30 dark:to-primary-900/30 hover:from-pink-200 hover:to-primary-200 dark:hover:from-pink-800/40 dark:hover:to-primary-800/40"
+                      onClick={() => setFilters({ brightness: 90, contrast: 110, saturation: 150, hue: -10, blur: 0, sepia: 0, grayscale: 0 })}
+                      disabled={!image}
+                      className="flex items-center justify-center p-2 space-x-1.5 text-xs border border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-primary-100 dark:from-pink-900/30 dark:to-primary-900/30 disabled:opacity-50"
                     >
-                      <span>🌈</span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                        {t("editor.vivid")}
-                      </span>
+                      <span className="text-base">🌈</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-200">{t("editor.vivid")}</span>
                     </button>
                     <button
-                      onClick={() =>
-                        setFilters({
-                          brightness: 100,
-                          contrast: 100,
-                          saturation: 0,
-                          hue: 0,
-                          blur: 0,
-                          sepia: 0,
-                          grayscale: 100,
-                        })
-                      }
-                      className="flex items-center justify-center p-3 space-x-2 transition-all border border-gray-300 rounded-lg dark:border-gray-600/50 bg-gradient-to-br from-gray-100 to-slate-100 dark:from-gray-800/30 dark:to-slate-800/30 hover:from-gray-200 hover:to-slate-200 dark:hover:from-gray-700/40 dark:hover:to-slate-700/40"
+                      onClick={() => setFilters({ brightness: 100, contrast: 100, saturation: 0, hue: 0, blur: 0, sepia: 0, grayscale: 100 })}
+                      disabled={!image}
+                      className="flex items-center justify-center p-2 space-x-1.5 text-xs border border-gray-300 rounded-lg dark:border-gray-600/50 bg-gradient-to-br from-gray-100 to-slate-100 dark:from-gray-800/30 dark:to-slate-800/30 disabled:opacity-50"
                     >
-                      <span>⚫</span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                        {t("editor.bw")}
-                      </span>
+                      <span className="text-base">⚫</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-200">{t("editor.bw")}</span>
                     </button>
                   </div>
                 </div>
               )}
 
               {activeTab === "basic" && (
-                <div className="space-y-4">
-                  {/* Brightness Control - Light/Dark */}
-                  <div className="p-3 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
-                    <div className="space-y-3">
+                <div className="space-y-2.5">
+                  <div className="p-2.5 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          ☀️ {t("editor.brightness")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-bold text-yellow-700 bg-yellow-200 rounded dark:text-yellow-300 dark:bg-yellow-800/50">
-                          {filters.brightness}%
-                        </span>
+                        <span className="text-xs font-medium text-gray-900 dark:text-gray-200">☀️ {t("editor.brightness")}</span>
+                        <span className="px-1.5 py-0.5 text-xs font-bold text-yellow-700 bg-yellow-200 rounded dark:text-yellow-300 dark:bg-yellow-800/50">{filters.brightness}%</span>
                       </div>
                       <input
                         type="range"
                         min="0"
                         max="200"
                         value={filters.brightness}
-                        onChange={(e) =>
-                          updateFilter("brightness", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-yellow"
+                        onChange={(e) => updateFilter("brightness", Number(e.target.value))}
+                        className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                       />
                     </div>
                   </div>
-                  {/* Contrast Control - Light/Dark */}
-                  <div className="p-3 border rounded-lg border-primary-200 dark:border-primary-600/30 bg-primary-50 dark:bg-primary-900/20">
-                    <div className="space-y-3">
+                  <div className="p-2.5 border rounded-lg border-primary-200 dark:border-primary-600/30 bg-primary-50 dark:bg-primary-900/20">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          🔳 {t("editor.contrast")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-bold rounded text-primary-700 bg-primary-200 dark:text-primary-300 dark:bg-primary-800/50">
-                          {filters.contrast}%
-                        </span>
+                        <span className="text-xs font-medium text-gray-900 dark:text-gray-200">🔳 {t("editor.contrast")}</span>
+                        <span className="px-1.5 py-0.5 text-xs font-bold rounded text-primary-700 bg-primary-200 dark:text-primary-300 dark:bg-primary-800/50">{filters.contrast}%</span>
                       </div>
                       <input
                         type="range"
                         min="0"
                         max="200"
                         value={filters.contrast}
-                        onChange={(e) =>
-                          updateFilter("contrast", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-primary"
+                        onChange={(e) => updateFilter("contrast", Number(e.target.value))}
+                        className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                       />
                     </div>
                   </div>
-                  {/* Saturation Control - Light/Dark */}
-                  <div className="p-3 border border-pink-200 rounded-lg dark:border-pink-600/30 bg-pink-50 dark:bg-pink-900/20">
-                    <div className="space-y-3">
+                  <div className="p-2.5 border border-pink-200 rounded-lg dark:border-pink-600/30 bg-pink-50 dark:bg-pink-900/20">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          🎨 {t("editor.saturation")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-bold text-pink-700 bg-pink-200 rounded dark:text-pink-300 dark:bg-pink-800/50">
-                          {filters.saturation}%
-                        </span>
+                        <span className="text-xs font-medium text-gray-900 dark:text-gray-200">🎨 {t("editor.saturation")}</span>
+                        <span className="px-1.5 py-0.5 text-xs font-bold text-pink-700 bg-pink-200 rounded dark:text-pink-300 dark:bg-pink-800/50">{filters.saturation}%</span>
                       </div>
                       <input
                         type="range"
                         min="0"
                         max="200"
                         value={filters.saturation}
-                        onChange={(e) =>
-                          updateFilter("saturation", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-pink"
+                        onChange={(e) => updateFilter("saturation", Number(e.target.value))}
+                        className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                       />
                     </div>
                   </div>
@@ -344,75 +259,52 @@ function EditorPage() {
               )}
 
               {activeTab === "effects" && (
-                <div className="space-y-4">
-                  {/* Hue Control - Light/Dark */}
-                  <div className="p-3 border border-indigo-200 rounded-lg dark:border-indigo-600/30 bg-indigo-50 dark:bg-indigo-900/20">
-                    <div className="space-y-3">
+                <div className="space-y-2.5">
+                  <div className="p-2.5 border border-indigo-200 rounded-lg dark:border-indigo-600/30 bg-indigo-50 dark:bg-indigo-900/20">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          🌀 {t("editor.hue")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-bold text-indigo-700 bg-indigo-200 rounded dark:text-indigo-300 dark:bg-indigo-800/50">
-                          {filters.hue}°
-                        </span>
+                        <span className="text-xs font-medium text-gray-900 dark:text-gray-200">🌀 {t("editor.hue")}</span>
+                        <span className="px-1.5 py-0.5 text-xs font-bold text-indigo-700 bg-indigo-200 rounded dark:text-indigo-300 dark:bg-indigo-800/50">{filters.hue}°</span>
                       </div>
                       <input
                         type="range"
                         min="-180"
                         max="180"
                         value={filters.hue}
-                        onChange={(e) =>
-                          updateFilter("hue", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-indigo"
+                        onChange={(e) => updateFilter("hue", Number(e.target.value))}
+                        className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                       />
                     </div>
                   </div>
-
-                  {/* Sepia - Light/Dark */}
-                  <div className="p-3 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-600/30">
-                    <div className="space-y-3">
+                  <div className="p-2.5 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-600/30">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          🍂 {t("editor.sepia")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-bold rounded text-amber-700 dark:text-amber-300 bg-amber-200 dark:bg-amber-800/50">
-                          {filters.sepia}%
-                        </span>
+                        <span className="text-xs font-medium text-gray-900 dark:text-gray-200">🍂 {t("editor.sepia")}</span>
+                        <span className="px-1.5 py-0.5 text-xs font-bold rounded text-amber-700 dark:text-amber-300 bg-amber-200 dark:bg-amber-800/50">{filters.sepia}%</span>
                       </div>
                       <input
                         type="range"
                         min="0"
                         max="100"
                         value={filters.sepia}
-                        onChange={(e) =>
-                          updateFilter("sepia", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-amber"
+                        onChange={(e) => updateFilter("sepia", Number(e.target.value))}
+                        className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                       />
                     </div>
                   </div>
-
-                  {/* Grayscale - Light/Dark */}
-                  <div className="p-3 border rounded-lg bg-slate-50 dark:bg-slate-800/20 border-slate-200 dark:border-slate-600/30">
-                    <div className="space-y-3">
+                  <div className="p-2.5 border rounded-lg bg-slate-50 dark:bg-slate-800/20 border-slate-200 dark:border-slate-600/30">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                          ⬜ {t("editor.grayscale")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-bold rounded text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700/50">
-                          {filters.grayscale}%
-                        </span>
+                        <span className="text-xs font-medium text-gray-900 dark:text-gray-200">⬜ {t("editor.grayscale")}</span>
+                        <span className="px-1.5 py-0.5 text-xs font-bold rounded text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700/50">{filters.grayscale}%</span>
                       </div>
                       <input
                         type="range"
                         min="0"
                         max="100"
                         value={filters.grayscale}
-                        onChange={(e) =>
-                          updateFilter("grayscale", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-slate"
+                        onChange={(e) => updateFilter("grayscale", Number(e.target.value))}
+                        className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                       />
                     </div>
                   </div>
@@ -423,10 +315,9 @@ function EditorPage() {
         </div>
 
         {/* Desktop Layout */}
-        <div className="hidden md:grid md:grid-cols-[minmax(350px,450px)_1fr] container p-6 gap-8 mx-auto w-full">
-          {/* Card Editor */}
+        <div className="hidden md:grid md:grid-cols-[1fr_320px] container p-6 gap-6 mx-auto w-full">
           <div className="flex flex-col items-center justify-center">
-            <div className="w-full max-w-[400px]">
+            <div className="w-full max-w-[450px]">
               <CardEditor
                 frameImage={frameImage}
                 filters={filters}
@@ -436,277 +327,116 @@ function EditorPage() {
             </div>
           </div>
 
-          {/* Enhanced Settings Panel - Light/Dark */}
-          <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl overflow-y-auto max-h-[calc(100vh-10rem)] p-8" style={{ opacity: image ? 1 : 0.5, pointerEvents: image ? 'auto' : 'none' }}>
-            <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-semibold text-gray-900 truncate dark:text-gray-200">
-                🎨 {t("editor.filter_settings")}
-              </h2>
+          {/* Desktop Filter Panel - Compact */}
+          <div className="bg-white border border-gray-200 shadow-lg dark:border-gray-700 dark:bg-gray-800 rounded-xl overflow-y-auto max-h-[calc(100vh-8rem)] p-5" style={{ opacity: image ? 1 : 0.5, pointerEvents: image ? 'auto' : 'none' }}>
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-base font-semibold text-gray-900 dark:text-gray-200">🎨 {t("editor.filter_settings")}</h2>
               <button
                 onClick={resetFilters}
                 disabled={!image}
-                className="px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
                 {t("editor.reset")}
               </button>
             </div>
 
-            <div className="space-y-8">
-              {/* Preset Filters - Light/Dark */}
-              <div className="flex flex-col bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700 max-h-80">
-                <h3 className="mb-4 text-lg font-medium text-gray-900 truncate dark:text-gray-200">
-                  {t("editor.filter_preset")}
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-5">
+              {/* Presets */}
+              <div>
+                <h3 className="mb-2.5 text-sm font-medium text-gray-900 dark:text-gray-200">{t("editor.filter_preset")}</h3>
+                <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() =>
-                      setFilters({
-                        brightness: 120,
-                        contrast: 110,
-                        saturation: 130,
-                        hue: 0,
-                        blur: 0,
-                        sepia: 0,
-                        grayscale: 0,
-                      })
-                    }
-                    className="flex items-center p-4 space-x-3 transition-all border-2 border-yellow-300 rounded-lg dark:border-yellow-600/50 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 hover:from-yellow-200 hover:to-orange-200 dark:hover:from-yellow-800/40 dark:hover:to-orange-800/40 hover:border-yellow-400 dark:hover:border-yellow-500/70"
+                    onClick={() => setFilters({ brightness: 120, contrast: 110, saturation: 130, hue: 0, blur: 0, sepia: 0, grayscale: 0 })}
+                    className="flex items-center p-2.5 space-x-2 border-2 border-yellow-300 rounded-lg dark:border-yellow-600/50 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 hover:border-yellow-400"
                   >
-                    <span className="text-2xl">☀️</span>
-                    <span className="font-medium text-gray-900 truncate dark:text-gray-200">
-                      {t("editor.bright")}
-                    </span>
+                    <span className="text-lg">☀️</span>
+                    <span className="text-xs font-medium text-gray-900 dark:text-gray-200">{t("editor.bright")}</span>
                   </button>
                   <button
-                    onClick={() =>
-                      setFilters({
-                        brightness: 80,
-                        contrast: 120,
-                        saturation: 80,
-                        hue: 0,
-                        blur: 0,
-                        sepia: 30,
-                        grayscale: 0,
-                      })
-                    }
-                    className="flex items-center p-4 space-x-3 transition-all border-2 rounded-lg border-amber-300 dark:border-amber-600/50 bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 hover:from-amber-200 hover:to-yellow-200 dark:hover:from-amber-800/40 dark:hover:to-yellow-800/40 hover:border-amber-400 dark:hover:border-amber-500/70"
+                    onClick={() => setFilters({ brightness: 80, contrast: 120, saturation: 80, hue: 0, blur: 0, sepia: 30, grayscale: 0 })}
+                    className="flex items-center p-2.5 space-x-2 border-2 rounded-lg border-amber-300 dark:border-amber-600/50 bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 hover:border-amber-400"
                   >
-                    <span className="text-2xl">📷</span>
-                    <span className="font-medium text-gray-900 truncate dark:text-gray-200">
-                      {t("editor.vintage")}
-                    </span>
+                    <span className="text-lg">📷</span>
+                    <span className="text-xs font-medium text-gray-900 dark:text-gray-200">{t("editor.vintage")}</span>
                   </button>
                   <button
-                    onClick={() =>
-                      setFilters({
-                        brightness: 90,
-                        contrast: 110,
-                        saturation: 150,
-                        hue: -10,
-                        blur: 0,
-                        sepia: 0,
-                        grayscale: 0,
-                      })
-                    }
-                    className="flex items-center p-4 space-x-3 transition-all border-2 border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-primary-100 dark:from-pink-900/30 dark:to-primary-900/30 hover:from-pink-200 hover:to-primary-200 dark:hover:from-pink-800/40 dark:hover:to-primary-800/40 hover:border-pink-400 dark:hover:border-pink-500/70"
+                    onClick={() => setFilters({ brightness: 90, contrast: 110, saturation: 150, hue: -10, blur: 0, sepia: 0, grayscale: 0 })}
+                    className="flex items-center p-2.5 space-x-2 border-2 border-pink-300 rounded-lg dark:border-pink-600/50 bg-gradient-to-br from-pink-100 to-primary-100 dark:from-pink-900/30 dark:to-primary-900/30 hover:border-pink-400"
                   >
-                    <span className="text-2xl">🌈</span>
-                    <span className="font-medium text-gray-900 truncate dark:text-gray-200">
-                      {t("editor.vivid")}
-                    </span>
+                    <span className="text-lg">🌈</span>
+                    <span className="text-xs font-medium text-gray-900 dark:text-gray-200">{t("editor.vivid")}</span>
                   </button>
                   <button
-                    onClick={() =>
-                      setFilters({
-                        brightness: 100,
-                        contrast: 100,
-                        saturation: 0,
-                        hue: 0,
-                        blur: 0,
-                        sepia: 0,
-                        grayscale: 100,
-                      })
-                    }
-                    className="flex items-center p-4 space-x-3 transition-all border-2 border-gray-300 rounded-lg dark:border-gray-600/50 bg-gradient-to-br from-gray-100 to-slate-100 dark:from-gray-800/30 dark:to-slate-800/30 hover:from-gray-200 hover:to-slate-200 dark:hover:from-gray-700/40 dark:hover:to-slate-700/40 hover:border-gray-400 dark:hover:border-gray-500/70"
+                    onClick={() => setFilters({ brightness: 100, contrast: 100, saturation: 0, hue: 0, blur: 0, sepia: 0, grayscale: 100 })}
+                    className="flex items-center p-2.5 space-x-2 border-2 border-gray-300 rounded-lg dark:border-gray-600/50 bg-gradient-to-br from-gray-100 to-slate-100 dark:from-gray-800/30 dark:to-slate-800/30 hover:border-gray-400"
                   >
-                    <span className="text-2xl">⚫</span>
-                    <span className="font-medium text-gray-900 truncate dark:text-gray-200">
-                      {t("editor.bw")}
-                    </span>
+                    <span className="text-lg">⚫</span>
+                    <span className="text-xs font-medium text-gray-900 dark:text-gray-200">{t("editor.bw")}</span>
                   </button>
                 </div>
               </div>
 
-              {/* Basic Controls - Light/Dark */}
+              {/* Basic Controls */}
               <div>
-                <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
-                  {t("editor.basic_controls")}
-                </h3>
-                <div className="space-y-4">
-                  {/* Brightness Control */}
-                  <div className="p-4 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
-                    <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
-                      ☀️ {t("editor.brightness")}
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
-                          {t("editor.brightness_desc")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-200 rounded dark:text-yellow-300 dark:bg-yellow-800/50">
-                          {filters.brightness}%
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="200"
-                        value={filters.brightness}
-                        onChange={(e) =>
-                          updateFilter("brightness", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-yellow"
-                      />
+                <h3 className="mb-2.5 text-sm font-medium text-gray-900 dark:text-gray-200">{t("editor.basic_controls")}</h3>
+                <div className="space-y-2.5">
+                  <div className="p-2.5 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
+                    <div className="mb-2 text-xs font-medium text-gray-900 dark:text-gray-200">☀️ {t("editor.brightness")}</div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs text-gray-600 dark:text-gray-400">{t("editor.brightness_desc")}</span>
+                      <span className="px-1.5 py-0.5 text-xs font-medium text-yellow-700 bg-yellow-200 rounded dark:text-yellow-300 dark:bg-yellow-800/50">{filters.brightness}%</span>
                     </div>
+                    <input type="range" min="0" max="200" value={filters.brightness} onChange={(e) => updateFilter("brightness", Number(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" />
                   </div>
 
-                  {/* Contrast Control */}
-                  <div className="p-4 border rounded-lg border-primary-200 dark:border-primary-600/30 bg-primary-50 dark:bg-primary-900/20">
-                    <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
-                      🔳 {t("editor.contrast")}
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
-                          {t("editor.contrast_desc")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-medium rounded text-primary-700 bg-primary-200 dark:text-primary-300 dark:bg-primary-800/50">
-                          {filters.contrast}%
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="200"
-                        value={filters.contrast}
-                        onChange={(e) =>
-                          updateFilter("contrast", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-primary"
-                      />
+                  <div className="p-2.5 border rounded-lg border-primary-200 dark:border-primary-600/30 bg-primary-50 dark:bg-primary-900/20">
+                    <div className="mb-2 text-xs font-medium text-gray-900 dark:text-gray-200">🔳 {t("editor.contrast")}</div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs text-gray-600 dark:text-gray-400">{t("editor.contrast_desc")}</span>
+                      <span className="px-1.5 py-0.5 text-xs font-medium rounded text-primary-700 bg-primary-200 dark:text-primary-300 dark:bg-primary-800/50">{filters.contrast}%</span>
                     </div>
+                    <input type="range" min="0" max="200" value={filters.contrast} onChange={(e) => updateFilter("contrast", Number(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" />
                   </div>
 
-                  {/* Saturation Control */}
-                  <div className="p-4 border border-pink-200 rounded-lg dark:border-pink-600/30 bg-pink-50 dark:bg-pink-900/20">
-                    <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
-                      🎨 {t("editor.saturation")}
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
-                          {t("editor.saturation_desc")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-medium text-pink-700 bg-pink-200 rounded dark:text-pink-300 dark:bg-pink-800/50">
-                          {filters.saturation}%
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="200"
-                        value={filters.saturation}
-                        onChange={(e) =>
-                          updateFilter("saturation", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-pink"
-                      />
+                  <div className="p-2.5 border border-pink-200 rounded-lg dark:border-pink-600/30 bg-pink-50 dark:bg-pink-900/20">
+                    <div className="mb-2 text-xs font-medium text-gray-900 dark:text-gray-200">🎨 {t("editor.saturation")}</div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs text-gray-600 dark:text-gray-400">{t("editor.saturation_desc")}</span>
+                      <span className="px-1.5 py-0.5 text-xs font-medium text-pink-700 bg-pink-200 rounded dark:text-pink-300 dark:bg-pink-800/50">{filters.saturation}%</span>
                     </div>
+                    <input type="range" min="0" max="200" value={filters.saturation} onChange={(e) => updateFilter("saturation", Number(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" />
                   </div>
                 </div>
               </div>
 
-              {/* Advanced Controls - Light/Dark */}
+              {/* Advanced Controls */}
               <div>
-                <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-gray-200">
-                  {t("editor.advanced_controls")}
-                </h3>
-                <div className="space-y-4">
-                  {/* Hue Control */}
-                  <div className="p-4 border border-indigo-200 rounded-lg dark:border-indigo-600/30 bg-indigo-50 dark:bg-indigo-900/20">
-                    <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
-                      🌀 {t("editor.hue")}
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
-                          {t("editor.hue_desc")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-medium text-indigo-700 bg-indigo-200 rounded dark:text-indigo-300 dark:bg-indigo-800/50">
-                          {filters.hue}°
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="-180"
-                        max="180"
-                        value={filters.hue}
-                        onChange={(e) =>
-                          updateFilter("hue", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-indigo"
-                      />
+                <h3 className="mb-2.5 text-sm font-medium text-gray-900 dark:text-gray-200">{t("editor.advanced_controls")}</h3>
+                <div className="space-y-2.5">
+                  <div className="p-2.5 border border-indigo-200 rounded-lg dark:border-indigo-600/30 bg-indigo-50 dark:bg-indigo-900/20">
+                    <div className="mb-2 text-xs font-medium text-gray-900 dark:text-gray-200">🌀 {t("editor.hue")}</div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs text-gray-600 dark:text-gray-400">{t("editor.hue_desc")}</span>
+                      <span className="px-1.5 py-0.5 text-xs font-medium text-indigo-700 bg-indigo-200 rounded dark:text-indigo-300 dark:bg-indigo-800/50">{filters.hue}°</span>
                     </div>
+                    <input type="range" min="-180" max="180" value={filters.hue} onChange={(e) => updateFilter("hue", Number(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" />
                   </div>
 
-                  {/* Effect Controls */}
-                  <div className="p-4 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-600/30">
-                    <h4 className="mb-3 font-medium text-gray-900 dark:text-gray-200">
-                      ✨ {t("editor.effects")}
-                    </h4>
-
-                    {/* Sepia */}
-                    <div className="mb-3 space-y-2">
+                  <div className="p-2.5 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-600/30">
+                    <div className="mb-2 text-xs font-medium text-gray-900 dark:text-gray-200">✨ {t("editor.effects")}</div>
+                    <div className="mb-2 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
-                          🍂 {t("editor.sepia")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-medium rounded text-amber-700 dark:text-amber-300 bg-amber-200 dark:bg-amber-800/50">
-                          {filters.sepia}%
-                        </span>
+                        <span className="text-xs text-gray-600 dark:text-gray-400">🍂 {t("editor.sepia")}</span>
+                        <span className="px-1.5 py-0.5 text-xs font-medium rounded text-amber-700 dark:text-amber-300 bg-amber-200 dark:bg-amber-800/50">{filters.sepia}%</span>
                       </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={filters.sepia}
-                        onChange={(e) =>
-                          updateFilter("sepia", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-amber"
-                      />
+                      <input type="range" min="0" max="100" value={filters.sepia} onChange={(e) => updateFilter("sepia", Number(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" />
                     </div>
-
-                    {/* Grayscale */}
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
-                          ⬜ {t("editor.grayscale")}
-                        </span>
-                        <span className="px-2 py-1 text-sm font-medium rounded text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700/50">
-                          {filters.grayscale}%
-                        </span>
+                        <span className="text-xs text-gray-600 dark:text-gray-400">⬜ {t("editor.grayscale")}</span>
+                        <span className="px-1.5 py-0.5 text-xs font-medium rounded text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700/50">{filters.grayscale}%</span>
                       </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={filters.grayscale}
-                        onChange={(e) =>
-                          updateFilter("grayscale", Number(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-slate"
-                      />
+                      <input type="range" min="0" max="100" value={filters.grayscale} onChange={(e) => updateFilter("grayscale", Number(e.target.value))} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" />
                     </div>
                   </div>
                 </div>

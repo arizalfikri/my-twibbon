@@ -2,17 +2,18 @@ import React, { useState, useEffect } from "react";
 import {
   Upload,
   X,
-  Image as ImageIcon, // ✅ Rename icon
+  Image as ImageIcon,
   Camera,
 } from "lucide-react";
 import { useModalStore } from "../../helper/store/modal.store";
 import { useTranslation } from "react-i18next";
+
 function ImageUploadArea({
   name = "image",
   setValue,
   error,
   value,
-  type = "frame", // ⬅️ baru: "frame" | "background"
+  type = "frame", // type akan di-pass dari parent
 }) {
   const { t } = useTranslation();
   const [dragActive, setDragActive] = useState(false);
@@ -21,11 +22,11 @@ function ImageUploadArea({
 
   // Allowed types per mode
   const allowedTypes = {
-    frame: ["image/png", "image/webp"], // ⬅ transparan wajib
+    frame: ["image/png", "image/webp"], // transparan wajib
     background: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
   };
 
-  // ⬅ helper cek transparansi
+  // Helper cek transparansi
   const checkTransparency = (img, file, onSuccess, onFail) => {
     const canvas = document.createElement("canvas");
     canvas.width = img.width;
@@ -75,9 +76,7 @@ function ImageUploadArea({
     }
   }, [value]);
 
-  // =============================
-  // ⬅ handle file secara umum
-  // =============================
+  // Handle file secara umum
   const handleFile = (file) => {
     if (!file) return;
 
@@ -142,15 +141,11 @@ function ImageUploadArea({
     setValue(name, null);
   };
 
-  // =============================
-  // ⬅ UI TETAP SAMA
-  // =============================
-
   return (
     <div className="h-full p-6">
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full min-h-80">
         <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">
-          { t("imageUpload.title")}
+          {t("imageUpload.title")}
         </h3>
 
         <div

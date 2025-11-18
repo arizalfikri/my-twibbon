@@ -78,6 +78,7 @@ const CreatorSection = () => {
       event: "Art Book Fair",
       year: "2024",
     },
+    
   ];
 
   return (
@@ -136,10 +137,19 @@ const CreatorSection = () => {
             slidesPerView="auto"
             spaceBetween={20}
             loop={true}
-            grabCursor={true}
-            allowTouchMove={true}
-            autoplay={{ delay: 0, disableOnInteraction: false }}
+            grabCursor={false}
+            allowTouchMove={false}
+            freeMode={true}
+            freeModeMomentum={false}
+            cssMode={false}
+            autoplay={{
+              delay: 0,
+              disableOnInteraction: false,
+            }}
             speed={5000}
+            style={{
+              "--swiper-wrapper-transition-timing-function": "linear",
+            }}
             className="!overflow-visible"
           >
             {[...creators, ...creators].map((creator, index) => (

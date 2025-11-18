@@ -13,7 +13,6 @@ import NotFound from "../pages/NotfoundPage.jsx";
 import MembershipPage from "../pages/MembershipPage.jsx";
 import CheckoutPage from "../pages/CheckoutPage.jsx";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
-import VerifyCode from "../pages/VerifyCode.jsx";
 import SetPassword from "../pages/SetPassword.jsx";
 import PrivacyPolicy from "../pages/PrivacyPolice.jsx";
 
@@ -54,10 +53,6 @@ export const router = createBrowserRouter([
         element: <ForgotPassword />,
       },
       {
-        path: "Verify-code",
-        element: <VerifyCode />,
-      },
-      {
         path: "reset-password/:token",
         element: <SetPassword />,
       },
@@ -67,7 +62,11 @@ export const router = createBrowserRouter([
       },
 
       {
-        path: "Create",
+        path: "Create/frame",
+        element: <TwiboneCreatePage />,
+      },
+      {
+        path: "Create/Background",
         element: <TwiboneCreatePage />,
       },
       {

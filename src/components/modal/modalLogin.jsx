@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ModalAlert from "../../layout/ModalAlert";
 import { Mail, X } from "lucide-react";
 import { useModalStore } from "../../helper/store/modal.store";
@@ -126,13 +126,8 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
   return (
     <ModalAlert onClose={onClose}>
       <div className="relative w-[97vw] -mx-[2.5vw] sm:w-[90vw] sm:mx-auto md:w-[420px] max-w-lg overflow-hidden bg-white rounded-md shadow-2xl dark:bg-gray-900">
-        <div className="relative px-8 py-6 bg-gradient-to-r from-primary-600 to-primary-700">
-          <button
-            onClick={onClose}
-            className="absolute p-2 text-white transition-colors rounded-full top-5 right-3 hover:text-primary-200 hover:bg-white/10"
-          >
-            <X size={20} />
-          </button>
+        <div className="relative px-8 py-6 bg-primary-600">
+  
 
           <div className="px-2 text-center text-white">
             <h2 className="mb-1 text-2xl font-bold">
@@ -187,22 +182,23 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
 
             {/* Remember me and Forgot password */}
             <div className="flex items-center justify-end text-sm">
-              <button
+              <Link
                 type="button"
                 className="font-medium text-primary-600 hover:text-primary-700"
+                to={"/forgot-password"}
               >
                 {t("auth.forgot_password")}
-              </button>
+              </Link>
             </div>
 
             {/* Sign In Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full py-3 rounded-lg text-white font-semibold transition-all duration-200 ${
+              className={`inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-white rounded-full transition-smoothdisabled:opacity-50 ${
                 isLoading
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  : " bg-primary-500 hover:bg-primary-600 "
               }`}
             >
               {isLoading ? (
@@ -235,7 +231,7 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
                 <button
                   onClick={() => loginGoogle()}
                   type="button"
-                  className="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
+              className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-700 hover:bg-gray-50 transition-smooth dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
                 >
                   <FcGoogle className="w-5 h-5" />
                   Google
@@ -248,9 +244,8 @@ export default function ModalLogin({ isOpen, onClose, kontributor = false }) {
           <div className="mt-3 text-sm text-center text-gray-600 dark:text-gray-400">
             {t("auth.no_account")}{" "}
             <a
-              href="https://gypem.com/register"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/SignUp"
+            
               className="font-medium text-primary-600 hover:text-primary-700"
             >
               {t("auth.register_now")}

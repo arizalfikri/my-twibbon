@@ -7,7 +7,7 @@ import UploadModal from "../modal/UploudModal";
 import CameraCapture from "../modal/CameraCapture";
 import ControlPanel from "../ui/ControlPanel";
 import { toPng } from "html-to-image";
-import gypemLogo from "../../assets/images/Logo_Watermark.png";
+import gypemLogo from "../../assets/images/logo/Logo_Hitam.png";
 import { usePOST } from "../../services/api";
 import ModalMembership from "../modal/ModalMembership";
 
@@ -47,13 +47,12 @@ function CardEditor({
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [frameAspectRatio, setFrameAspectRatio] = useState("1/1");
-  const [frameSize, setFrameSize] = useState({ width: 1080, height: 1080 }); // default 1080
+  const [frameSize, setFrameSize] = useState({ width: 1080, height: 1080 });
 
   const handleImageLoad = () => {
     setIsLoaded(true);
   };
 
-  // Set aspect ratio & size frame sesuai ukuran asli
   useEffect(() => {
     if (!frameImage) return;
     const img = new Image();
@@ -65,7 +64,6 @@ function CardEditor({
     img.src = frameImage;
   }, [frameImage]);
 
-  // Cleanup modal on unmount
   useEffect(() => {
     return () => {
       setShowUploadModal(false);
@@ -73,7 +71,6 @@ function CardEditor({
     };
   }, [setShowUploadModal, setShowCamera]);
 
-  // Generate CSS filter string
   const generateFilterString = (f) => {
     const parts = [];
     if (f.brightness !== 100) parts.push(`brightness(${f.brightness}%)`);
@@ -86,13 +83,11 @@ function CardEditor({
     return parts.length ? parts.join(" ") : "none";
   };
 
-  // Generate final image dengan ukuran asli frame
   const generateFinalImage = async () => {
     if (!containerRef.current || !image) throw new Error("Container missing");
 
     try {
-      setIsExporting(true); // aktifkan logo khusus export
-
+      setIsExporting(true);
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const scale = frameSize.width / containerRef.current.offsetWidth;
@@ -117,7 +112,7 @@ function CardEditor({
       console.error("html-to-image error:", error);
       throw new Error("Gagal generate gambar");
     } finally {
-      setIsExporting(false); // reset lagi ke mode normal
+      setIsExporting(false);
     }
   };
 
@@ -129,8 +124,6 @@ function CardEditor({
       }
 
       setIsDownloading(true);
-
-      // bedakan state watermark
       setDownloadWithWatermark(withWatermark);
       setIsExporting(true);
       await new Promise((resolve) => setTimeout(resolve, 50));
@@ -147,17 +140,17 @@ function CardEditor({
       setResultImage(dataUrl);
       navigate("/result");
 
-      // await mutateAsync({
-      //   url: "/support",
-      //   data: { event_twibbon_id },
-      // });
+      await mutateAsync({
+        url: "/support",
+        data: { event_twibbon_id },
+      });
     } catch (err) {
       console.error(err);
       alert("Download gagal. Silakan coba lagi.");
     } finally {
       setIsDownloading(false);
       setIsExporting(false);
-      setDownloadWithWatermark(false); // reset biar ga kebawa ke next download
+      setDownloadWithWatermark(false);
     }
   };
 
@@ -167,7 +160,7 @@ function CardEditor({
 
     const reader = new FileReader();
     reader.onload = () => {
-      setImage(reader.result); // simpan base64 aman
+      setImage(reader.result);
       navigate(`/${slug}/editorpage`);
     };
     reader.readAsDataURL(file);
@@ -186,7 +179,7 @@ function CardEditor({
         <div className="flex flex-col items-center justify-center flex-1 p-4">
           <div
             ref={containerRef}
-            className="relative w-full mx-auto overflow-hidden rounded-xl "
+            className="relative w-full mx-auto overflow-hidden rounded-xl"
             style={{
               aspectRatio: frameAspectRatio,
             }}
@@ -233,7 +226,6 @@ function CardEditor({
               onLoad={handleImageLoad}
               style={{ maxWidth: "none", maxHeight: "none" }}
             />
-            {/* WATERMARK */}
             {isExporting && downloadWithWatermark && (
               <div
                 id="watermark-fixed"
@@ -242,12 +234,12 @@ function CardEditor({
       bottom-[10px] right-[10px]"
                 style={{
                   transformOrigin: "bottom right",
-                  scale: "clamp(0.7, 1vw, 1)", // 🔥 auto scaling biar konsisten di HP & PC
+                  scale: "clamp(0.7, 1vw, 1)",
                 }}
               >
                 <span
                   style={{
-                    fontSize: "clamp(7px, 1.3vw, 10px)", // 🔥 teks menyesuaikan device
+                    fontSize: "clamp(7px, 1.3vw, 10px)",
                     fontWeight: 600,
                     lineHeight: 1,
                   }}
@@ -258,7 +250,7 @@ function CardEditor({
                   src={gypemLogo}
                   alt="Logo"
                   style={{
-                    height: "clamp(8px, 2vw, 13px)", // 🔥 logo fleksibel tapi proporsional
+                    height: "clamp(8px, 2vw, 13px)",
                     width: "auto",
                     objectFit: "contain",
                   }}
@@ -306,8 +298,8 @@ function CardEditor({
       <ModalMembership
         isOpen={showMembershipModal}
         onClose={() => setShowMembershipModal(false)}
-        onDownloadMember={() => handleDownload(false)} // no watermark
-        onDownloadWatermark={() => handleDownload(true)} // dengan watermark
+        onDownloadMember={() => handleDownload(false)}
+        onDownloadWatermark={() => handleDownload(true)}
       />
     </>
   );

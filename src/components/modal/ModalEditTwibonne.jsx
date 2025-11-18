@@ -34,7 +34,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
       link: "",
     },
     resolver: yupResolver(editTwiboneSchema),
-    mode: "onChange", 
+    mode: "onChange",
     reValidateMode: "onChange",
   });
 
@@ -201,8 +201,21 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
 
   return (
     <ModalAlert onClose={onClose}>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-        <div className="w-full max-w-lg max-h-[95vh] bg-white dark:bg-gray-900 shadow-2xl rounded-2xl overflow-hidden flex flex-col">
+      <div className="fixed inset-0 z-50 flex items-end justify-center p-4 md:items-center bg-black/50">
+        <div
+          className="
+      w-full 
+      bg-white dark:bg-gray-900 shadow-2xl 
+      rounded-t-2xl md:rounded-xl
+
+      fixed bottom-0 md:static
+      max-h-[85vh] md:max-h-[95vh]
+      overflow-y-auto
+      p-0
+      md:max-w-lg
+      flex flex-col
+    "
+        >
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary-50 to-pink-50 dark:from-gray-800 dark:to-gray-800">
             <div className="flex items-center justify-between">

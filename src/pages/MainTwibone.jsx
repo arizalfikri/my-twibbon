@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import CardEditor from "../components/cards/CardEditor";
 import CardResult from "../components/cards/CardResult";
-import Bg1 from "../assets/images/background_hero3.png";
+import Bg1 from "../assets/images/background_hero.png";
 import Footer from "../components/layoutpage/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import useImageStore from "../helper/store/imagestore";

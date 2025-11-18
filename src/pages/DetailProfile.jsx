@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Edit, Users, Trophy } from "lucide-react";
 import { useGET, useDELETE } from "../services/api.js";
 import Navbar from "../components/layoutpage/Navbar.jsx";
-import Bg1 from "../assets/images/background_hero3.png";
+import Bg1 from "../assets/images/background_hero.png";
 import CardProfile from "../components/cards/CardProfile.jsx";
 import CardPost from "../components/cards/CardPost.jsx"; // Import CardPost
 import DetailResult from "../components/modal/DetailResult.jsx"; // Import DetailResult untuk modal
@@ -249,7 +249,6 @@ const DetailProfile = () => {
           className="relative overflow-hidden bg-center bg-cover h-80"
           style={{
             backgroundImage: `url(${Bg1})`,
-            filter: "saturate(300%)",
           }}
         >
           <div className="absolute inset-0 bg-black/10"></div>
@@ -257,7 +256,7 @@ const DetailProfile = () => {
         </div>
 
         {/* Profile Content */}
-        <div className="container relative max-w-screen-lg px-6 mx-auto">
+        <div className="container relative px-6 mx-auto">
           <div className="flex flex-col gap-8 lg:flex-row">
             {/* Main Profile Section */}
             <div className="flex-1">
@@ -412,7 +411,7 @@ const DetailProfile = () => {
           </div>
         </div>
       </div>
-      <div className="w-full max-w-screen-lg px-4 mx-auto sm:px-6 lg:px-8">
+      <div className="container w-full px-4 mx-auto sm:px-6 lg:px-8">
         {/* Content Section */}
         <div className="container px-6 py-8 mx-auto">
           <div className="flex flex-col gap-8 lg:flex-row">
@@ -451,7 +450,7 @@ const DetailProfile = () => {
                 <div
                   className={`${
                     viewMode === "grid"
-                      ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                      ? "grid grid-cols-2 sm:grid-cols-3    md:grid-cols-5 gap-6"
                       : "space-y-4"
                   }`}
                 >

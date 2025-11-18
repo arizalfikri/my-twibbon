@@ -26,23 +26,27 @@ function ModalDeletePost({ visible, onClose, onDeleteSuccess, postId }) {
   return (
     <ModalAlert onClose={onClose}>
       <ModalDeleteLayout>
-     
-        <div className="flex flex-col md:flex-row justify-center gap-5 text-[16px] mb-5">
+        <div className="grid grid-cols-1 gap-4 px-8 py-6 bg-gray-50 dark:bg-gray-800/50 md:grid-cols-2">
+          {/* Cancel Button */}
           <button
             onClick={onClose}
             disabled={deleteMutation.isPending}
-            className="bg-white border-2 border-[#E8121F] text-black px-10 md:px-20 lg:px-20 py-3 items-center rounded-lg mt-6 font-semibold disabled:opacity-50"
+            className="w-full px-6 py-3 text-sm font-semibold text-gray-700 transition-all duration-200 bg-white border border-gray-300 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-600 disabled:opacity-50"
           >
-            Batal
+            {t("logout.cancel")}
           </button>
+
+          {/* Delete Button */}
           <button
             onClick={handleDelete}
             disabled={deleteMutation.isPending || !postId}
-            className="bg-[#E8121F] hover:bg-[#ff000d] px-10 md:px-20 lg:px-20 py-3 items-center rounded-lg -mt-2 md:mt-6 text-[#FFFFFF] font-semibold disabled:opacity-50"
+            className="flex items-center justify-center w-full gap-2 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 bg-red-600 shadow-md rounded-xl hover:bg-red-700 hover:shadow-red-500/30 disabled:opacity-50"
           >
-            {deleteMutation.isPending
-              ? t("modaldeletetwibbone.deleting")
-              : t("modaldeletetwibbone.delete")}
+            <span>
+              {deleteMutation.isPending
+                ? t("modaldeletetwibbone.deleting")
+                : t("modaldeletetwibbone.delete")}
+            </span>
           </button>
         </div>
       </ModalDeleteLayout>
