@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import LogoGypem from "../../assets/images/logo_putih.png";
+import Logo from "../../assets/images/logo/logo_putih.png";
 import { Link } from "react-router-dom";
 
 function Footer() {
@@ -29,14 +29,10 @@ function Footer() {
         <div className="mb-12 text-center">
           <div className="flex items-center justify-center gap-4 mb-6">
             <img
-              src={LogoGypem}
+              src={Logo}
               alt="MyTwibbon Logo"
-              className="object-contain w-20 h-20 drop-shadow-lg"
+              className="object-contain w-56 h-20 md:w-72 drop-shadow-lg"
             />
-            <div className="text-white">
-              <h2 className="mb-1 text-3xl font-bold">MyTwibbon</h2>
-              <p className="text-sm opacity-80">{t("footer.tagline")}</p>
-            </div>
           </div>
         </div>
 
