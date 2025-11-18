@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
-import LoginImage from "../assets/images/login_image.png";
-import LogoGypem from "../assets/images/Logo_Icon.png";
+import LoginImage from "../assets/images/login_image.svg";
+import Logo from "../assets/images/logo/Logo_Icon.png";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore } from "../helper/store/global.store";
 import { useModalStore } from "../helper/store/modal.store";
@@ -58,7 +58,7 @@ function ForgotPassword() {
   return (
     <div id="root" className="flex w-screen h-screen overflow-hidden">
       {/* Left Side - Fixed Image */}
-      <div className="flex-shrink-0 hidden w-1/3 bg-white lg:flex dark:bg-gray-900">
+      <div className="flex-shrink-0 hidden w-1/2 bg-white lg:flex dark:bg-gray-900">
         <img
           className="object-cover w-full h-full"
           src={LoginImage}
@@ -68,13 +68,11 @@ function ForgotPassword() {
 
       {/* Right Side - Scrollable Form */}
       <div className="flex-1 w-full overflow-y-auto bg-white lg:w-2/3 dark:bg-gray-900">
-        <div className="flex flex-col min-h-full px-4 py-16 md:px-32 xl:px-52 md:py-20">
+        <div className="flex flex-col min-h-full px-4 py-16 md:px-32 md:py-20">
           <a href="/">
             <img
               src={
-                document.documentElement.classList.contains("dark")
-                  ? LogoGypemPutih
-                  : LogoGypem
+                Logo
               }
               alt={t("common.logo")}
               className="block w-20 h-full mx-auto md:w-28 md:h-28"
@@ -120,7 +118,7 @@ function ForgotPassword() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold bg-primary-500 text-white px-4 py-2.5 w-full rounded-xl hover:bg-primary-600 disabled:opacity-50"
+                className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-white rounded-full transition-smooth bg-primary-500 hover:bg-primary-600 disabled:opacity-50"
               >
                 {isPending ? t("common.loading") : "submit"}
               </button>

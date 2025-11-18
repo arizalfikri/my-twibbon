@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import LogoGypem from "../assets/images/gypem_logo.png";
-import LogoGypemPutih from "../assets/images/Logo_Icon.png";
-import LoginImage from "../assets/images/login_image.png";
+import Logo from "../assets/images/logo/Logo_Icon.png";
+import LoginImage from "../assets/images/login_image.svg";
 import { Eye, EyeOff } from "lucide-react";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
 import InputPassword from "../components/FormControl/InputPassword";
@@ -68,7 +67,7 @@ function SignUp() {
     try {
       const response = await mutateAsync({
         url: "/auth/register",
-        data: { ...rest, role: selectedRole },
+        data: { ...rest, role: "participant" },
       });
 
       if (response.status === 201) {
@@ -88,72 +87,10 @@ function SignUp() {
     }
   };
 
-  if (!selectedRole) {
-    return (
-      <div id="root" className="flex w-screen h-screen overflow-hidden">
-        {/* Left Side - Fixed Image */}
-        <div className="flex-shrink-0 hidden w-1/3 bg-white lg:flex dark:bg-gray-900">
-          <img
-            className="object-cover w-full h-full"
-            src={LoginImage}
-            alt={t("auth.register")}
-          />
-        </div>
-
-        {/* Right Side - Scrollable Form */}
-        <div className="flex-1 w-full overflow-y-auto bg-white lg:w-2/3 dark:bg-gray-900">
-          <div className="flex flex-col justify-center min-h-full px-4 py-16 md:px-32 xl:px-52 md:py-20">
-            <a href="/">
-              <img
-                src={
-                  document.documentElement.classList.contains("dark")
-                    ? LogoGypemPutih
-                    : LogoGypem
-                }
-                alt={t("common.logo")}
-                className="block w-20 h-full mx-auto md:w-28 md:h-28"
-              />
-            </a>
-
-            <div className="mt-10 md:mt-5">
-              <h2 className="mb-8 text-2xl font-bold text-center text-gray-800 dark:text-gray-200">
-                {t("auth.select_register_role")}
-              </h2>
-
-              <div className="flex flex-col gap-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedRole("contributor");
-                    localStorage.setItem("selectedRole", "contributor");
-                  }}
-                  className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-white bg-primary-500 gap-x-1 transition-smooth rounded-xl hover:bg-primary-600"
-                >
-                  {t("auth.register_as_contributor")}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedRole("participant");
-                    localStorage.setItem("selectedRole", "participant");
-                  }}
-                  className="inline-flex items-center justify-center w-full px-4 py-4 text-lg font-semibold text-black bg-yellow-400 gap-x-1 transition-smooth rounded-xl hover:bg-yellow-600"
-                >
-                  {t("auth.register_as_participant")}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div id="root" className="flex w-screen h-screen overflow-hidden">
       {/* Left Side - Fixed Image */}
-      <div className="flex-shrink-0 hidden w-1/3 bg-white lg:flex dark:bg-gray-900">
+      <div className="flex-shrink-0 hidden w-1/2 bg-white lg:flex dark:bg-gray-900">
         <img
           className="object-cover w-full h-full"
           src={LoginImage}
@@ -163,37 +100,14 @@ function SignUp() {
 
       {/* Right Side - Scrollable Form */}
       <div className="flex-1 w-full overflow-y-auto text-gray-800 bg-white lg:w-2/3 dark:bg-gray-900 dark:text-gray-100">
-        <div className="flex flex-col min-h-full px-4 py-16 md:px-32 xl:px-52 md:py-20">
+        <div className="flex flex-col min-h-full px-4 py-16 md:px-32 md:py-20">
           <a href="/">
             <img
-              src={
-                document.documentElement.classList.contains("dark")
-                  ? LogoGypemPutih
-                  : LogoGypem
-              }
+              src={Logo}
               alt={t("common.logo")}
               className="block w-20 h-full mx-auto md:w-28 md:h-28"
             />
           </a>
-          <div className="mt-4">
-            <button
-              type="button"
-              onClick={() => setSelectedRole(null)}
-              className="inline-block text-sm font-medium rounded-lg text-primary-400 dark:hover:text-primary-400 hover:text-primary-500 transition-smooth"
-            >
-              ←{" "}
-              {t("common.back_role", {
-                defaultValue: "Kembali Ke Pilihan Role",
-              })}
-            </button>
-
-            <h2 className="mt-4 text-2xl font-semibold text-gray-800 dark:text-gray-200">
-              {t("auth.register")}{" "}
-              {selectedRole === "contributor"
-                ? t("auth.contributor")
-                : t("auth.participant")}
-            </h2>
-          </div>
 
           <form
             className="mt-10 md:mt-5"
@@ -239,9 +153,7 @@ function SignUp() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="inline-flex items-center justify-center gap-x-1 transition-smooth font-semibold 
-                       bg-primary-500 text-white px-4 py-2.5 w-full rounded-xl 
-                       hover:bg-primary-600 disabled:opacity-50"
+                className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-white rounded-full transition-smooth bg-primary-500 hover:bg-primary-600 disabled:opacity-50"
               >
                 {isPending ? t("auth.registering") : t("auth.register")}
               </button>

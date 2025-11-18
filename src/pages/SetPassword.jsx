@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import InputWithLabel from "../components/FormControl/InputWithLabel";
-import LoginImage from "../assets/images/login_image.png";
-import LogoGypem from "../assets/images/Logo_Icon.png";
+import LoginImage from "../assets/images/login_image.svg";
+import Logo from "../assets/images/logo/Logo_Icon.png";
 import { InputType } from "../components/FormControl";
 import { useModalStore } from "../helper/store/modal.store";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -68,14 +68,10 @@ function SetPassword() {
         />
 
         {/* Konten kanan */}
-        <div className="flex flex-col col-span-3 px-4 py-16 overflow-auto bg-white dark:bg-gray-900 lg:col-span-2 md:px-32 xl:px-52 md:py-20">
+        <div className="flex flex-col min-h-full px-4 py-16 md:px-32 md:py-20">
           <a href="/">
             <img
-              src={
-                document.documentElement.classList.contains("dark")
-                  ? LogoGypemPutih
-                  : LogoGypem
-              }
+              src={Logo}
               alt={t("common.logo")}
               className="block w-20 h-full mx-auto md:w-28 md:h-28"
             />
@@ -135,11 +131,12 @@ function SetPassword() {
               <button
                 type="submit"
                 disabled={isPending}
-                className={`inline-flex items-center justify-center gap-x-2 transition-smooth font-semibold px-4 py-2.5 w-full rounded-xl ${
-                  isPending
-                    ? "bg-primary-300 cursor-not-allowed text-white"
-                    : "bg-primary-500 hover:bg-primary-600 text-white"
-                }`}
+                className={`inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold  rounded-full transition-smooth disabled:opacity-50"
+ ${
+   isPending
+     ? "bg-primary-300 cursor-not-allowed text-white"
+     : "bg-primary-500 hover:bg-primary-600 text-white"
+ }`}
               >
                 {isPending ? (
                   <>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import LoginImage from "../assets/images/tes_login_image.png";
-import LogoGypem from "../assets/images/Logo_Icon.png";
+import LoginImage from "../assets/images/Login_Image.svg";
+import LogoGypem from "../assets/images/logo/Logo_Icon.png";
 import { Link, useNavigate } from "react-router-dom";
 import { usePOST } from "../services/api";
 import { useGlobalStore } from "../helper/store/global.store";
@@ -214,7 +214,7 @@ const SignIn = () => {
             <button
               type="button"
               onClick={() => loginGoogle()}
-              className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-100 hover:bg-gray-900 hover:text-white transition-smooth dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
+              className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-700 hover:bg-gray-50 transition-smooth dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
             >
               <FcGoogle className="w-5 h-5" />
               google
