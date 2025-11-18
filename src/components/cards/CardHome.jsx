@@ -3,37 +3,44 @@ import { Link } from "react-router-dom";
 import { TrendingUp, User } from "lucide-react";
 import PropTypes from "prop-types";
 
-const CardHome = ({ twibon, isGrid = true }) => {
+const CardHome = ({ twibon, isSupport = false }) => {
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+
+    // Buang whitespace & quote tidak perlu
+    const cleanString = String(dateString).trim().replace(/^"|"$/g, "");
+
+    const date = new Date(cleanString);
+
+    if (isNaN(date.getTime())) {
+      console.warn("Tanggal tidak valid:", dateString);
+      return "";
+    }
+
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+
   return (
     <Link
       to={`/${twibon.slug}`}
       className={`block bg-white dark:bg-gray-800 rounded-xl shadow-md\ border-2  border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all duration-300 cursor-pointer group   `}
     >
-      <div
-        className={`relative aspect-[1/1] `}
-      >
+      <div className={`relative aspect-[1/1] `}>
         <img
           src={`${import.meta.env.VITE_FILE_URL}${twibon.image}`}
           alt={twibon.title}
           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
         />
-        <div className="absolute flex gap-2 top-3 left-3">
-          {twibon.isNew && (
-            <span className="px-2 py-1 text-xs font-medium text-white bg-green-500 rounded-full dark:bg-green-600">
-              Baru
-            </span>
-          )}
-          {twibon.isTrending && (
-            <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-red-500 rounded-full dark:bg-red-600">
-              <TrendingUp className="w-3 h-3" />
-              Trending
-            </span>
-          )}
-        </div>
+      
       </div>
 
-      <div className={`p-4 ${isGrid ? "" : "flex-1"}`}>
-        <div className="flex items-start justify-between mb-2 h-[48px]">
+      <div className={`p-4`}>
+        <div className="flex items-start justify-between mb-2 ">
           <h3 className="font-semibold text-gray-900 transition-colors dark:text-gray-100 line-clamp-2 group-hover:text-primary-500 dark:group-hover:text-primary-300">
             {twibon.title}
           </h3>
@@ -47,7 +54,11 @@ const CardHome = ({ twibon, isGrid = true }) => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               <User className="w-4 h-4" />
-              <span>{twibon?.supports} Supporters</span>
+              {twibon.isSupport ? (
+                <span>{twibon.supports} Supporters</span>
+              ) : (
+                <span>{formatDate(twibon.date)}</span>
+              )}
             </div>
           </div>
         </div>
