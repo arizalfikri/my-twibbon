@@ -24,7 +24,6 @@ function ModalLogout({ isOpen, onClose }) {
     setRole(null);
 
     queryClient.removeQueries();
-
     onClose();
     navigate("/");
   };

@@ -42,6 +42,11 @@
     "view_templates": "Lihat Template"
   },
   "explore": {
+    "filter_all": "Semua",
+    "filter_background": "Background",
+    "filter_frame": "Frame",
+    "sort_newest": "Terbaru",
+    "sort_popular": "Populer",
     "loading_twibone": "Memuat Twibbon...",
     "loading_collection": "Sedang mengambil koleksi Twibbon untuk Anda.",
     "loading_more": "Memuat...",
@@ -100,7 +105,10 @@
     "copy_success": "Berhasil disalin!",
     "view_all_images": "Lihat semua gambar",
     "share": "Bagikan",
-    "delete": "Hapus"
+    "delete": "Hapus",
+    "share_profile": "Bagikan Profil",
+    "share_description": "Yuk, bagikan profilmu ke orang lain!"
+    ,"copy_link":"salin link"
   },
   "common": {
     "back_role": "Kembali ke Pilihan Role",
@@ -491,7 +499,13 @@
     "waiting_verification": "Pembayaran Anda telah diterima dan sedang menunggu verifikasi.",
     "verification_notice": "Verifikasi akan dilakukan maksimal dalam 24 jam kerja. Anda akan menerima notifikasi setelah status diperbarui.",
     "or": "atau",
-    "days": "hari"
+    "days": "hari",
+    "confirm_payment_title": "Konfirmasi Pembayaran",
+    "confirm_payment_message": "Apakah Anda yakin ingin melanjutkan pembayaran dengan metode ini?",
+    "payment_method": "Metode Pembayaran",
+    "choose_payment": "Pilih Metode Pembayaran",
+    "please_select_payment": "Silakan pilih metode pembayaran terlebih dahulu",
+    "confirm": "Konfirmasi"
   },
   "membership": {
     "pricing": "HARGA",
@@ -512,5 +526,47 @@
     "waiting_verification": "Menunggu verifikasi pembayaran kamu",
     "subscribe_failed": "Langganan gagal, coba lagi",
     "redirecting_checkout": "Mengalihkan ke halaman checkout..."
+  },
+  "virtual_account": {
+    "title": "Pembayaran Virtual Account",
+    "subtitle": "Silakan lakukan pembayaran menggunakan Virtual Account berikut",
+    "waiting_payment": "Menunggu Pembayaran",
+    "va_number": "Nomor Virtual Account",
+    "amount": "Total Pembayaran",
+    "expiry": "Batas Pembayaran",
+    "instructions": "Cara Pembayaran",
+    "step1": "Buka aplikasi mobile banking atau internet banking bank Anda",
+    "step2": "Pilih menu Transfer atau Pembayaran",
+    "step3": "Masukkan nomor Virtual Account di atas",
+    "step4": "Masukkan jumlah yang harus dibayar",
+    "step5": "Konfirmasi dan selesaikan pembayaran",
+    "step6": "Status pembayaran akan diperbarui secara otomatis",
+    "refresh_status": "Perbarui Status",
+    "back_to_membership": "Kembali ke Membership",
+    "note": "Pembayaran akan diproses otomatis. Jika mengalami kendala, silakan hubungi customer service."
+  },
+  "qris": {
+    "title": "Pembayaran QRIS",
+    "subtitle": "Scan QR Code berikut untuk melakukan pembayaran",
+    "waiting_payment": "Menunggu Pembayaran",
+    "instructions": "Cara Pembayaran",
+    "step1": "Download QR Code atau scan langsung dari layar",
+    "step2": "Buka aplikasi e-wallet atau mobile banking Anda",
+    "step3": "Pilih menu Scan QRIS atau Pembayaran QR",
+    "step4": "Scan QR Code yang sudah didownload",
+    "step5": "Periksa detail pembayaran dan konfirmasi",
+    "step6": "Tunggu hingga pembayaran berhasil diproses",
+    "back_to_membership": "Kembali ke Membership",
+    "note": "Pembayaran akan diproses otomatis. Jika mengalami kendala, silakan hubungi customer service."
+  },
+  "modalThumbnailPreview": {
+    "select_upload_thumbnail": "Pilih atau Upload Thumbnail",
+    "upload": "Upload",
+    "shuffle": "Acak",
+    "publish_campaign": "Publikasikan Kampanye",
+    "back": "Kembali",
+    "free_ratio": "Rasio Bebas",
+    "export": "Export",
+    "square": "persegi"
   }
 }

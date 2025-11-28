@@ -44,6 +44,9 @@
   "explore": {
     "loading_twibone": "Loading Twibone...",
     "loading_collection": "Fetching twibone collection for you.",
+    "filter_all": "All",
+    "filter_background": "Background",
+    "filter_frame": "Frame",
     "loading_more": "Loading...",
     "not_found": "Not Found",
     "no_results": "No twibone matches your search for \"{{query}}\". Try different keywords or clear filters.",
@@ -99,7 +102,8 @@
     "copy_success": "Successfully copied!",
     "view_all_images": "View all images",
     "share": "Share",
-    "delete": "Delete"
+    "delete": "Delete",
+    "share_profile":"Share Profil"
   },
   "common": {
     "back_role":"Back To Choise Role",
@@ -488,8 +492,13 @@
     "waiting_verification": "Your payment has been received and is awaiting verification.",
     "verification_notice": "Verification will be processed within 24 working hours. You will be notified once your status is updated.",
     "or": "or",
-        "days":"days"
-
+    "days": "days",
+    "confirm_payment_title": "Confirm Payment",
+    "confirm_payment_message": "Are you sure you want to proceed with payment using this method?",
+    "payment_method": "Payment Method",
+    "choose_payment": "Choose Payment Method",
+    "please_select_payment": "Please select a payment method first",
+    "confirm": "Confirm"
   },
   "membership": {
     "pricing": "PRICING",
@@ -509,5 +518,15 @@
     "waiting_verification": "Waiting for payment verification",
     "subscribe_failed": "Subscription failed",
     "redirecting_checkout": "Redirecting to checkout..."
+  },
+  "modalThumbnailPreview": {
+    "select_upload_thumbnail": "Select or Upload a Thumbnail",
+    "upload": "Upload",
+    "shuffle": "Shuffle",
+    "publish_campaign": "Publish Campaign",
+    "back": "Back",
+    "free_ratio": "Free ratio",
+    "export": "Export",
+    "square": "square"
   }
 }

@@ -1,33 +1,49 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Edit, Users, Trophy } from "lucide-react";
+import { Edit, Users, Trophy, Share2 } from "lucide-react";
 import { useGET, useDELETE } from "../services/api.js";
 import Navbar from "../components/layoutpage/Navbar.jsx";
 import Bg1 from "../assets/images/background_hero.png";
 import CardProfile from "../components/cards/CardProfile.jsx";
-import CardPost from "../components/cards/CardPost.jsx"; // Import CardPost
-import DetailResult from "../components/modal/DetailResult.jsx"; // Import DetailResult untuk modal
+import CardPost from "../components/cards/CardPost.jsx";
+import DetailResult from "../components/modal/DetailResult.jsx";
 import ModalDeleteTwibone from "../components/modal/ModalDeleteTwibone.jsx";
-import ModalDeletePost from "../components/modal/ModalDeletePost.jsx"; // Perlu dibuat modal delete post
+import ModalDeletePost from "../components/modal/ModalDeletePost.jsx";
 import { useGlobalStore } from "../helper/store/global.store.js";
 import Footer from "../components/layoutpage/Footer.jsx";
 import ModalEditTwibonne from "../components/modal/ModalEditTwibonne.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
 import { useModalStore } from "../helper/store/modal.store.js";
 import CardCollections from "../components/cards/CardCollection.jsx";
 import ModalDeleteCollection from "../components/modal/ModalDeleteCollection.jsx";
+import ShareModal from "../components/modal/ShareModal.jsx"; // Import ShareModal
 
 const DetailProfile = () => {
   const { t } = useTranslation();
   const { openToast } = useModalStore();
-  const { data: profileData, isLoading, refetch } = useGET("/my-profile");
+
+  const { data: profileData, isLoading, refetch } = useGET("/my-twibbons");
+  // Paginated fetch for "My Twibbons" to support infinite scroll
+  const [currentPage, setCurrentPage] = useState(1);
+  const [allMyTwibbons, setAllMyTwibbons] = useState([]);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const observerTarget = useRef(null);
+  const {
+    data: myTwibbonsData,
+    isLoading: myTwibbonsLoading,
+    refetch: refetchMyTwibbons,
+  } = useGET(`/my-twibbons?page=${currentPage}`);
   const {
     data: SubscribeData,
     isLoading: subscribeLoading,
     refetch: refetchLoading,
-  } = useGET("/subscription");
-
+  } = useGET("/detail-subscription");
+  const {
+    data: ProfilData,
+    isLoading: ProfilLoading,
+    refetch: refetchProfil,
+  } = useGET("/my-profile");
   const {
     data: userPostsData,
     isLoading: postsLoading,
@@ -40,7 +56,6 @@ const DetailProfile = () => {
     refetch: refetchCollections,
   } = useGET("/bookmarks");
 
-  const [viewMode, setViewMode] = useState("grid");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -53,21 +68,43 @@ const DetailProfile = () => {
   const [showPostDetailModal, setShowPostDetailModal] = useState(false);
   const [selectedPostData, setSelectedPostData] = useState(null);
 
+  // State untuk share modal
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareData, setShareData] = useState({
+    title: "",
+    url: "",
+    description: "",
+  });
+
   const [showDeleteCollectionModal, setShowDeleteCollectionModal] =
     useState(false);
   const { email, token, fullname, role } = useGlobalStore();
   const [activeTab, setActiveTab] = useState("Campaign");
   const navigate = useNavigate();
 
-  // Updated data extraction
-  const userData = profileData?.data || {};
-  const twibbonData = userData.my_event_twibbons || [];
-  const supports = userData.supports || 0;
+  const userData = profileData || {};
+  // Use the paginated list if available, otherwise fallback to profileData's data
+  const twibbonData = allMyTwibbons.length
+    ? allMyTwibbons
+    : userData.data || [];
+  const supports = ProfilData?.data?.supports || 0;
   const userFullname = userData.fullname || fullname;
   const userEmail = userData.email || email;
 
   // Extract posts data
   const userPosts = userPostsData?.data || [];
+
+  // Extract subscription data
+  const subscriptions = SubscribeData?.data || [];
+
+  // Cari subscription berdasarkan type
+  const contributorSubscription = subscriptions.find(
+    (sub) => sub.plan?.type?.toLowerCase() === "contributor"
+  );
+
+  const participantSubscription = subscriptions.find(
+    (sub) => sub.plan?.type?.toLowerCase() === "participant"
+  );
 
   useEffect(() => {
     const isProfileError =
@@ -103,11 +140,64 @@ const DetailProfile = () => {
     }
   }, [profileData, userPostsData, userCollectionsData, navigate, openToast]);
 
+  // Update paginated my-twibbons data when response arrives
+  useEffect(() => {
+    if (myTwibbonsData?.data) {
+      const newData = myTwibbonsData.data;
+      const pagination = myTwibbonsData.pagination;
+
+      if (currentPage === 1) {
+        setAllMyTwibbons(newData);
+      } else {
+        setAllMyTwibbons((prev) => [...prev, ...newData]);
+      }
+
+      setHasNextPage(pagination?.has_next || false);
+      setIsLoadingMore(false);
+    }
+  }, [myTwibbonsData, currentPage]);
+
   useEffect(() => {
     refetch();
     refetchPosts();
     refetchCollections();
+    // refresh paginated my-twibbons as well
+    setCurrentPage(1);
+    setAllMyTwibbons([]);
+    refetchMyTwibbons();
   }, [refetch, refetchPosts, refetchCollections]);
+
+  // Intersection observer for infinite scrolling of my-twibbons
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          hasNextPage &&
+          !myTwibbonsLoading &&
+          !isLoadingMore
+        ) {
+          setIsLoadingMore(true);
+          setCurrentPage((prev) => prev + 1);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "100px",
+      }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasNextPage, myTwibbonsLoading, isLoadingMore]);
 
   // Semua tabs muncul untuk semua role
   const availableTabs = [
@@ -133,6 +223,57 @@ const DetailProfile = () => {
     }
   }, [role, navigate]);
 
+  // Share handlers
+  const handlePostShare = (post) => {
+    const shareUrl = `${window.location.origin}/post/${post.id}`;
+    const title = post.caption || "Check out this post!";
+
+    setShareData({
+      title: title,
+      url: shareUrl,
+      description: post.caption || "",
+    });
+    setShowShareModal(true);
+  };
+
+  const handleCollectionShare = (twibbon) => {
+    if (!twibbon) {
+      openToast("toast", true, t("main.twibbon_not_found"), "error");
+      return;
+    }
+
+    const shareUrl = `${window.location.origin}/${twibbon.slug || ""}`;
+    const title = twibbon.title || "Check out this twibbon!";
+
+    setShareData({
+      title: title,
+      url: shareUrl,
+      description: twibbon.title || "",
+    });
+    setShowShareModal(true);
+  };
+
+  const handleProfileShare = () => {
+    const shareUrl = `${window.location.origin}/user/${ProfilData?.data?.username}`;
+    const title = `Check out ${ProfilData?.data?.username}'s profile!`;
+
+    setShareData({
+      title: title,
+      url: shareUrl,
+      description: `View ${ProfilData?.data?.username} 's campaigns and posts on our platform`,
+    });
+    setShowShareModal(true);
+  };
+
+  const closeShareModal = () => {
+    setShowShareModal(false);
+    setShareData({
+      title: "",
+      url: "",
+      description: "",
+    });
+  };
+
   // Campaign handlers
   const handleDeleteClick = (itemId) => {
     setSelectedItemId(itemId);
@@ -148,12 +289,20 @@ const DetailProfile = () => {
     setShowDeleteModal(false);
     setSelectedItemId(null);
     refetch();
+    // refresh paginated my-twibbons
+    setCurrentPage(1);
+    setAllMyTwibbons([]);
+    refetchMyTwibbons();
   };
 
   const handleEditSuccess = () => {
     setShowEditModal(false);
     setSelectedItemData(null);
     refetch();
+    // refresh paginated my-twibbons
+    setCurrentPage(1);
+    setAllMyTwibbons([]);
+    refetchMyTwibbons();
   };
 
   // Post handlers
@@ -167,53 +316,7 @@ const DetailProfile = () => {
     setShowDeleteCollectionModal(true);
   };
 
-  const handlePostShare = (post) => {
-    // Handle share functionality
-    if (navigator.share) {
-      navigator.share({
-        title: post.caption || "Check out this post!",
-        text: post.caption,
-        url: window.location.origin + `/post/${post.id}`, // Adjust URL as needed
-      });
-    } else {
-      // Fallback: copy to clipboard
-      const shareUrl = window.location.origin + `/post/${post.id}`;
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        openToast("toast", true, t("main.link_copied"), "success");
-      });
-    }
-  };
-  const handleCollectionShare = (twibbon) => {
-    console.log(twibbon);
-    if (!twibbon) {
-      openToast("toast", true, t("main.twibbon_not_found"), "error");
-      return;
-    }
-
-    const caption = twibbon.caption || "Check out this post!";
-    const shareUrl = `${window.location.origin}/${twibbon.slug || ""}`;
-
-    if (navigator.share) {
-      navigator
-        .share({
-          title: caption,
-          text: caption,
-          url: shareUrl,
-        })
-        .catch(() => {
-          navigator.clipboard.writeText(shareUrl).then(() => {
-            openToast("toast", true, t("main.link_copied"), "success");
-          });
-        });
-    } else {
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        openToast("toast", true, t("main.link_copied"), "success");
-      });
-    }
-  };
-
   const handlePostClick = (post) => {
-    // Transform post data to match DetailResult expected format
     const transformedData = {
       id: post.id,
       title: post.event_twibbon?.title || post.caption || "Post",
@@ -238,11 +341,124 @@ const DetailProfile = () => {
     setSelectedCollectionId(null);
     refetchCollections();
     openToast("toast", true, t("profile.collection_deleted"), "success");
+    setCurrentPage(1);
+    setAllMyTwibbons([]);
+    refetchMyTwibbons();
+  };
+
+  // Helper function untuk render subscription status
+  const renderSubscriptionStatus = (subscription, type) => {
+    if (!subscription) {
+      return (
+        <div className="mb-4">
+          <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            {type === "contributor"
+              ? "Creator Membership"
+              : "Supporter Membership"}
+          </p>
+          <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
+            {t("profile.membership_status.not_subscribed")}
+          </p>
+          <button
+            onClick={() => navigate("/membership")}
+            className="w-full px-3 py-2 text-xs font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+          >
+            {t("profile.membership_status.subscribe_now")}
+          </button>
+        </div>
+      );
+    }
+
+    const status = subscription.status;
+    const planName = subscription.plan?.name || "Unknown Plan";
+
+    return (
+      <div className="mb-4">
+        <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          {type === "contributor"
+            ? "Creator Membership"
+            : "Supporter Membership"}{" "}
+          - {planName}
+        </p>
+
+        {status === "ACTIVE" ? (
+          <div>
+            <p className="mb-3 text-sm font-medium text-green-600 dark:text-green-400">
+              {t("profile.membership_status.active")}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Berlaku hingga:{" "}
+              {new Date(subscription.end_date).toLocaleDateString("id-ID")}
+            </p>
+          </div>
+        ) : status === "PENDING" ? (
+          <div>
+            <p className="mb-3 text-sm font-medium text-yellow-600 dark:text-yellow-400">
+              {t("profile.membership_status.pending")}
+            </p>
+            <button
+              onClick={() => {
+                type === "contributor"
+                  ? navigate("/checkout?type=contributor")
+                  : navigate("/checkout?type=participant");
+              }}
+              className="w-full px-3 py-2 text-xs font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+            >
+              {t("profile.membership_status.continue_payment")}
+            </button>
+          </div>
+        ) : status === "FAILED" ? (
+          <div>
+            <p className="mb-3 text-sm font-medium text-red-600 dark:text-red-400">
+              {t("profile.membership_status.canceled")}
+            </p>
+            <button
+              onClick={() => navigate("/membership")}
+              className="w-full px-3 py-2 text-xs font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+            >
+              {t("profile.membership_status.subscribe_now")}
+            </button>
+          </div>
+        ) : status === "EXPIRED" ? (
+          <div>
+            <p className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-400">
+              {t("profile.membership_status.expired")}
+            </p>
+            <button
+              onClick={() => navigate("/membership")}
+              className="w-full px-3 py-2 text-xs font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+            >
+              {t("profile.membership_status.renew_subscription")}
+            </button>
+          </div>
+        ) : (
+          <div>
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
+              {t("profile.membership_status.not_subscribed")}
+            </p>
+            <button
+              onClick={() => navigate("/membership")}
+              className="w-full px-3 py-2 text-xs font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+            >
+              {t("profile.membership_status.subscribe_now")}
+            </button>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={closeShareModal}
+        shareData={shareData}
+      />
+
       {/* Hero Section with Profile */}
       <div className="relative">
         <div
@@ -289,6 +505,15 @@ const DetailProfile = () => {
                     </p>
                   </button>
                 </Link>
+
+                {/* Share Profile Button */}
+                <button
+                  onClick={handleProfileShare}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+                >
+                  <Share2 className="w-4 h-4" />
+                  {t("main.share_profile")}
+                </button>
               </div>
             </div>
 
@@ -349,60 +574,16 @@ const DetailProfile = () => {
                       {t("profile.membership_status.title")}
                     </h3>
 
-                    {SubscribeData?.data?.status === "ACTIVE" ? (
-                      <div>
-                        <p className="mb-3 text-lg font-medium text-green-600 dark:text-green-400">
-                          {t("profile.membership_status.active")}
-                        </p>
-                      </div>
-                    ) : SubscribeData?.data?.status === "PENDING" ? (
-                      <div>
-                        <p className="mb-3 text-lg font-medium text-yellow-600 dark:text-yellow-400">
-                          {t("profile.membership_status.pending")}
-                        </p>
-                        <button
-                          onClick={() => navigate("/checkout")}
-                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
-                        >
-                          {t("profile.membership_status.continue_payment")}
-                        </button>
-                      </div>
-                    ) : SubscribeData?.data?.status === "FAILED" ? (
-                      <div>
-                        <p className="mb-3 text-lg font-medium text-red-600 dark:text-red-400">
-                          {t("profile.membership_status.canceled")}
-                        </p>
-                        <button
-                          onClick={() => navigate("/membership")}
-                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
-                        >
-                          {t("profile.membership_status.subscribe_now")}
-                        </button>
-                      </div>
-                    ) : SubscribeData?.data?.status === "EXPIRED" ? (
-                      <div>
-                        <p className="mb-3 text-lg font-medium text-gray-600 dark:text-gray-400">
-                          {t("profile.membership_status.expired")}
-                        </p>
-                        <button
-                          onClick={() => navigate("/membership")}
-                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
-                        >
-                          {t("profile.membership_status.renew_subscription")}
-                        </button>
-                      </div>
-                    ) : (
-                      <div>
-                        <p className="mb-3 text-lg font-medium text-gray-600 dark:text-gray-400">
-                          {t("profile.membership_status.not_subscribed")}
-                        </p>
-                        <button
-                          onClick={() => navigate("/membership")}
-                          className="w-full px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
-                        >
-                          {t("profile.membership_status.subscribe_now")}
-                        </button>
-                      </div>
+                    {/* Contributor Subscription */}
+                    {renderSubscriptionStatus(
+                      contributorSubscription,
+                      "contributor"
+                    )}
+
+                    {/* Participant Subscription */}
+                    {renderSubscriptionStatus(
+                      participantSubscription,
+                      "participant"
                     )}
                   </div>
                 )}
@@ -411,6 +592,8 @@ const DetailProfile = () => {
           </div>
         </div>
       </div>
+
+      {/* Rest of the component remains the same */}
       <div className="container w-full px-4 mx-auto sm:px-6 lg:px-8">
         {/* Content Section */}
         <div className="container px-6 py-8 mx-auto">
@@ -447,13 +630,7 @@ const DetailProfile = () => {
 
               {/* Campaign Content */}
               {activeTab === "Campaign" && (
-                <div
-                  className={`${
-                    viewMode === "grid"
-                      ? "grid grid-cols-2 sm:grid-cols-3    md:grid-cols-5 gap-6"
-                      : "space-y-4"
-                  }`}
-                >
+                <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-5">
                   {twibbonData.length === 0 ? (
                     <div className="flex flex-col items-center justify-center col-span-4 py-16 text-center">
                       <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
@@ -467,29 +644,42 @@ const DetailProfile = () => {
                       </p>
                     </div>
                   ) : (
-                    twibbonData.map((twibon) => (
-                      <CardProfile
-                        key={twibon.id}
-                        twibon={{
-                          id: twibon.id,
-                          title: twibon.title || t("main.no_title"),
-                          author: userFullname || "Gypem",
-                          supports: twibon?.supports ?? 0,
-                          slug: twibon.slug_event_twibbon,
-                          image: twibon.template_twibbon,
-                          caption: twibon.caption,
-                          url: twibon.url,
-                        }}
-                        onDelete={handleDeleteClick}
-                        onEdit={handleEditClick}
-                        isGrid={viewMode === "grid"}
-                      />
-                    ))
+                    <>
+                      {twibbonData.map((twibon) => (
+                        <CardProfile
+                          key={twibon.id}
+                          twibon={{
+                            id: twibon.id,
+                            title: twibon.title || t("main.no_title"),
+                            author: userFullname || "Gypem",
+                            supports: twibon?.supports ?? 0,
+                            slug: twibon.slug_event_twibbon,
+                            image: twibon.template_twibbon,
+                            caption: twibon.caption,
+                            url: twibon.url,
+                          }}
+                          onDelete={handleDeleteClick}
+                          onEdit={handleEditClick}
+                        />
+                      ))}
+
+                      {/* Loading more indicator for infinite scroll */}
+                      {isLoadingMore && (
+                        <div className="flex items-center justify-center py-6 col-span-full">
+                          <div className="w-8 h-8 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
+                        </div>
+                      )}
+
+                      {/* Intersection observer target to trigger next page load */}
+                      {hasNextPage && twibbonData.length > 0 && (
+                        <div ref={observerTarget} className="h-6" />
+                      )}
+                    </>
                   )}
                 </div>
               )}
 
-              {/* Posts Content - Updated */}
+              {/* Posts Content */}
               {activeTab === "Posts" && (
                 <div>
                   {postsLoading ? (
@@ -592,7 +782,6 @@ const DetailProfile = () => {
         itemData={selectedItemData}
       />
 
-      {/* Post Delete Modal = */}
       <ModalDeletePost
         visible={showDeletePostModal}
         onClose={() => {
@@ -602,6 +791,7 @@ const DetailProfile = () => {
         onDeleteSuccess={handlePostDeleteSuccess}
         postId={selectedPostId}
       />
+
       <ModalDeleteCollection
         visible={showDeleteCollectionModal}
         onClose={() => {
@@ -612,7 +802,6 @@ const DetailProfile = () => {
         collectionId={selectedCollectionId}
       />
 
-      {/* Post Detail Modal */}
       <DetailResult
         isOpen={showPostDetailModal}
         onClose={() => setShowPostDetailModal(false)}
