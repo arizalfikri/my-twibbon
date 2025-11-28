@@ -24,8 +24,8 @@ export default function MembershipCards({
       topBar: "from-blue-500 to-purple-500",
       buttonGradient: "bg-blue-500 ",
       buttonHover: "bg-blue-600 ",
-      priceMultiplier: 1,
-      priceOriginalMultiplier: 1.5,
+  
+      planType: "participant",
     },
     creator: {
       gradient: "from-orange-500 via-orange-600 to-red-500",
@@ -36,10 +36,15 @@ export default function MembershipCards({
       topBar: "from-orange-500 to-red-500",
       buttonGradient: "bg-orange-500",
       buttonHover: "bg-orange-600 ",
-      priceMultiplier: 1.5,
-      priceOriginalMultiplier: 2,
+
+      planType: "Contributor",
     },
   };
+  React.useEffect(() => {
+    if (plans && plans.length > 0 && !selectedPlan) {
+      onSelectPlan(plans[0]);
+    }
+  }, [plans, selectedPlan, onSelectPlan]);
 
   const currentConfig = config[type];
 
@@ -100,13 +105,13 @@ export default function MembershipCards({
               <p className="mb-1 text-xs text-gray-500 line-through md:text-sm">
                 Rp
                 {(
-                  selectedPlan.price * currentConfig.priceOriginalMultiplier
+                  selectedPlan.price 
                 ).toLocaleString("id-ID")}
               </p>
               <p className="mb-2 text-4xl font-black text-gray-900 md:text-5xl dark:text-white">
                 Rp{" "}
                 {(
-                  selectedPlan.price * currentConfig.priceMultiplier
+                  selectedPlan.final_price 
                 ).toLocaleString("id-ID")}
               </p>
               <p className="text-sm font-medium text-gray-600 md:text-base dark:text-gray-400">
@@ -124,11 +129,7 @@ export default function MembershipCards({
           <div
             className={`group relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]`}
           >
-            <div
-              className={`absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-${currentConfig.accentColor}-500/5 to-${
-                currentConfig.accentColor === "blue" ? "purple" : "red"
-              }-500/5 group-hover:opacity-100`}
-            ></div>
+          
             <video
               src={videos.noWatermark}
               className="object-cover w-full h-40 md:h-48 rounded-t-2xl md:rounded-t-3xl"
@@ -172,11 +173,7 @@ export default function MembershipCards({
           <div
             className={`group relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]`}
           >
-            <div
-              className={`absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-${currentConfig.accentColor}-500/5 to-${
-                currentConfig.accentColor === "blue" ? "purple" : "red"
-              }-500/5 group-hover:opacity-100`}
-            ></div>
+          
             <video
               src={videos.noAds}
               className="object-cover w-full h-40 md:h-48 rounded-t-2xl md:rounded-t-3xl"

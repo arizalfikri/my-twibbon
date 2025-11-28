@@ -17,10 +17,18 @@ import MembershipCards from "../components/cards/MembershipCards";
 
 export default function MembershipPage() {
   const { t } = useTranslation();
-  const { data, isLoading } = useGET("/plans");
-  const { refetch: refetchPayment } = useGET("/payment");
-  const { data: subscriptionData, refetch: refetchSubscription } =
-    useGET("/subscription");
+  const { data: plansContributor, isLoading } = useGET(
+    "/plans?type=Contributor"
+  );
+  const { data: plansParticipant } = useGET("/plans?type=participant");
+
+  const { refetch: refetchPayment } = useGET("/payment", {
+    enabled: false,
+  });
+  const { data: subscriptionData, refetch: refetchSubscription } = useGET(
+    "/detail-subscription",
+    { enabled: false }
+  );
   const [selectedPlan, setSelectedPlan] = useState(null);
   const navigate = useNavigate();
   const CheckoutMutation = usePOST("/subscribe");
@@ -33,12 +41,14 @@ export default function MembershipPage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showPendingModal, setShowPendingModal] = useState(false);
   const [pendingSubscriptionData, setPendingSubscriptionData] = useState(null);
+  const [isContinueLoading, setIsContinueLoading] = useState(false);
+  const [selectedPlans, setSelectedPlans] = useState({
+    supporter: null,
+    creator: null,
+  });
 
-  useEffect(() => {
-    if (data?.data?.length > 0 && !selectedPlan) {
-      setSelectedPlan(data.data[0]);
-    }
-  }, [data, selectedPlan]);
+  // State untuk menyimpan planType yang sedang diproses
+  const [currentPlanType, setCurrentPlanType] = useState("supporter");
 
   useEffect(() => {
     AOS.init({ duration: 800, offset: 100, easing: "ease-in-out" });
@@ -46,9 +56,17 @@ export default function MembershipPage() {
   }, []);
 
   const handleSubscribe = async (planType = "supporter") => {
-    if (!selectedPlan) return;
+    // Simpan planType yang sedang diproses
+    setCurrentPlanType(planType);
 
-    if (!token || role !== "participant") {
+    const selectedPlan = selectedPlans[planType];
+
+    if (!selectedPlan) {
+      openToast("toast", true, t("membership.please_select_plan"), "warning");
+      return;
+    }
+
+    if (!token || role !== "user") {
       openToast("toast", true, t("membership.login_warning"), "warning");
       setShowLoginModal(true);
       return;
@@ -57,16 +75,36 @@ export default function MembershipPage() {
     const { data: newSubscription } = await refetchSubscription();
     const { data: newPayment } = await refetchPayment();
 
-    const paymentStatus = newPayment?.data?.status;
-    const paymentPlanId = newPayment?.data?.subscription?.plan_id;
-    const subscriptionStatus = newSubscription?.data?.status;
+    // Cek subscription berdasarkan type
+    const subscriptionType =
+      planType === "supporter" ? "participant" : "contributor";
+    const userSubscriptions = newSubscription?.data || [];
 
-    if (subscriptionStatus === "ACTIVE") {
+    // Cari subscription aktif berdasarkan type
+    const activeSubscription = userSubscriptions.find(
+      (sub) =>
+        sub.status === "ACTIVE" &&
+        sub.plan?.type?.toLowerCase() === subscriptionType
+    );
+
+    // Cari subscription pending berdasarkan type
+    const pendingSubscription = userSubscriptions.find(
+      (sub) =>
+        sub.status === "PENDING" &&
+        sub.plan?.type?.toLowerCase() === subscriptionType
+    );
+
+    const paymentStatus = newPayment?.data?.payment?.status;
+    const paymentPlanId = newPayment?.data?.subscription?.plan_id;
+
+    // Jika sudah ada subscription aktif dengan type yang sama
+    if (activeSubscription) {
       openToast("toast", true, t("membership.active_subscription"), "info");
       return;
     }
 
-    if (paymentStatus === "PENDING") {
+    // Jika ada subscription pending dengan type yang sama
+    if (pendingSubscription) {
       if (paymentPlanId === selectedPlan.id) {
         openToast(
           "toast",
@@ -74,11 +112,13 @@ export default function MembershipPage() {
           t("membership.processing_subscription"),
           "warning"
         );
-        navigate("/checkout");
+        // navigate to checkout with the correct type
+        const payloadType = planType === "supporter" ? "participant" : "contributor";
+        navigate(`/checkout?type=${payloadType}`);
       } else {
         setPendingSubscriptionData({
-          subscription: newPayment?.data?.subscription,
-          payment: newPayment?.data,
+          subscription: newPayment?.data?.payment?.subscription,
+          payment: newPayment?.data?.payment,
           selectedPlan,
           planType,
         });
@@ -87,6 +127,10 @@ export default function MembershipPage() {
       return;
     }
 
+    // Boleh subscribe jika:
+    // 1. Belum ada subscription dengan type yang sama, atau
+    // 2. Ingin subscribe ke type yang berbeda (supporter bisa punya creator, dan sebaliknya)
+
     if (paymentStatus === "waiting_verification") {
       openToast("toast", true, t("membership.waiting_verification"), "warning");
       return;
@@ -94,9 +138,16 @@ export default function MembershipPage() {
 
     setIsProcessing(true);
     try {
+      // Tentukan type payload berdasarkan planType
+      const payloadType =
+        planType === "supporter" ? "participant" : "contributor";
+
       const res = await CheckoutMutation.mutateAsync({
         url: "/subscribe",
-        data: { plan_id: selectedPlan.id.toString() },
+        data: {
+          plan_id: selectedPlan.id.toString(),
+          type: payloadType, // Tambahkan type di payload
+        },
       });
 
       if (res.status === 201 || res.status === 200) {
@@ -107,26 +158,51 @@ export default function MembershipPage() {
           "success"
         );
         await Promise.all([refetchPayment(), refetchSubscription()]);
-        navigate("/checkout");
+        // Navigate to checkout and include type so checkout loads correct flow
+        navigate(`/checkout?type=${payloadType}`);
       }
     } catch (error) {
       console.error("Subscription failed:", error);
+
+      if (error?.response?.status === 403) {
+        openToast("toast", true, t("membership.login_warning"), "warning");
+        setShowLoginModal(true);
+        localStorage.removeItem("token");
+        return;
+      }
+
       openToast("toast", true, t("membership.subscribe_failed"), "error");
     } finally {
       setIsProcessing(false);
     }
   };
 
+  // Update handleSelectPlan untuk menerima planType
+  const handleSelectPlan = (plan, planType) => {
+    setSelectedPlans((prev) => ({
+      ...prev,
+      [planType]: plan,
+    }));
+  };
+
   const handleLoginSuccess = async () => {
     setShowLoginModal(false);
-    await handleSubscribe();
+    // Gunakan currentPlanType yang sudah disimpan
+    await handleSubscribe(currentPlanType);
   };
 
   const handleCancelSubscription = async () => {
-    if (!pendingSubscriptionData?.subscription?.id) return;
+    const planId = pendingSubscriptionData?.subscription?.plan?.id;
+    setShowPendingModal(false);
+
+    if (!planId) {
+      console.error("Plan ID for pending subscription not found");
+      return;
+    }
     try {
       await PatchSubscriptionMutation.mutateAsync({
         url: `/cancel-subscription`,
+        data: { plan_id: planId.toString() },
       });
       openToast(
         "toast",
@@ -143,10 +219,23 @@ export default function MembershipPage() {
     }
   };
 
-  const handleContinueSubscription = () => {
-    setShowPendingModal(false);
-    setPendingSubscriptionData(null);
-    navigate("/checkout");
+  const handleContinueSubscription = async () => {
+    // Keep modal open, show loading, refresh payment then navigate
+    setIsContinueLoading(true);
+    try {
+      await refetchPayment();
+
+      const planType = pendingSubscriptionData?.planType || pendingSubscriptionData?.planType;
+      const payloadType = planType === "supporter" ? "participant" : "contributor";
+
+      setShowPendingModal(false);
+      setPendingSubscriptionData(null);
+      navigate(`/checkout?type=${payloadType}`);
+    } catch (err) {
+      console.error("Continue subscription error:", err);
+    } finally {
+      setIsContinueLoading(false);
+    }
   };
 
   if (isLoading) return <LoadingPage />;
@@ -204,10 +293,10 @@ export default function MembershipPage() {
             {/* Supporter Card */}
             <MembershipCards
               type="supporter"
-              selectedPlan={selectedPlan}
-              plans={data?.data}
-              onSelectPlan={setSelectedPlan}
-              onSubscribe={handleSubscribe}
+              selectedPlan={selectedPlans.supporter}
+              plans={plansParticipant?.data}
+              onSelectPlan={(plan) => handleSelectPlan(plan, "supporter")}
+              onSubscribe={() => handleSubscribe("supporter")}
               isProcessing={isProcessing}
               videos={videos}
             />
@@ -215,10 +304,10 @@ export default function MembershipPage() {
             {/* Creator Card */}
             <MembershipCards
               type="creator"
-              selectedPlan={selectedPlan}
-              plans={data?.data}
-              onSelectPlan={setSelectedPlan}
-              onSubscribe={handleSubscribe}
+              selectedPlan={selectedPlans.creator}
+              plans={plansContributor?.data}
+              onSelectPlan={(plan) => handleSelectPlan(plan, "creator")}
+              onSubscribe={() => handleSubscribe("creator")}
               isProcessing={isProcessing}
               videos={videos}
             />
@@ -245,6 +334,7 @@ export default function MembershipPage() {
           }}
           onCancel={handleCancelSubscription}
           onContinue={handleContinueSubscription}
+          isProcessing={isContinueLoading}
           subscriptionData={pendingSubscriptionData}
         />
       )}
