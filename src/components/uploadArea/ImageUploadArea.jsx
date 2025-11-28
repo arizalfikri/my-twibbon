@@ -9,7 +9,7 @@ import { useModalStore } from "../../helper/store/modal.store";
 import { useTranslation } from "react-i18next";
 
 function ImageUploadArea({
-  name = "image",
+  name = "template",
   setValue,
   error,
   value,
