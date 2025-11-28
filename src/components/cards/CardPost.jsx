@@ -10,7 +10,6 @@ function CardPost({
   showActions = true,
 }) {
   const { t } = useTranslation();
-
   // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -53,7 +52,7 @@ function CardPost({
         <img
           src={`${import.meta.env.VITE_FILE_URL}${post.image_url}`}
           alt={post.caption || "Post image"}
-          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+          className="object-cover w-full h-full transition-transform duration-300 "
           onError={(e) => {
             e.currentTarget.src = "/placeholder-image.jpg";
           }}

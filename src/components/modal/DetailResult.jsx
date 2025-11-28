@@ -582,7 +582,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
               </div>
 
               <div className="flex items-center space-x-3 text-sm text-gray-500 dark:text-gray-400">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-primary-600">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary-200">
                   <span className="text-xs font-bold text-white">
                     {getUserInitials(
                       infoUser?.data?.author?.fullname ||
