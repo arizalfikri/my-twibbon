@@ -16,7 +16,9 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
   const { mutateAsync, isPending } = usePATCH(`/event-twibbon/${itemData?.id}`);
   const { openToast } = useModalStore();
   const [isCheckingDuplicates, setIsCheckingDuplicates] = useState(false);
-  const { data: twibbonsData } = useGET("/twibbons");
+  const { data: twibbonsData } = useGET("/twibbons", {
+    enabled: visibel,
+  });
 
   const {
     register,
