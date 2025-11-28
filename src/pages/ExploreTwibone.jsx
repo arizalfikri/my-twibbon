@@ -1,85 +1,96 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Grid, List, Search, X } from "lucide-react";
+import { Search } from "lucide-react";
 import Navbar from "../components/layoutpage/Navbar";
 import Footer from "../components/layoutpage/Footer";
 import CardHome from "../components/cards/CardHome";
+import CardUser from "../components/cards/CardUser";
+import SmoothDropdown from "../components/buttons/SmoothDropdown.jsx";
+
 import { useGET } from "../services/api.js";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
 import { useTranslation } from "react-i18next";
 
 function ExploreTwibone() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const location = useLocation();
   const { t } = useTranslation();
 
-  const [selectedCategory, setSelectedCategory] = useState("Semua");
+  const [selectedTab, setSelectedTab] = useState("twibbon");
   const [viewMode, setViewMode] = useState("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [showFilters, setShowFilters] = useState(false);
+  const [typeFilter, setTypeFilter] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [allTwibbons, setAllTwibbons] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const searchFromUrl = searchParams.get("search") || "";
+  const sortFromUrl = searchParams.get("sort") || "newest";
   const observerTarget = useRef(null);
 
   const displaySearchQuery = searchFromUrl
     ? decodeURIComponent(searchFromUrl).trim()
     : "";
 
-  // Construct URL dengan page
-  const apiUrl = searchFromUrl
-    ? `twibbons?q=${encodeURIComponent(searchFromUrl)}&page=${currentPage}`
-    : `twibbons?page=${currentPage}`;
+  // API URL construction
+  const getApiUrl = useCallback(() => {
+    const baseParams =
+      selectedTab === "twibbon"
+        ? `twibbons?page=${currentPage}&sort=${sortBy}${
+            typeFilter ? `&type=${typeFilter}` : ""
+          }`
+        : `users?page=${currentPage}`;
 
-  const { data, isLoading, refetch } = useGET(apiUrl);
+    return searchFromUrl
+      ? baseParams.replace("?", `?q=${encodeURIComponent(searchFromUrl)}&`)
+      : baseParams;
+  }, [selectedTab, currentPage, sortBy, typeFilter, searchFromUrl]);
 
-  // Set default view mode sekali aja saat mount
-  useEffect(() => {
-    if (window.innerWidth < 1024) {
-      setViewMode("list");
-    } else {
-      setViewMode("grid");
-    }
-  }, []);
+  const { data, isLoading, refetch } = useGET(getApiUrl());
 
-  // Handle URL search parameters
-  useEffect(() => {
-    if (searchFromUrl) {
-      setSearchQuery(displaySearchQuery);
-    } else {
-      setSearchQuery("");
-    }
-  }, [searchFromUrl, displaySearchQuery]);
-
-  // Reset pagination saat search berubah
+  // Reset state when filters change
   useEffect(() => {
     setCurrentPage(1);
-    setAllTwibbons([]);
-  }, [searchFromUrl]);
+    selectedTab === "twibbon" ? setAllTwibbons([]) : setAllUsers([]);
+  }, [searchFromUrl, sortBy, selectedTab, typeFilter]);
 
-  // Update data saat response datang
+  // Initialize from URL parameters
   useEffect(() => {
-    if (data?.data) {
-      const newTwibbons = data.data;
+    if (
+      sortFromUrl &&
+      (sortFromUrl === "popular" || sortFromUrl === "newest")
+    ) {
+      setSortBy(sortFromUrl);
+    }
+    const typeFromUrl = searchParams.get("type");
+    if (typeFromUrl) setTypeFilter(typeFromUrl);
+  }, []);
+
+  // Update data from API response
+  useEffect(() => {
+    if (data?.data && Array.isArray(data.data)) {
+      const newData = data.data;
       const pagination = data.pagination;
 
       if (currentPage === 1) {
-        setAllTwibbons(newTwibbons);
+        selectedTab === "twibbon"
+          ? setAllTwibbons(newData)
+          : setAllUsers(newData);
       } else {
-        setAllTwibbons((prev) => [...prev, ...newTwibbons]);
+        selectedTab === "twibbon"
+          ? setAllTwibbons((prev) => [...prev, ...newData])
+          : setAllUsers((prev) => [...prev, ...newData]);
       }
 
       setHasNextPage(pagination?.has_next || false);
-      setIsLoadingMore(false);
     }
-  }, [data, currentPage]);
+    setIsLoadingMore(false);
+  }, [data, currentPage, selectedTab]);
 
-  // Intersection Observer untuk infinite scroll
+  // Infinite scroll observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -93,155 +104,147 @@ function ExploreTwibone() {
           setCurrentPage((prev) => prev + 1);
         }
       },
-      {
-        threshold: 0.1,
-        rootMargin: "100px",
-      }
+      { threshold: 0.1, rootMargin: "100px" }
     );
 
     const currentTarget = observerTarget.current;
-    if (currentTarget) {
-      observer.observe(currentTarget);
-    }
+    if (currentTarget) observer.observe(currentTarget);
 
     return () => {
-      if (currentTarget) {
-        observer.unobserve(currentTarget);
-      }
+      if (currentTarget) observer.unobserve(currentTarget);
     };
   }, [hasNextPage, isLoading, isLoadingMore]);
 
-  // Update search query and URL
+  // Search and filter handlers
   const handleSearchChange = (value) => {
     setSearchQuery(value);
-    if (value.trim()) {
-      const cleanValue = value.trim().replace(/\s+/g, " ");
-      setSearchParams({ search: cleanValue });
-    } else {
-      setSearchParams({});
-    }
+    const params = { sort: sortBy };
+    if (typeFilter) params.type = typeFilter;
+    if (value.trim()) params.search = value.trim().replace(/\s+/g, " ");
+    setSearchParams(params);
   };
 
-  // Clear search
+  const handleSortChange = (newSort) => {
+    setSortBy(newSort);
+    updateUrlParams({ sort: newSort });
+  };
+
+  const handleTypeFilterChange = (newType) => {
+    setTypeFilter(newType || null);
+    updateUrlParams({ type: newType || "" });
+  };
+
+  const updateUrlParams = (updates) => {
+    const params = { ...updates };
+    if (searchFromUrl) params.search = searchFromUrl;
+    setSearchParams(params);
+  };
+
   const clearSearch = () => {
     setSearchQuery("");
-    setSearchParams({});
+    setSearchParams({ sort: sortBy });
+  };
+
+  const handleTabChange = (tab) => {
+    setSelectedTab(tab);
+    setCurrentPage(1);
+    setAllTwibbons([]);
+    setAllUsers([]);
+    setSearchQuery("");
+    setSearchParams({ sort: sortBy });
   };
 
   const renderEmptyState = () => {
     if (isLoading && currentPage === 1) {
+      return <LoadingState selectedTab={selectedTab} t={t} />;
+    }
+
+    if (searchFromUrl && currentData.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
-          <div className="max-w-md space-y-6 text-center">
-            <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary-100 to-pink-100 dark:from-primary-900/30 dark:to-pink-900/30">
-              <div className="w-16 h-16 border-4 rounded-full border-primary-400 dark:border-primary-500 border-t-transparent animate-spin"></div>
-            </div>
-            <div className="space-y-3">
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                {t("explore.loading_twibone")}
-              </h3>
-              <p className="leading-relaxed text-gray-600 dark:text-gray-400">
-                {t("explore.loading_collection")}
-              </p>
-            </div>
-          </div>
-        </div>
+        <SearchEmptyState
+          selectedTab={selectedTab}
+          displaySearchQuery={displaySearchQuery}
+          clearSearch={clearSearch}
+          t={t}
+        />
       );
     }
 
-    // Jika ada search tapi tidak ada data → tampilkan empty state pencarian
-    if (searchFromUrl && allTwibbons.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
-          <div className="max-w-md space-y-6 text-center">
-            <div className="relative">
-              <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-blue-100 to-primary-100 dark:from-blue-900/30 dark:to-primary-900/30">
-                <Search className="w-16 h-16 text-blue-400 dark:text-blue-500" />
-              </div>
-            </div>
-            <div className="space-y-3">
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                {t("explore.not_found")}
-              </h3>
-              <p className="leading-relaxed text-gray-600 dark:text-gray-400">
-                {t("explore.no_results", { query: displaySearchQuery })}
-              </p>
-            </div>
-            <button
-              onClick={clearSearch}
-              className="px-6 py-3 font-semibold transition-all duration-300 border-2 rounded-full text-primary-700 border-primary-200 dark:text-primary-400 dark:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20"
-            >
-              {t("explore.clear_search")}
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    // Jika tidak ada search & kosong → pakai empty state dari Homepage
     return <EmptyTwibbon />;
   };
 
   const renderLoadingMore = () => {
     if (!isLoadingMore) return null;
-
-    return (
-      <div className="flex items-center justify-center py-8 col-span-full">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 rounded-full border-primary-400 dark:border-primary-500 border-t-transparent animate-spin"></div>
-          <span className="text-gray-600 dark:text-gray-400">
-            {t("explore.loading_more") || "Loading more..."}
-          </span>
-        </div>
-      </div>
-    );
+    return <LoadingMoreIndicator t={t} />;
   };
+
+  const currentData = selectedTab === "twibbon" ? allTwibbons : allUsers;
+  const gridCols =
+    selectedTab === "twibbon"
+      ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
+      : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white">
       <Navbar />
 
+      <div className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50 dark:bg-gray-900 dark:border-gray-800">
+        <div className="container px-4 py-4 mx-auto">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <TabButtons
+              selectedTab={selectedTab}
+              onTabChange={handleTabChange}
+            />
+
+            {selectedTab === "twibbon" && (
+              <FilterSection
+                sortBy={sortBy}
+                typeFilter={typeFilter}
+                onSortChange={handleSortChange}
+                onTypeFilterChange={handleTypeFilterChange}
+                t={t}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
       <main className="container px-4 py-8 mx-auto">
-        {/* Search and Filters */}
-        <div className="mb-8"></div>
-
-        {/* Twibon Grid/List */}
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-5 ">
-          {allTwibbons.length === 0
+        <div className={`grid ${gridCols} gap-6`}>
+          {currentData.length === 0 && isLoading && currentPage === 1
             ? renderEmptyState()
-            : allTwibbons.map((twibon) => (
-                <CardHome
-                  key={twibon.id}
-                  twibon={{
-                    id: twibon.id,
-                    title: twibon.title || t("explore.untitled"),
-                    author: twibon?.contributor?.fullname || "Gypem",
-                    supports: twibon?.supports || 0,
-                    slug: twibon.slug_event_twibbon,
-                    image: twibon.template_twibbon,
+            : currentData.length === 0 && searchFromUrl
+            ? renderEmptyState()
+            : currentData.length > 0
+            ? selectedTab === "twibbon"
+              ? allTwibbons.map((twibon) => (
+                  <CardHome
+                    key={twibon.id}
+                    twibon={{
+                      id: twibon.id,
+                      title: twibon.title || t("explore.untitled"),
+                      author: twibon?.contributor?.fullname || "Gypem",
+                      supports: twibon?.supports || 0,
+                      slug: twibon.slug_event_twibbon,
+                      image: twibon.template_twibbon,
+                      date: twibon.createdAt,
+                      username: twibon?.contributor?.username || "",
+                      isSupport: sortBy === "popular",
+                    }}
+                  />
+                ))
+              : allUsers.map((user) => <CardUser key={user.id} User={user} />)
+            : !isLoading && <EmptyTwibbon />}
 
-                    date: twibon.createdAt,
-                  }}
-                />
-              ))}
-
-          {/* Loading More Indicator */}
           {renderLoadingMore()}
         </div>
 
-        {/* Intersection Observer Target - invisible element untuk trigger load more */}
-        {hasNextPage && allTwibbons.length > 0 && (
+        {hasNextPage && currentData.length > 0 && (
           <div ref={observerTarget} className="h-10" />
         )}
 
-        {/* End of Results Message */}
-        {!hasNextPage && allTwibbons.length > 0 && !isLoadingMore && (
-          <div className="py-8 text-center">
-            <p className="text-gray-500 dark:text-gray-400">
-              {t("explore.end_of_results") ||
-                "You've reached the end of the results"}
-            </p>
-          </div>
+        {!hasNextPage && currentData.length > 0 && !isLoadingMore && (
+          <EndOfResultsMessage t={t} />
         )}
       </main>
 
@@ -249,5 +252,147 @@ function ExploreTwibone() {
     </div>
   );
 }
+
+// Extracted Components
+const TabButtons = ({ selectedTab, onTabChange }) => {
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const handleClick = (tab) => {
+    if (isTransitioning || selectedTab === tab) return;
+    setIsTransitioning(true);
+    onTabChange(tab);
+    setTimeout(() => setIsTransitioning(false), 300);
+  };
+
+  return (
+    <div className="flex gap-2 p-1 bg-gray-100 rounded-lg dark:bg-gray-800">
+      {["twibbon", "creator"].map((tab) => (
+        <button
+          key={tab}
+          onClick={() => handleClick(tab)}
+          disabled={isTransitioning}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+            selectedTab === tab
+              ? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
+              : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+          } ${isTransitioning ? "opacity-50 cursor-not-allowed" : ""}`}
+        >
+          {tab === "twibbon" ? "Twibbons" : "Creators"}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+const FilterSection = ({
+  sortBy,
+  typeFilter,
+  onSortChange,
+  onTypeFilterChange,
+  t,
+}) => (
+  <div className="flex flex-col gap-4 md:flex md:flex-row md:items-center md:justify-end">
+    <div className="w-auto">
+      <SmoothDropdown
+        value={sortBy}
+        onChange={onSortChange}
+        options={[
+          { value: "newest", label: t("explore.sort_newest") || "Terbaru" },
+          { value: "popular", label: t("explore.sort_popular") || "Populer" },
+        ]}
+      />
+    </div>
+
+    <div className="w-auto">
+      <SmoothDropdown
+        value={typeFilter || ""}
+        onChange={onTypeFilterChange}
+        options={[
+          { value: "", label: t("explore.filter_all") || "Semua" },
+          {
+            value: "background",
+            label: t("explore.filter_background") || "Background",
+          },
+          { value: "frame", label: t("explore.filter_frame") || "Frame" },
+        ]}
+      />
+    </div>
+  </div>
+)
+
+
+const LoadingState = ({ selectedTab, t }) => (
+  <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
+    <div className="max-w-md space-y-6 text-center">
+      <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary-100 to-pink-100 dark:from-primary-900/30 dark:to-pink-900/30">
+        <div className="w-16 h-16 border-4 rounded-full border-primary-400 dark:border-primary-500 border-t-transparent animate-spin"></div>
+      </div>
+      <div className="space-y-3">
+        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+          {selectedTab === "twibbon"
+            ? t("explore.loading_twibone")
+            : t("explore.loading_creators")}
+        </h3>
+        <p className="leading-relaxed text-gray-600 dark:text-gray-400">
+          {selectedTab === "twibbon"
+            ? t("explore.loading_collection")
+            : t("explore.loading_users")}
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+const SearchEmptyState = ({
+  selectedTab,
+  displaySearchQuery,
+  clearSearch,
+  t,
+}) => (
+  <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
+    <div className="max-w-md space-y-6 text-center">
+      <div className="relative">
+        <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-blue-100 to-primary-100 dark:from-blue-900/30 dark:to-primary-900/30">
+          <Search className="w-16 h-16 text-blue-400 dark:text-blue-500" />
+        </div>
+      </div>
+      <div className="space-y-3">
+        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+          {t("explore.not_found")}
+        </h3>
+        <p className="leading-relaxed text-gray-600 dark:text-gray-400">
+          {selectedTab === "twibbon"
+            ? t("explore.no_results", { query: displaySearchQuery })
+            : t("explore.no_users", { query: displaySearchQuery })}
+        </p>
+      </div>
+      <button
+        onClick={clearSearch}
+        className="px-6 py-3 font-semibold transition-all duration-300 border-2 rounded-full text-primary-700 border-primary-200 dark:text-primary-400 dark:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20"
+      >
+        {t("explore.clear_search")}
+      </button>
+    </div>
+  </div>
+);
+
+const LoadingMoreIndicator = ({ t }) => (
+  <div className="flex items-center justify-center py-8 col-span-full">
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 border-4 rounded-full border-primary-400 dark:border-primary-500 border-t-transparent animate-spin"></div>
+      <span className="text-gray-600 dark:text-gray-400">
+        {t("explore.loading_more") || "Loading more..."}
+      </span>
+    </div>
+  </div>
+);
+
+const EndOfResultsMessage = ({ t }) => (
+  <div className="py-8 text-center">
+    <p className="text-gray-500 dark:text-gray-400">
+      {t("explore.end_of_results") || "You've reached the end of the results"}
+    </p>
+  </div>
+);
 
 export default ExploreTwibone;

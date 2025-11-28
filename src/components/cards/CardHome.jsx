@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { TrendingUp, User } from "lucide-react";
+import { Calendar, TrendingUp, User } from "lucide-react";
 import PropTypes from "prop-types";
 
 const CardHome = ({ twibon, isSupport = false }) => {
@@ -24,7 +24,6 @@ const CardHome = ({ twibon, isSupport = false }) => {
     });
   };
 
-
   return (
     <Link
       to={`/${twibon.slug}`}
@@ -36,7 +35,6 @@ const CardHome = ({ twibon, isSupport = false }) => {
           alt={twibon.title}
           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
         />
-      
       </div>
 
       <div className={`p-4`}>
@@ -46,18 +44,25 @@ const CardHome = ({ twibon, isSupport = false }) => {
           </h3>
         </div>
 
-        <div className="flex items-center justify-between mb-3 text-sm text-gray-500 dark:text-gray-400">
-          <span>by {twibon.author}</span>
+        <div className="flex items-center justify-between mb-3 text-sm text-gray-500 dark:text-gray-400 hover:underline">
+          <Link to={`/user/${twibon.username}`}>
+            <span>by {twibon.author}</span>
+          </Link>
         </div>
 
         <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
-              <User className="w-4 h-4" />
               {twibon.isSupport ? (
-                <span>{twibon.supports} Supporters</span>
+                <>
+                  <User className="w-4 h-4" />
+                  <span>{twibon.supports} Supporters</span>
+                </>
               ) : (
-                <span>{formatDate(twibon.date)}</span>
+                <>
+                  <Calendar className="w-4 h-4" />{" "}
+                  <span>{formatDate(twibon.date)}</span>
+                </>
               )}
             </div>
           </div>
