@@ -8,6 +8,7 @@ function ModalPendingSubscription({
   onCancel,
   onContinue,
   subscriptionData,
+  isProcessing = false,
 }) {
   const { t } = useTranslation();
 
@@ -94,15 +95,6 @@ function ModalPendingSubscription({
             </span>
           </div>
 
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">
-              {t("modal.admin_fee", "Admin Fee")}:
-            </span>
-            <span className="font-medium text-gray-900 dark:text-white">
-              {formatCurrency(payment?.admin_fee)}
-            </span>
-          </div>
-
           <div className="flex justify-between pt-2 text-sm font-semibold border-t border-gray-300 dark:border-gray-600">
             <span className="text-gray-900 dark:text-white">
               {t("modal.total", "Total")}:
@@ -145,15 +137,47 @@ function ModalPendingSubscription({
         <div className="flex flex-col gap-3 sm:flex-row">
           <button
             onClick={onCancel}
-            className="flex-1 px-4 py-3 font-semibold text-red-600 transition border-2 border-red-500 rounded-lg dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
+            disabled={isProcessing}
+            className={`flex-1 px-4 py-3 font-semibold text-red-600 transition border-2 border-red-500 rounded-lg dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 ${
+              isProcessing ? "opacity-60 cursor-not-allowed" : ""
+            }`}
           >
             {t("modal.cancel_subscription", "Cancel Subscription")}
           </button>
           <button
             onClick={onContinue}
-            className="flex-1 px-4 py-3 font-semibold text-white transition rounded-lg bg-primary-500 hover:bg-primary-600"
+            disabled={isProcessing}
+            className={`flex-1 px-4 py-3 font-semibold text-white transition rounded-lg bg-primary-500 hover:bg-primary-600 ${
+              isProcessing ? "opacity-80 cursor-wait" : ""
+            }`}
           >
-            {t("modal.continue_payment", "Continue Payment")}
+            {isProcessing ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg
+                  className="w-4 h-4 animate-spin"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+                <span>{t("modal.loading", "Loading...")}</span>
+              </span>
+            ) : (
+              t("modal.continue_payment", "Continue Payment")
+            )}
           </button>
         </div>
 
