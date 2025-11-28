@@ -1,15 +1,80 @@
 import React, { useState, useRef, useEffect } from "react";
 import { X, Shuffle } from "lucide-react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
-import { toPng } from "html-to-image";
+import { toPng, toBlob } from "html-to-image";
 
-function ModalThumbnailPreview({ isOpen, onClose, onConfirm, framePreview, uploadType = "frame" }) {
+// Utility function to compress image to under 2MB
+const compressImage = async (blob, maxSize = 2 * 1024 * 1024) => {
+  if (blob.size <= maxSize) return blob;
+
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+
+        // Calculate compression ratio based on file size
+        const compressionRatio = Math.sqrt(maxSize / blob.size);
+        width = Math.floor(width * compressionRatio);
+        height = Math.floor(height * compressionRatio);
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d", { alpha: true });
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to blob with quality compression
+        canvas.toBlob(
+          (compressedBlob) => {
+            resolve(compressedBlob || blob);
+          },
+          "image/png",
+          0.8 // quality setting
+        );
+      };
+    };
+  });
+};
+
+// Utility function to generate SVG thumbnail (ultra-lightweight)
+const generateSvgThumbnail = async (canvas) => {
+  return new Promise((resolve) => {
+    canvas.toBlob(async (blob) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onload = (e) => {
+        const base64 = e.target.result.split(",")[1];
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="144" height="144">
+          <image href="data:image/png;base64,${base64}" width="144" height="144"/>
+        </svg>`;
+
+        const svgBlob = new Blob([svg], { type: "image/svg+xml" });
+        const svgFile = new File([svgBlob], "thumbnail.svg", {
+          type: "image/svg+xml",
+        });
+        resolve(svgFile);
+      };
+    });
+  });
+};
+
+function ModalThumbnailPreview({
+  isOpen,
+  onClose,
+  onConfirm,
+  framePreview,
+  uploadType = "frame",
+}) {
   const [selectedThumb, setSelectedThumb] = useState(null);
   const canvasRef = useRef(null);
   const [displayThumbs, setDisplayThumbs] = useState([]);
-  // If `framePreview` is a File, convert it to a data URL so html-to-image
-  // doesn't run into cross-origin / taint issues when exporting to PNG.
   const [frameSrc, setFrameSrc] = useState(null);
+  const [compressionFormat, setCompressionFormat] = useState("png"); // "png" or "svg"
 
   const thumbnails = [
     // Male
@@ -41,7 +106,6 @@ function ModalThumbnailPreview({ isOpen, onClose, onConfirm, framePreview, uploa
     let mounted = true;
     setFrameSrc(null);
 
-    // If framePreview is a File (from input/form), read it as data URL
     if (framePreview && typeof framePreview !== "string") {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -64,12 +128,11 @@ function ModalThumbnailPreview({ isOpen, onClose, onConfirm, framePreview, uploa
 
   if (!isOpen) return null;
 
-  // === EXPORT FINAL IMAGE (langsung dari canvas) ===
   const handlePublish = async () => {
     if (!canvasRef.current || !selectedThumb) return;
 
     try {
-      const dataUrl = await toPng(canvasRef.current, {
+      const blob = await toBlob(canvasRef.current, {
         pixelRatio: 2,
         useCORS: true,
         cacheBust: true,
@@ -77,40 +140,82 @@ function ModalThumbnailPreview({ isOpen, onClose, onConfirm, framePreview, uploa
         allowTaint: true,
       });
 
-      onConfirm(dataUrl);
+      if (!blob) throw new Error("Blob export failed");
+
+      let finalFile;
+      if (compressionFormat === "svg") {
+        // Generate SVG version
+        finalFile = await generateSvgThumbnail(canvasRef.current);
+      } else {
+        // Compress PNG to under 2MB
+        const compressedBlob = await compressImage(blob);
+        finalFile = new File([compressedBlob], "thumbnail.png", {
+          type: "image/png",
+        });
+      }
+
+      console.log(
+        `Thumbnail created: ${finalFile.name} (${(finalFile.size / 1024).toFixed(2)} KB)`
+      );
+      onConfirm(finalFile);
     } catch (err) {
       console.error("Thumbnail export failed:", err);
-      
-      // Fallback: ambil hanya thumbnail tanpa frame
+
       try {
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.src = selectedThumb;
-        
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          canvas.width = 144;
-          canvas.height = 144;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, 144, 144);
-          const fallbackDataUrl = canvas.toDataURL("image/png");
-          onConfirm(fallbackDataUrl);
+
+        img.onload = async () => {
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = 144;
+            canvas.height = 144;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, 144, 144);
+
+            const fallbackDataUrl = canvas.toDataURL("image/png");
+            const res = await fetch(fallbackDataUrl);
+            const blob = await res.blob();
+
+            let finalFile;
+            if (compressionFormat === "svg") {
+              finalFile = await generateSvgThumbnail(canvas);
+            } else {
+              const compressedBlob = await compressImage(blob);
+              finalFile = new File([compressedBlob], "thumbnail.png", {
+                type: "image/png",
+              });
+            }
+
+            console.log(
+              `Thumbnail created (fallback): ${finalFile.name} (${(finalFile.size / 1024).toFixed(2)} KB)`
+            );
+            onConfirm(finalFile);
+          } catch (convErr) {
+            console.error("Fallback conversion failed:", convErr);
+            alert(
+              "Gagal membuat thumbnail. Coba foto lain atau upload gambar langsung."
+            );
+          }
         };
-        
+
         img.onerror = () => {
-          alert("Gagal membuat thumbnail. Coba foto lain atau upload gambar langsung.");
+          alert(
+            "Gagal membuat thumbnail. Coba foto lain atau upload gambar langsung."
+          );
         };
       } catch (fallbackErr) {
         console.error("Fallback export failed:", fallbackErr);
-        alert("Gagal membuat thumbnail. Coba foto lain atau upload gambar langsung.");
+        alert(
+          "Gagal membuat thumbnail. Coba foto lain atau upload gambar langsung."
+        );
       }
     }
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center p-4 bg-black/40 md:items-center md:justify-center"
-    >
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-4 bg-black/40 md:items-center md:justify-center">
       <div
         className="
      bg-white shadow-lg 
@@ -255,6 +360,8 @@ function ModalThumbnailPreview({ isOpen, onClose, onConfirm, framePreview, uploa
               Upload
             </label>
           </div>
+
+  
 
           {/* Shuffle button */}
           <div className="flex justify-center mb-6">

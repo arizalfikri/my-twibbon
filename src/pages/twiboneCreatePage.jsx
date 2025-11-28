@@ -60,7 +60,7 @@ function TwiboneCreatePage() {
     resolver: yupResolver(createTwiboneSchema),
     mode: "onChange",
     defaultValues: {
-      image: null,
+      template: null,
       title: "",
       link: "",
       caption: "",
@@ -71,7 +71,7 @@ function TwiboneCreatePage() {
   const watchLink = watch("link");
   const [debouncedTitle] = useDebounce(watchTitle, 600);
   const [debouncedLink] = useDebounce(watchLink, 600);
-  const imageValue = watch("image");
+  const templateValue = watch("template");
 
   // Detect desktop
   useEffect(() => {
@@ -124,7 +124,10 @@ function TwiboneCreatePage() {
 
   const onSubmit = (formData) => {
     setShowThumbnailModal(true);
-    setTempForm(formData);
+    setTempForm({
+      ...formData,
+      type: uploadType,
+    });
   };
 
   const handleFinalSubmit = async (thumb) => {
@@ -169,7 +172,7 @@ function TwiboneCreatePage() {
     errors.link ||
     !watch("title") ||
     !watch("link") ||
-    !watch("image") ||
+    !watch("template") ||
     !watch("caption");
 
   return (
@@ -186,10 +189,10 @@ function TwiboneCreatePage() {
         {isDesktop && (
           <div className="w-1/2 border-r bg-gray-50 dark:bg-gray-800">
             <ImageUploadArea
-              name="image"
+              name="template"
               setValue={setValue}
-              error={errors?.image}
-              value={imageValue}
+              error={errors?.template}
+              value={templateValue}
               type={uploadType}
             />
           </div>
@@ -211,10 +214,10 @@ function TwiboneCreatePage() {
                 {!isDesktop && (
                   <div className="mb-6">
                     <ImageUploadArea
-                      name="image"
+                      name="template"
                       setValue={setValue}
-                      error={errors?.image}
-                      value={imageValue}
+                      error={errors?.template}
+                      value={templateValue}
                       type={uploadType}
                     />
                   </div>
@@ -296,7 +299,7 @@ function TwiboneCreatePage() {
           setShowThumbnailModal(false);
           handleFinalSubmit(thumb);
         }}
-        framePreview={imageValue}
+        framePreview={templateValue}
         uploadType={uploadType}
       />
     </div>
