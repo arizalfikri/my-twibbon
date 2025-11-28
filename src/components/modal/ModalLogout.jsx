@@ -5,13 +5,14 @@ import { useGlobalStore } from "../../helper/store/global.store";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
+import { useModalStore } from "../../helper/store/modal.store";
 
 function ModalLogout({ isOpen, onClose }) {
   const queryClient = useQueryClient();
   const { setToken, setEmail, setFullName, setRole } = useGlobalStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  
+  const { openToast } = useModalStore();
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
@@ -22,6 +23,7 @@ function ModalLogout({ isOpen, onClose }) {
     setEmail(null);
     setFullName(null);
     setRole(null);
+    openToast("toast", true, "Logout Berhasil", "success");
 
     queryClient.removeQueries();
     onClose();

@@ -24,7 +24,7 @@ export function ModalToast() {
       {toast && (
         <div className={`z-50 inset-0 py-5 ${toast ? "fixed" : "hidden"}`}>
           <div
-            className="fixed inset-0 z-0 bg-[#a7b7c0] dark:bg-gray-900 bg-opacity-10 dark:bg-opacity-10 backdrop-brightness-10"
+            className="fixed inset-0 z-0 "
             onClick={onClose}
           ></div>
           <motion.div
