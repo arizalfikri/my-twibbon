@@ -173,7 +173,7 @@ function Navbar() {
                     <img
                       src={logo}
                       alt="Logo"
-                      className="object-contain h-48"
+                      className="object-contain h-fit"
                     />
                   </div>
                 </Link>

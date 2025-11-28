@@ -4,7 +4,7 @@ import ModalKeluarEditor from "../modal/modalKeluarEditor";
 import { useModalStore } from "../../helper/store/modal.store";
 import LogoGypem from "../../assets/images/logo/logo_Icon.png";
 
-function NavbarEditor({ title, onExit, disableModalExit = false }) {
+function NavbarEditor({ title, onExit, disableModalExit = false, twibbon }) {
   const { openModal } = useModalStore();
 
   const handleExit = () => {
@@ -14,7 +14,6 @@ function NavbarEditor({ title, onExit, disableModalExit = false }) {
       openModal("modalLogout", true);
     }
   };
-
   return (
     <>
       <nav className="border-b shadow-lg bg-primary-600 dark:bg-gray-900 border-prime-600 dark:border-gray-700">
@@ -24,9 +23,9 @@ function NavbarEditor({ title, onExit, disableModalExit = false }) {
             <div className="items-center hidden md:flex">
               <h1 className="flex items-center justify-center gap-3 text-lg font-semibold text-white truncate dark:text-gray-100">
                 <img
-                  src={LogoGypem}
+                  src={twibbon ? twibbon : LogoGypem}
                   alt="Logo Gypem"
-                  className="object-contain w-12 h-12"
+                  className="object-contain w-12 h-12 "
                 />
                 {title}
               </h1>
@@ -36,7 +35,7 @@ function NavbarEditor({ title, onExit, disableModalExit = false }) {
             <div className="flex flex-1 md:hidden">
               <h1 className="flex items-center gap-2 text-base font-semibold text-white dark:text-gray-100 max-w-[300px] truncate">
                 <img
-                  src={LogoGypem}
+                  src={twibbon ? twibbon : LogoGypem}
                   alt="Logo Gypem"
                   className="object-contain w-8 h-8"
                 />
