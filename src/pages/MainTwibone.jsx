@@ -11,12 +11,13 @@ import {
   Maximize2,
   X,
   Bookmark,
+  Copy,
 } from "lucide-react";
 import CardEditor from "../components/cards/CardEditor";
 import CardResult from "../components/cards/CardResult";
 import Bg1 from "../assets/images/background_hero.png";
 import Footer from "../components/layoutpage/Footer";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useImageStore from "../helper/store/imagestore";
 import DetailResult from "../components/modal/DetailResult";
 import { useGET, usePOST, useDELETE } from "../services/api";
@@ -32,8 +33,13 @@ function MainTwibone() {
   const { image, setImage, setFrameImage, frameImage } = useImageStore();
   const navigate = useNavigate();
   const { slug } = useParams();
-  const { data: twibbon, isLoading, refetch } = useGET(`twibbon/${slug}?page=1&perPage=20`);
+  const {
+    data: twibbon,
+    isLoading,
+    refetch,
+  } = useGET(`twibbon/${slug}?page=1&perPage=20`);
   const { data: bookmark, refetch: refetchBookmarks } = useGET(`bookmarks`);
+  const { data: subscriptionData } = useGET("/detail-subscription");
 
   const { openToast } = useModalStore();
   const { token, role } = useGlobalStore();
@@ -62,12 +68,12 @@ function MainTwibone() {
 
   useEffect(() => {
     refetch();
-  }, [slug]);
+  }, [slug, refetch]);
 
   useEffect(() => {
     setShowDetailModal(false);
     setSelectedCard(null);
-  }, []);
+  }, [slug]);
 
   useEffect(() => {
     if (twibbon?.data) {
@@ -81,10 +87,9 @@ function MainTwibone() {
       setBookmarked(isBookmarked);
 
       useTwibbonStore.getState().setTwibbonData(twibbon.data);
-      const baseURL = "https://api-twibbon-dev.digiduindo.com";
       const userCards = twibbon.data.user_twibbons.map((utw) => ({
         id: utw.id,
-        image: `${baseURL}${utw.image_url}`,
+        image: `${import.meta.env.VITE_FILE_URL}${utw.image_url}`,
         description: utw.caption || "",
         title: twibbon.data.title,
         status: "",
@@ -92,6 +97,7 @@ function MainTwibone() {
         creator: utw.user_id,
         user_twibbon_id: utw.id,
       }));
+
       setCards(userCards);
     }
   }, [twibbon]);
@@ -119,13 +125,13 @@ function MainTwibone() {
       }`;
       setFrameImage(imageURL);
     }
-  }, [twibbon]);
+  }, [twibbon?.data?.template_twibbon, setFrameImage]);
 
-  useState(() => {
+  useEffect(() => {
     if (image) {
       setImage(null);
     }
-  }, [image, navigate]);
+  }, [slug]);
 
   // Reset pagination saat buka fullscreen
   useEffect(() => {
@@ -138,10 +144,9 @@ function MainTwibone() {
   // Update data fullscreen saat response datang
   useEffect(() => {
     if (fullscreenData?.data) {
-      const baseURL = "https://api-twibbon-dev.digiduindo.com";
       const newCards = fullscreenData.data.user_twibbons.map((utw) => ({
         id: utw.id,
-        image: `${baseURL}${utw.image_url}`,
+        image: `${API_BASE_URL}${utw.image_url}`,
         description: utw.caption || "",
         title: fullscreenData.data.title,
         status: "",
@@ -195,7 +200,12 @@ function MainTwibone() {
         observer.unobserve(currentTarget);
       }
     };
-  }, [isFullscreen, hasNextPageFullscreen, isLoadingFullscreen, isLoadingMoreFullscreen]);
+  }, [
+    isFullscreen,
+    hasNextPageFullscreen,
+    isLoadingFullscreen,
+    isLoadingMoreFullscreen,
+  ]);
 
   const handleCardClick = (cardId) => {
     const card = isFullscreen
@@ -478,8 +488,10 @@ function MainTwibone() {
             <h1 className="text-lg font-medium capitalize truncate">
               {twibbon?.data?.title || t("main.no_title")}
             </h1>
-            <p className="text-sm text-gray-400 dark:text-gray-400">
-              {twibbon?.data?.contributor?.fullname}
+            <p className="text-sm text-gray-400 dark:text-gray-400 hover:underline">
+              <Link to={`/user/${twibbon.data.contributor.username}`}>
+                {twibbon?.data?.contributor?.fullname}
+              </Link>
             </p>
           </div>
 
@@ -493,10 +505,11 @@ function MainTwibone() {
             </div>
           </div>
           <div className="items-center justify-end hidden space-x-4 lg:flex">
-            <div className="flex overflow-hidden bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600">
+            <div className="relative flex items-center overflow-hidden bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600">
               <span className="px-3 py-2 text-sm text-gray-500 bg-gray-200 select-none dark:bg-gray-700 dark:text-gray-300">
                 MyTwibbon/
               </span>
+
               <input
                 type="text"
                 readOnly
@@ -505,11 +518,20 @@ function MainTwibone() {
                   navigator.clipboard.writeText(twibbon?.data?.link);
                   openToast("toast", true, t("main.copy_success"), "success");
                 }}
-                className="px-3 py-2 text-sm text-gray-800 bg-transparent dark:text-gray-200 focus:outline-none w-[160px] truncate cursor-pointer"
+                className="px-3 py-2 text-sm text-gray-800 bg-transparent dark:text-gray-200 focus:outline-none w-[160px] truncate cursor-pointer pr-10"
                 title={twibbon?.data?.link}
               />
+
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(twibbon?.data?.link);
+                  openToast("toast", true, t("main.copy_success"), "success");
+                }}
+                className="absolute p-1 text-gray-500 transition-all rounded right-2 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                <Copy size={16} />
+              </button>
             </div>
-            
           </div>
         </div>
       </header>
@@ -528,7 +550,14 @@ function MainTwibone() {
 
           {/* Konten */}
           <div className="relative z-10 w-full lg:max-w-lg">
-            <CardEditor frameImage={frameImage} />
+            <CardEditor
+              frameImage={frameImage}
+              event_twibbon_id={twibbon?.data?.id}
+              SubscribeData={subscriptionData?.data}
+              templateType={twibbon?.data?.type || "frame"}
+              watermarkRequired={twibbon?.data?.watermark || false}
+              isSubscribed={subscriptionData?.data?.[0]?.status === "ACTIVE"}
+            />
           </div>
         </div>
 

@@ -8,20 +8,41 @@ const UploadModal = ({ isOpen, onClose, onFileSelect, onCameraSelect }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-end justify-center  bg-black/50 backdrop-blur-sm md:items-center md:justify-center"
       role="dialog"
       aria-modal="true"
     >
-      <div className="p-6 mx-4 bg-white rounded-lg w-80 dark:bg-gray-900">
+      {/* WRAPPER FULLSCREEN MOBILE */}
+      <div
+        className="
+          w-full bg-white dark:bg-gray-900 
+          p-6 shadow-xl
+
+          fixed bottom-0 rounded-t-2xl 
+          max-h-[90vh] overflow-y-auto
+
+          md:static md:rounded-xl md:w-80 md:max-h-none
+        "
+      >
+        {/* Close button (mobile) */}
+        <button
+          onClick={onClose}
+          className="absolute text-gray-400 top-3 right-3 hover:text-gray-600 md:hidden"
+          aria-label={t('uploadModal.close')}
+        >
+          <X size={22} />
+        </button>
+
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 md:mb-6">
           <h3 className="text-lg font-semibold dark:text-white">
             {t("uploadModal.title")}
           </h3>
+
+          {/* Desktop Close Button */}
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-            aria-label={t("uploadModal.close")}
+            className="hidden text-gray-400 hover:text-gray-600 md:block"
           >
             <X size={20} />
           </button>
@@ -32,7 +53,7 @@ const UploadModal = ({ isOpen, onClose, onFileSelect, onCameraSelect }) => {
           {/* Camera */}
           <button
             onClick={onCameraSelect}
-            className="flex items-center w-full gap-3 p-4 transition-colors rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-gray-800"
+            className="flex items-center w-full gap-3 p-4 transition-colors rounded-lg  bg-blue-50 hover:bg-blue-100 dark:bg-gray-800"
           >
             <Camera size={24} className="text-blue-600" />
             <div className="text-left">
@@ -53,9 +74,10 @@ const UploadModal = ({ isOpen, onClose, onFileSelect, onCameraSelect }) => {
             onChange={onFileSelect}
             className="hidden"
           />
+
           <label
             htmlFor="fileInput"
-            className="flex items-center w-full gap-3 p-4 transition-colors rounded-lg cursor-pointer bg-primary-50 hover:bg-primary-100 dark:bg-gray-800"
+            className="flex items-center w-full gap-3 p-4 transition-colors rounded-lg cursor-pointer  bg-primary-50 hover:bg-primary-100 dark:bg-gray-800"
           >
             <Upload size={24} className="text-primary-600" />
             <div className="text-left">

@@ -10,6 +10,8 @@ import { toPng } from "html-to-image";
 import gypemLogo from "../../assets/images/logo/Logo_Hitam.png";
 import { usePOST } from "../../services/api";
 import ModalMembership from "../modal/ModalMembership";
+import ModalGreenscreen from "../modal/ModalGreenscreen";
+import ExampleModal from "../modal/ExampleModal ";
 
 function CardEditor({
   frameImage,
@@ -23,6 +25,9 @@ function CardEditor({
   },
   event_twibbon_id,
   SubscribeData,
+  templateType = "frame",
+  watermarkRequired = false,
+  isSubscribed = false,
 }) {
   const { mutateAsync } = usePOST("/support");
   const containerRef = useRef(null);
@@ -31,8 +36,24 @@ function CardEditor({
   const [isExporting, setIsExporting] = useState(false);
   const [showMembershipModal, setShowMembershipModal] = useState(false);
   const [downloadWithWatermark, setDownloadWithWatermark] = useState(false);
-  const [isMember, setIsMember] = useState(false);
+  const [userRole, setUserRole] = useState("");
+  const [showGreenscreenModal, setShowGreenscreenModal] = useState(false);
+  const [isProcessingBg, setIsProcessingBg] = useState(false);
+  const [pendingImageData, setPendingImageData] = useState(null);
+  const [showExampleModal, setShowExampleModal] = useState(false); // Modal contoh
   const { slug } = useParams();
+
+  // State untuk menentukan apakah sedang dalam proses upload pertama kali
+  const [isInitialUpload, setIsInitialUpload] = useState(true);
+
+  const shouldShowWatermark =
+    watermarkRequired === true &&
+    userRole === "contributor" &&
+    isSubscribed === false;
+  const shouldShowModal =
+    watermarkRequired === true &&
+    userRole === "contributor" &&
+    isSubscribed === false;
 
   const {
     showUploadModal,
@@ -53,6 +74,15 @@ function CardEditor({
     setIsLoaded(true);
   };
 
+  // Determine userRole dari subscription data
+  useEffect(() => {
+    if (SubscribeData?.[0]?.role) {
+      setUserRole(SubscribeData[0].role.toLowerCase());
+    } else {
+      setUserRole("");
+    }
+  }, [SubscribeData]);
+
   useEffect(() => {
     if (!frameImage) return;
     const img = new Image();
@@ -70,6 +100,18 @@ function CardEditor({
       setShowCamera(false);
     };
   }, [setShowUploadModal, setShowCamera]);
+
+  // Example modal will be shown when user clicks Upload — see handleUploadClick
+
+  const handleUploadClick = () => {
+    // For background templates on first upload we prefer to show the example modal first
+    if (templateType === "background" && isInitialUpload && !image) {
+      setShowExampleModal(true);
+    } else {
+      // fallback: open upload modal immediately
+      setShowUploadModal(true);
+    }
+  };
 
   const generateFilterString = (f) => {
     const parts = [];
@@ -154,21 +196,87 @@ function CardEditor({
     }
   };
 
+  // Fungsi untuk memulai proses upload
+  const startUploadProcess = () => {
+    setShowExampleModal(false);
+    setIsInitialUpload(false);
+    setShowUploadModal(true);
+  };
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    console.log("File selected:", file.name);
+    console.log("Template type:", templateType);
+    console.log("Current showGreenscreenModal:", showGreenscreenModal);
+
     const reader = new FileReader();
     reader.onload = () => {
-      setImage(reader.result);
-      navigate(`/${slug}/editorpage`);
+      if (templateType === "background") {
+        console.log("Setting greenscreen modal to TRUE");
+        setPendingImageData(reader.result);
+        setShowUploadModal(false);
+        setShowGreenscreenModal(true);
+
+        setTimeout(() => {
+          handleRemoveBgAuto(reader.result);
+        }, 100);
+      } else {
+        setImage(reader.result);
+        navigate(`/${slug}/editorpage`);
+      }
     };
     reader.readAsDataURL(file);
   };
 
   const handleCameraCapture = (dataUrl) => {
-    setImage(dataUrl);
-    navigate(`/${slug}/editorpage`);
+    // Jika background type, langsung proses greenscreen
+    if (templateType === "background") {
+      setPendingImageData(dataUrl);
+      setShowCamera(false);
+      setShowGreenscreenModal(true);
+
+      // Auto proses background removal setelah modal terbuka
+      setTimeout(() => {
+        handleRemoveBgAuto(dataUrl);
+      }, 100);
+    } else {
+      // Jika frame type, langsung set image
+      setImage(dataUrl);
+      navigate(`/${slug}/editorpage`);
+    }
+  };
+
+  const handleRemoveBgAuto = async (imageData) => {
+    try {
+      setIsProcessingBg(true);
+
+      const { removeBackground } = await import("@imgly/background-removal");
+      const result = await removeBackground(imageData);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result);
+        setIsProcessingBg(false);
+        setPendingImageData(null);
+        setShowGreenscreenModal(false);
+
+        setTimeout(() => {
+          navigate(`/${slug}/editorpage`);
+        }, 300);
+      };
+      reader.readAsDataURL(result);
+    } catch (error) {
+      console.error("Auto background removal error:", error);
+      setIsProcessingBg(false);
+      // Fallback ke image original jika gagal
+      setImage(imageData);
+      setPendingImageData(null);
+      setShowGreenscreenModal(false);
+      setTimeout(() => {
+        navigate(`/${slug}/editorpage`);
+      }, 300);
+    }
   };
 
   const currentFilterString = generateFilterString(filters);
@@ -200,6 +308,7 @@ function CardEditor({
                     height: "150%",
                     position: "absolute",
                     left: "-60px",
+                    zIndex: templateType === "background" ? 1 : 10,
                   }}
                 >
                   <img
@@ -224,9 +333,13 @@ function CardEditor({
               className="absolute inset-0 object-cover w-full h-full pointer-events-none"
               crossOrigin="anonymous"
               onLoad={handleImageLoad}
-              style={{ maxWidth: "none", maxHeight: "none" }}
+              style={{
+                maxWidth: "none",
+                maxHeight: "none",
+                zIndex: templateType === "background" ? 0 : 20,
+              }}
             />
-            {isExporting && downloadWithWatermark && (
+            {isExporting && downloadWithWatermark && shouldShowWatermark && (
               <div
                 id="watermark-fixed"
                 className="absolute flex items-center justify-center gap-1 px-2 py-[4px]
@@ -235,6 +348,7 @@ function CardEditor({
                 style={{
                   transformOrigin: "bottom right",
                   scale: "clamp(0.7, 1vw, 1)",
+                  zIndex: 30,
                 }}
               >
                 <span
@@ -262,16 +376,31 @@ function CardEditor({
 
           <ControlPanel
             onDownload={() => {
-              if (SubscribeData?.status === "ACTIVE") {
+              const isSubscribed = SubscribeData?.[0]?.status === "ACTIVE";
+
+              if (isSubscribed || !shouldShowModal) {
                 handleDownload(false);
               } else {
-                setShowMembershipModal(true);
+                if (shouldShowModal) {
+                  setShowMembershipModal(true);
+                } else {
+                  handleDownload(false);
+                }
               }
             }}
             hasImage={!!image}
+            onUpload={handleUploadClick}
           />
         </div>
       </div>
+
+      {/* Modal Contoh Gambar - hanya untuk background template dan pertama kali */}
+      <ExampleModal
+        isOpen={showExampleModal}
+        onClose={() => setShowExampleModal(false)}
+        onContinue={startUploadProcess}
+        templateType={templateType}
+      />
 
       <UploadModal
         isOpen={showUploadModal}
@@ -295,12 +424,37 @@ function CardEditor({
           onClose={closeCamera}
         />
       )}
+
       <ModalMembership
         isOpen={showMembershipModal}
         onClose={() => setShowMembershipModal(false)}
-        onDownloadMember={() => handleDownload(false)}
-        onDownloadWatermark={() => handleDownload(true)}
+        onDownloadMember={() => {
+          handleDownload(false);
+          setShowMembershipModal(false);
+        }}
+        onDownloadWatermark={() => {
+          handleDownload(true);
+          setShowMembershipModal(false);
+        }}
       />
+
+      {/* Modal Greenscreen - langsung proses tanpa konfirmasi */}
+      <ModalGreenscreen
+        isOpen={showGreenscreenModal}
+        isProcessing={isProcessingBg}
+      />
+
+      {/* Loading Indicator saat process BG */}
+      {isProcessingBg && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4 p-6 bg-white rounded-lg shadow-xl dark:bg-gray-800">
+            <div className="w-12 h-12 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+            <p className="text-center text-gray-700 dark:text-gray-200">
+              🎨 Menghapus Background...
+            </p>
+          </div>
+        </div>
+      )}
     </>
   );
 }

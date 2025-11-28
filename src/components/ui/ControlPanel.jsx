@@ -4,13 +4,13 @@ import UploadButton from "../buttons/UploudButton";
 import DownloadButton from "../buttons/DownloadButton";
 import { useModalStore } from "../../helper/store/modal.store";
 
-const ControlPanel = ({ onDownload, hasImage = false }) => {
+const ControlPanel = ({ onDownload, onUpload, hasImage = false }) => {
   const { modalLogout } = useModalStore();
 
   if (!hasImage) {
     return (
       <div className="flex justify-center p-6">
-        <UploadButton />
+        <UploadButton onClick={onUpload} />
       </div>
     );
   }
@@ -24,14 +24,14 @@ const ControlPanel = ({ onDownload, hasImage = false }) => {
   `}
       >
         <div className="flex justify-center gap-4 mx-auto">
-          <UploadButton variant="icon" />
+          <UploadButton variant="icon" onClick={onUpload} />
           <DownloadButton onClick={onDownload} fullWidth={true} />
         </div>
       </div>
 
       {/* 🔹 Desktop Controls (rapi & proporsional) */}
       <div className="justify-center hidden gap-6 mt-6 md:flex md:mt-8">
-        <UploadButton variant="icon" />
+        <UploadButton variant="icon" onClick={onUpload} />
         <DownloadButton onClick={onDownload} />
       </div>
     </>
