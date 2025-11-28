@@ -9,6 +9,7 @@ const UploadButton = ({
   className = "",
   disabled = false,
   children,
+  onClick, // optional custom click handler
 }) => {
   const { t  } = useTranslation();
   const { openUploadModal, isDownloading } = useUIStore();
@@ -29,9 +30,11 @@ const UploadButton = ({
     isDisabled ? disabledClasses : ""
   }`;
 
+  const handleClick = onClick || openUploadModal;
+
   return (
     <button
-      onClick={openUploadModal}
+      onClick={handleClick}
       disabled={isDisabled}
       className={finalClasses}
     >
