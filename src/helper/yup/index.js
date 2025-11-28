@@ -38,7 +38,7 @@ export const createTwiboneSchema = yup.object({
         .test("len", () => t('validation.caption_max_length', { max: 500 }), (val) => {
             return val ? val.length <= 500 : false;
         }),
-    image: yup
+    template: yup
         .mixed()
         .required(() => t('validation.image_required'))
         .test("fileType", () => t('validation.image_format_unsupported'), (value) => {

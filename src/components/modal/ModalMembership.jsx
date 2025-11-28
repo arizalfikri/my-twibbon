@@ -9,7 +9,13 @@ import ModalAlert from "../../layout/ModalAlert";
 import ModalPendingSubscription from "./ModalPendingSubscription";
 import { X, Crown, Download, Zap } from "lucide-react";
 
-const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
+const ModalMembership = ({
+  isOpen,
+  onClose,
+  onDownloadWatermark,
+  watermarkRequired = true,
+  isSubscribed = false,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { token, role } = useGlobalStore();
@@ -18,9 +24,11 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
   const CancelSubscriptionMutation = usePATCH();
 
   // API
-  const { data: plansData, isLoading } = useGET("/plans", { enabled: isOpen });
+  const { data: plansData, isLoading } = useGET("/plans?type=participant", {
+    enabled: isOpen,
+  });
   const { data: dataSubscription, refetch: refetchSubscription } = useGET(
-    "/subscription",
+    "/detail-subscription",
     { enabled: isOpen }
   );
   const { data: dataPayment, refetch: refetchPayment } = useGET("/payment", {
@@ -41,38 +49,64 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
     }
   }, [dataSubscription, openToast]);
 
+  // Cek pending payment ketika dataPayment berubah
+  useEffect(() => {
+    if (dataPayment?.data?.payment?.status === "pending") {
+      const pendingPayment = dataPayment.data.payment;
+      const selectedPlan = plans.find(p => p.id === pendingPayment.subscription?.plan_id);
+      
+      if (selectedPlan) {
+        setPendingSubscriptionData({
+          subscription: pendingPayment.subscription,
+          payment: pendingPayment,
+          selectedPlan: selectedPlan,
+        });
+        setShowPendingModal(true);
+      }
+    }
+  }, [dataPayment, plans]);
+
   const handleSubscribe = async (planId) => {
-    if (!token || role !== "participant") {
+    if (!token || role !== "user") {
       openToast("toast", true, "Login Peserta Terlebih dahulu", "warning");
       setSelectedPlanId(planId);
       setShowLoginModal(true);
       return;
     }
 
-    const { data: newSubscription } = await refetchSubscription();
-    const { data: newPayment } = await refetchPayment();
+    // Refresh data terbaru
+    await refetchSubscription();
+    await refetchPayment();
 
-    const paymentStatus = newPayment?.data?.status;
-    const paymentPlanId = newPayment?.data?.subscription?.plan_id;
-    const subscriptionStatus = newSubscription?.data?.status;
+    const subscriptionData = dataSubscription?.data;
+    const paymentData = dataPayment?.data?.payment;
 
-    if (subscriptionStatus === "ACTIVE") {
+    // Cek apakah ada subscription ACTIVE dengan type participant
+    const activeParticipantSubscription = Array.isArray(subscriptionData)
+      ? subscriptionData.find(
+          (sub) => sub.status === "ACTIVE" && sub.plan?.type === "participant"
+        )
+      : null;
+
+    if (activeParticipantSubscription) {
       openToast("toast", true, "Kamu sudah memiliki langganan aktif", "info");
       return;
     }
 
-    // --- Handle Pending Subscription ---
-    if (paymentStatus === "PENDING") {
+    // Cek apakah ada payment PENDING
+    if (paymentData?.status === "pending") {
+      const selectedPlan = plans.find((p) => p.id === planId);
       setPendingSubscriptionData({
-        subscription: newPayment?.data?.subscription,
-        payment: newPayment?.data,
-        selectedPlan: plans.find((p) => p.id === planId),
+        subscription: paymentData.subscription,
+        payment: paymentData,
+        selectedPlan: selectedPlan,
       });
       setShowPendingModal(true);
       return;
     }
 
-    if (paymentStatus === "waiting_verification") {
+    // Cek status waiting_verification
+    if (paymentData?.status === "waiting_verification") {
       openToast(
         "toast",
         true,
@@ -82,7 +116,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
       return;
     }
 
-    // --- Normal Subscribe Flow ---
+    // --- Normal Subscribe Flow untuk participant ---
     setIsProcessing(true);
     try {
       const res = await CheckoutMutation.mutateAsync({
@@ -92,6 +126,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
 
       if (res.status === 201 || res.status === 200) {
         openToast("toast", true, "Redirecting to checkout...", "success");
+        onClose();
         navigate("/checkout");
       }
     } catch (error) {
@@ -110,14 +145,19 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
   };
 
   const handleCancelSubscription = async () => {
-    if (!pendingSubscriptionData?.subscription?.id) return;
+    if (!pendingSubscriptionData?.subscription?.plan_id) return;
+
     try {
       await CancelSubscriptionMutation.mutateAsync({
         url: `/cancel-subscription`,
+        data: {
+          plan_id: pendingSubscriptionData.subscription.plan_id,
+        },
       });
       openToast("toast", true, "Langganan dibatalkan", "success");
       setShowPendingModal(false);
       setPendingSubscriptionData(null);
+      await refetchSubscription();
       await refetchPayment();
     } catch (error) {
       console.error("Cancel subscription error:", error);
@@ -128,6 +168,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
   const handleContinueSubscription = () => {
     setShowPendingModal(false);
     setPendingSubscriptionData(null);
+    onClose();
     navigate("/checkout");
   };
 
@@ -142,9 +183,12 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
     switch (name.toLowerCase()) {
       case "daily":
         return <Zap size={20} className="text-yellow-500" />;
-      case "mount":
       case "monthly":
         return <Crown size={20} className="text-primary-300" />;
+      case "6 months":
+        return <Crown size={20} className="text-green-500" />;
+      case "1 year":
+        return <Crown size={20} className="text-blue-500" />;
       default:
         return <Crown size={20} className="text-blue-400" />;
     }
@@ -154,16 +198,19 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
     switch (name.toLowerCase()) {
       case "daily":
         return "from-yellow-400 to-orange-500";
-      case "mount":
       case "monthly":
         return "from-primary-300 to-primary-400";
+      case "6 months":
+        return "from-green-400 to-green-500";
+      case "1 year":
+        return "from-blue-400 to-blue-500";
       default:
         return "from-blue-400 to-blue-500";
     }
   };
 
   if (!isOpen) return null;
- 
+
   return (
     <>
       <ModalAlert onClose={onClose}>
@@ -215,8 +262,7 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
                           {getPlanIcon(plan.name)}
                           <div className="text-left">
                             <h3 className="font-semibold text-gray-800 capitalize dark:text-gray-200">
-                              {plan.name === "mount" ? "Monthly" : plan.name}{" "}
-                              Plan
+                              {plan.name} Plan
                             </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
                               {plan.duration_days}{" "}
@@ -230,8 +276,14 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
                               plan.name
                             )} bg-clip-text text-transparent`}
                           >
-                            {formatPrice(plan.price)}
+                            {formatPrice(plan.final_price || plan.price)}
                           </div>
+                          {plan.final_price &&
+                            plan.final_price < plan.price && (
+                              <div className="text-xs text-gray-500 line-through dark:text-gray-400">
+                                {formatPrice(plan.price)}
+                              </div>
+                            )}
                           <div className="text-xs text-gray-500 dark:text-gray-400">
                             {plan.duration_days === 1
                               ? "per day"
@@ -272,7 +324,12 @@ const ModalMembership = ({ isOpen, onClose, onDownloadWatermark }) => {
                         {t("membership.free_download", "Download Free")}
                       </div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {t("membership.with_watermark", "with watermark")}
+                        {watermarkRequired && !isSubscribed
+                          ? t("membership.with_watermark", "with watermark")
+                          : t(
+                              "membership.without_watermark",
+                              "without watermark"
+                            )}
                       </div>
                     </div>
                   </div>

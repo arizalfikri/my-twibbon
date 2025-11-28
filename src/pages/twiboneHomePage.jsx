@@ -62,29 +62,13 @@ import FAQSection from "../components/sections/FAQSection.jsx";
 import CTASection from "../components/sections/CTASection.jsx";
 import TUTORIALSection from "../components/sections/TUTORIALSection.jsx";
 import CreatorSection from "../components/sections/CREATORSection.jsx";
+import ModalTwibbonChoice from "../components/modal/ModalTwibbonChoise.jsx";
 function TwiboneHomepage() {
   const { data, isLoading } = useGET("twibbons");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
-  const [viewMode, setViewMode] = useState("grid");
+  const [openModal, setOpenModal] = useState(false);
 
   const { t } = useTranslation();
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      if (window.innerWidth < 1024) {
-        setViewMode("list");
-      } else {
-        setViewMode("grid");
-      }
-    };
-
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-
-    return () => {
-      window.removeEventListener("resize", checkScreenSize);
-    };
-  }, []);
 
   const twibbonData = data?.data || [];
   const pagination = data?.pagination || [];
@@ -165,15 +149,15 @@ function TwiboneHomepage() {
                   {t("homepage.hero_subtitle")}
                 </p>
                 <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row md:items-start md:justify-start lg:ps-0">
-                  <Link
-                    to="/create"
+                  <button
+                    onClick={() => setOpenModal(true)}
                     className="bg-primary-400 border-primary-400 hover:border-primary-600 border text-white px-6 py-3 sm:px-8 sm:py-4 md:px-5 md:py-2.5 rounded-full font-bold text-base sm:text-lg md:text-base hover:bg-primary-600 
              transition-all duration-300 ease-out delay-75 shadow-lg 
              inline-flex items-center justify-center gap-2 whitespace-nowrap"
                   >
                     <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                     {t("homepage.start_creating")}
-                  </Link>
+                  </button>
 
                   <Link
                     to="/explore"
@@ -300,59 +284,56 @@ function TwiboneHomepage() {
         </section>
 
         <main className="container px-4 py-8 mx-auto">
-         { filteredTwibbons.length === 0 ? (
-  null
-) : (
-  <>
-    {/* Header */}
-    <div className="mb-8">
-      <div className="flex flex-col items-start justify-between gap-4 mb-6 sm:flex-row sm:items-center">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t("homepage.twibbon_title")}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {t("homepage.twibbon_Subtitle")}
-          </p>
-        </div>
+          {filteredTwibbons.length === 0 ? null : (
+            <>
+              {/* Header */}
+              <div className="mb-8">
+                <div className="flex flex-col items-start justify-between gap-4 mb-6 sm:flex-row sm:items-center">
+                  <div className="flex flex-col gap-2">
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                      {t("homepage.twibbon_title")}
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {t("homepage.twibbon_Subtitle")}
+                    </p>
+                  </div>
 
-        <Link
-          to="/explore"
-          className="flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-        >
-          <span className="sm:inline">{t("homepage.view_all")}</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
-    </div>
+                  <Link
+                    to="/explore"
+                    className="flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    <span className="sm:inline">{t("homepage.view_all")}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
 
-    {/* Grid */}
-    <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5">
-      {isLoading ? (
-        <p className="text-center col-span-full">
-          {t("homepage.loading")}
-        </p>
-      ) : filteredTwibbons.length === 0 ? (
-        null
-      ) : (
-        filteredTwibbons.map((twibbon) => (
-          <CardHome
-            key={twibbon.id}
-            twibon={{
-              id: twibbon.id,
-              title: twibbon.title || t("homepage.untitled"),
-              author: twibbon?.contributor?.fullname || "Gypem",
-              supports: twibbon.supports || 0,
-              slug: twibbon.slug_event_twibbon,
-              image: twibbon.template_twibbon,
-              date: twibbon.createdAt,
-            }}
-          />
-        ))
-      )}
-    </div>
-  </>
-)}
+              {/* Grid */}
+              <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5">
+                {isLoading ? (
+                  <p className="text-center col-span-full">
+                    {t("homepage.loading")}
+                  </p>
+                ) : filteredTwibbons.length === 0 ? null : (
+                  filteredTwibbons.map((twibbon) => (
+                    <CardHome
+                      key={twibbon.id}
+                      twibon={{
+                        id: twibbon.id,
+                        title: twibbon.title || t("homepage.untitled"),
+                        author: twibbon?.contributor?.fullname || "Gypem",
+                        supports: twibbon.supports || 0,
+                        slug: twibbon.slug_event_twibbon,
+                        image: twibbon.thumbnail,
+                        date: twibbon.createdAt,
+                        username: twibbon?.contributor?.username || "",
+                      }}
+                    />
+                  ))
+                )}
+              </div>
+            </>
+          )}
 
           <TUTORIALSection />
           <CTASection />
@@ -360,6 +341,10 @@ function TwiboneHomepage() {
           <CreatorSection />
         </main>
         <Footer />
+        <ModalTwibbonChoice
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+        />
       </div>
     </>
   );

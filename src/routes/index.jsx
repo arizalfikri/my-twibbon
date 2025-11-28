@@ -15,6 +15,13 @@ import CheckoutPage from "../pages/CheckoutPage.jsx";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
 import SetPassword from "../pages/SetPassword.jsx";
 import PrivacyPolicy from "../pages/PrivacyPolice.jsx";
+import EwalletPage from "../pages/EwalletPage.jsx";
+import QrisPage from "../pages/QrisPage.jsx";
+import VirtualAccountPage from "../pages/VirtualAccountPage.jsx";
+import PaymentSuccessPage from "../pages/PaymentSuccesPage.jsx";
+import PaymentFailedPage from "../pages/PaymentFailedPage.jsx";
+import PaymentCanceledPage from "../pages/PaymentCanceledPage.jsx";
+import ProfilePublic from "../pages/ProfilePublic.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -29,27 +36,27 @@ export const router = createBrowserRouter([
         element: <PrivacyPolicy />,
       },
       {
-        path: "Explore",
+        path: "explore",
         element: <ExploreTwibone />,
       },
       {
-        path: ":slug/EditorPage",
+        path: ":slug/editorPage",
         element: <EditorPage />,
       },
       {
-        path: "Result",
+        path: "result",
         element: <Result />,
       },
       {
-        path: "SignIn",
+        path: "signin",
         element: <SignIn />,
       },
       {
-        path: "SignUp",
+        path: "signup",
         element: <SignUp />,
       },
       {
-        path: "Forgot-Password",
+        path: "forgot-password",
         element: <ForgotPassword />,
       },
       {
@@ -62,28 +69,56 @@ export const router = createBrowserRouter([
       },
 
       {
-        path: "Create/frame",
+        path: "create/frame",
         element: <TwiboneCreatePage />,
       },
       {
-        path: "Create/Background",
+        path: "create/background",
         element: <TwiboneCreatePage />,
       },
       {
-        path: "DetailProfile",
+        path: "detailprofile",
         element: <DetailProfile />,
       },
+          {
+        path: "user/:username",
+        element: <ProfilePublic />,
+      },
       {
-        path: "EditProfile",
+        path: "editprofile",
         element: <EditProfile />,
       },
       {
-        path: "Membership",
+        path: "membership",
         element: <MembershipPage />,
       },
       {
-        path: "Checkout",
+        path: "checkout",
         element: <CheckoutPage />,
+      },
+      {
+        path: "checkout/qris/:referer",
+        element: <QrisPage />,
+      },
+      {
+        path: "checkout/ewallet/:referer",
+        element: <EwalletPage />,
+      },
+      {
+        path: "checkout/va/:referer",
+        element: <VirtualAccountPage />,
+      },
+      {
+        path: "payment-cancelled",
+        element: <PaymentCanceledPage />,
+      },
+      {
+        path: "payment-failed",
+        element: <PaymentFailedPage />,
+      },
+      {
+        path: "payment-success",
+        element: <PaymentSuccessPage />,
       },
       {
         path: "404",
