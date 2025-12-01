@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Edit, Users, Trophy, Share2 } from "lucide-react";
+import { Edit, Users, Trophy, Share2, MoreVertical } from "lucide-react";
 import { useGET } from "../services/api.js";
 import { useModalStore } from "../helper/store/modal.store.js";
 import { useParams, useNavigate } from "react-router-dom";
@@ -37,8 +37,12 @@ const ProfilePublic = () => {
   const [totalCampaigns, setTotalCampaigns] = useState(0);
   const [totalPosts, setTotalPosts] = useState(0);
 
+  // Dropdown state
+  const [showDropdown, setShowDropdown] = useState(false);
+
   // Refs
   const observerTarget = useRef(null);
+  const dropdownRef = useRef(null);
 
   // API calls
   const { data: myprofile } = useGET(`/my-profile`);
@@ -122,6 +126,23 @@ const ProfilePublic = () => {
     };
   }, [hasNextPage, isLoadingMore]);
 
+  // Handle click outside dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
+
   // Share handlers
   const handlePostShare = (post) => {
     const shareUrl = `${window.location.origin}/post/${post.id}`;
@@ -191,8 +212,8 @@ const ProfilePublic = () => {
   const tabs = [t("profile.campaign"), t("profile.posts")];
 
   const renderEmptyState = (icon, title, description) => (
-    <div className="flex flex-col items-center justify-center col-span-4 py-16 text-center">
-      <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
+    <div className="flex flex-col col-span-4 justify-center items-center py-16 text-center">
+      <div className="flex justify-center items-center mb-4 w-16 h-16 bg-gray-100 rounded-full dark:bg-gray-800">
         {icon}
       </div>
       <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
@@ -203,8 +224,8 @@ const ProfilePublic = () => {
   );
 
   const renderStatsItem = (icon, label, value) => (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
+    <div className="flex justify-between items-center">
+      <div className="flex gap-2 items-center">
         {icon}
         <span className="font-medium text-gray-700 dark:text-gray-200">
           {label}
@@ -230,72 +251,126 @@ const ProfilePublic = () => {
       {/* Hero Section */}
       <div className="relative">
         <div
-          className="relative overflow-hidden bg-center bg-cover h-80"
+          className="overflow-hidden relative h-60 bg-center bg-cover md:h-52"
           style={{ backgroundImage: `url(${Bg1})` }}
-        >
-          <div className="absolute inset-0 bg-black/10"></div>
-        </div>
+        ></div>
 
         {/* Profile Content */}
-        <div className="container relative px-6 mx-auto">
-          <div className="flex flex-col gap-8 lg:flex-row">
-            {/* Main Profile Section */}
-            <div className="flex-1">
-              <div className="flex items-end justify-between mb-8 -mt-20">
-                <div className="flex items-end">
-                  <div className="relative">
-                    <div className="flex items-center justify-center w-32 h-32 bg-white border-4 border-white rounded-full shadow-lg dark:bg-gray-800 dark:border-gray-700">
-                      <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary-100 dark:bg-primary-900">
-                        <Users className="w-10 h-10 text-primary-600 dark:text-primary-400" />
-                      </div>
-                    </div>
+        <div className="container mt-10">
+          <div className="flex flex-col gap-8 md:flex-row md:gap-8">
+            {/* Profile Section */}
+            <div className="flex flex-col flex-1 gap-6 items-start md:flex-row md:gap-8">
+              {/* Avatar */}
+              <div className="relative w-auto">
+                <div className="flex justify-center items-center p-2 -mt-20 w-full bg-white rounded-xl border-4 border-white shadow-lg dark:bg-gray-800 dark:border-gray-700">
+                  <div className="flex justify-center items-center w-40 h-40 rounded-xl bg-primary-100 dark:bg-primary-900 md:w-48 md:h-48">
+                    <Users className="w-16 h-16 text-primary-600 dark:text-primary-400 md:w-20 md:h-20" />
                   </div>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
-                  {userData?.fullname}
-                </h1>
-                <p className="text-lg text-gray-600 dark:text-gray-400">
-                  @{userData?.username || userData?.userEmail}
-                </p>
+              {/* Profile Info */}
+              <div className="flex flex-col flex-1 w-full">
+                {/* Name */}
+                <div className="mb-6">
+                  <h1 className="mb-3 text-2xl font-bold text-gray-900 md:text-3xl dark:text-white">
+                    {userData?.fullname}
+                  </h1>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    @{userData?.username || userData?.userEmail}
+                  </p>
+                </div>
+
+                {/* Stats */}
+                <div className="flex gap-8">
+                  {/* Supporters */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                      {t("main.supporters")}
+                    </span>
+                    <div className="flex gap-2 items-center">
+                      <Users className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+                      <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                        {userData?.supports || 0}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Campaigns */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                      {t("profile.campaigns")}
+                    </span>
+                    <div className="flex gap-2 items-center">
+                      <Trophy className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+                      <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                        {totalCampaigns}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Posts */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                      {t("profile.posts")}
+                    </span>
+                    <div className="flex gap-2 items-center">
+                      <Edit className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+                      <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                        {totalPosts}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Stats Sidebar */}
-            <div className="flex flex-col gap-3 mt-5 lg:w-80">
-              <div className="p-6 space-y-4 bg-white border border-gray-200 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
-                {renderStatsItem(
-                  <Users className="w-5 h-5 text-gray-600 dark:text-gray-300" />,
-                  t("main.supporters"),
-                  userData?.supports
-                )}
-                {renderStatsItem(
-                  <Trophy className="w-5 h-5 text-gray-600 dark:text-gray-300" />,
-                  t("profile.campaigns"),
-                  totalCampaigns
-                )}
-                {renderStatsItem(
-                  <Edit className="w-5 h-5 text-gray-600 dark:text-gray-300" />,
-                  t("profile.posts"),
-                  totalPosts
+            {/* RIGHT SIDE - Dropdown Menu */}
+            <div className="md:w-fit md:mt-0">
+              {/* Dropdown Menu */}
+              <div className="relative mb-1" ref={dropdownRef}>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="hidden gap-2 justify-center items-center p-2 ml-auto md:flex"
+                >
+                  <MoreVertical className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                </button>
+                <div className="flex gap-2 mb-2 md:hidden">
+                  <button
+                    className="flex gap-2 items-center px-3 py-2 w-full text-gray-700 bg-white rounded-xl border-2 border-gray-300 dark:text-gray-300 h-fit dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    onClick={() => {
+                      handleProfileShare();
+                      setShowDropdown(false);
+                    }}
+                  >
+                    <Share2 className="w-4 h-4" /> Share
+                  </button>
+                </div>
+                {/* Dropdown Content */}
+                {showDropdown && (
+                  <div className="absolute right-0 z-10 mt-2 w-48 bg-white rounded-lg border border-gray-200 shadow-lg dark:bg-gray-800 dark:border-gray-700">
+                    <div className="py-1">
+                      <button
+                        onClick={() => {
+                          handleProfileShare();
+                          setShowDropdown(false);
+                        }}
+                        className="flex gap-3 items-center px-4 py-2 w-full text-sm text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        <Share2 className="w-4 h-4" />
+                        Share
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
-              <button
-                onClick={handleProfileShare}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
-              >
-                <Share2 className="w-4 h-4" />
-                {t("main.share_profile")}
-              </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Content Section */}
-      <div className="container w-full px-4 mx-auto sm:px-6 lg:px-8">
+      <div className="container px-4 mx-auto w-full sm:px-6 lg:px-8">
         <div className="container px-6 py-8 mx-auto">
           <div className="flex flex-col gap-8 lg:flex-row">
             <div className="flex-1">
@@ -352,8 +427,8 @@ const ProfilePublic = () => {
                       ))}
 
                       {isLoadingMore && (
-                        <div className="flex items-center justify-center py-6 col-span-full">
-                          <div className="w-8 h-8 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
+                        <div className="flex col-span-full justify-center items-center py-6">
+                          <div className="w-8 h-8 rounded-full border-4 border-gray-300 animate-spin border-t-blue-500"></div>
                         </div>
                       )}
 
