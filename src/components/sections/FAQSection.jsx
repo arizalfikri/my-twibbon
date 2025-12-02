@@ -49,20 +49,10 @@ const FAQSection = () => {
       answer:
         "Anda dapat melihat total jumlah pendukung kampanye Anda di Campaign Analytics. Untuk melihat profil pendukung, Anda hanya dapat melihat mereka yang mengunggah foto twibbon ke galeri pendukung kampanye Anda.",
     },
-    {
-      question: "Apa saja yang bisa saya kustomisasi dalam kampanye?",
-      answer:
-        "Anda dapat mengubah background halaman kampanye menggunakan background eksklusif atau mengunggah gambar Anda sendiri.",
-    },
-    {
-      question: "Apa itu kampanye privat?",
-      answer:
-        "Kampanye privat memungkinkan Anda membatasi akses kampanye sehingga hanya orang yang memiliki link atau password kampanye yang dapat melihatnya.",
-    },
+
     {
       question: "Metode pembayaran apa saja yang tersedia?",
-      answer:
-        "Anda dapat menggunakan kartu kredit atau debit. Pembayaran diproses melalui Stripe sebagai payment gateway kami.",
+      answer: "Anda dapat menggunakan Virtual Account,Ewallet, dan Qris.",
     },
     {
       question:
@@ -78,18 +68,18 @@ const FAQSection = () => {
 
   return (
     <section className="">
-      <div className="container mx-auto ">
+      <div className="container mx-auto">
         {/* Header */}
         <div className="mb-12 text-center">
-          <div className="flex items-center justify-center mb-4">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/50">
+          <div className="flex justify-center items-center mb-4">
+            <div className="flex justify-center items-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/50">
               <HelpCircle className="w-8 h-8 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
           <h2 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white">
             Pertanyaan yang Sering Diajukan
           </h2>
-          <p className="max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-400">
+          <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
             Temukan jawaban untuk pertanyaan umum tentang layanan kami
           </p>
         </div>
@@ -107,9 +97,9 @@ const FAQSection = () => {
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="flex items-start justify-between w-full gap-4 p-6 text-left transition-colors hover:bg-gradient-to-r hover:from-primary-50 hover:to-transparent dark:hover:from-primary-900/20"
+                className="flex gap-4 justify-between items-start p-6 w-full text-left transition-colors hover:bg-gradient-to-r hover:from-primary-50 hover:to-transparent dark:hover:from-primary-900/20"
               >
-                <div className="flex items-start flex-1 min-w-0 gap-4">
+                <div className="flex flex-1 gap-4 items-start min-w-0">
                   <div
                     className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
                       openIndex === index

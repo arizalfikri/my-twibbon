@@ -88,18 +88,18 @@ const CreatorSection = () => {
       }
     >
       <div className="container relative p-24 px-4 mx-auto bg-gray-900 rounded-2xl">
-        <div className="absolute top-0 bottom-0 left-0 z-20 hidden pointer-events-none w-28 md:block">
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-transparent opacity-90 rounded-2xl"></div>
+        <div className="hidden absolute top-0 bottom-0 left-0 z-20 w-28 pointer-events-none md:block">
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-transparent rounded-2xl opacity-90"></div>
         </div>
 
-        <div className="absolute top-0 bottom-0 right-0 z-20 hidden pointer-events-none w-28 md:block">
-          <div className="absolute inset-0 bg-gradient-to-l from-gray-800 to-transparent opacity-90 rounded-2xl"></div>
+        <div className="hidden absolute top-0 right-0 bottom-0 z-20 w-28 pointer-events-none md:block">
+          <div className="absolute inset-0 bg-gradient-to-l from-gray-800 to-transparent rounded-2xl opacity-90"></div>
         </div>
 
         {/* Header */}
         <div className="mb-6 text-center">
-          <div className="inline-flex items-center px-4 py-2 mb-6 text-sm font-medium tracking-wider uppercase border-2 rounded-full border-primary-500 text-primary-600 dark:border-primary-300 dark:text-primary-200">
-            <Sparkles className="w-4 h-4 mr-2" />
+          <div className="inline-flex items-center px-4 py-2 mb-6 text-sm font-medium tracking-wider text-white uppercase rounded-full border-2 border-primary-500 dark:border-primary-300 dark:text-primary-200">
+            <Sparkles className="mr-2 w-4 h-4" />
             MyTwibbon FOR CREATORS
           </div>
 
@@ -115,9 +115,9 @@ const CreatorSection = () => {
             <span className="text-primary-300">MyTwibbon</span>
           </h2>
 
-          <div className="flex items-center justify-center gap-4 mt-8">
+          <div className="flex gap-4 justify-center items-center mt-8">
             <Link to={"/create/frame"}>
-              <button className="px-8 py-3 font-semibold transition-all border-2 rounded-full border-primary-300 text-primary-200 hover:bg-primary-500">
+              <button className="px-8 py-3 font-semibold text-white rounded-full border-2 transition-all border-primary-300 hover:bg-primary-500">
                 Try it now, Free!
               </button>
             </Link>
@@ -159,14 +159,14 @@ const CreatorSection = () => {
     "
                     >
                       {/* Top Bar */}
-                      <div className="absolute top-0 left-0 right-0 flex items-center h-6 px-2 bg-primary-400/90 dark:bg-primary-500/90">
+                      {/* <div className="flex absolute top-0 right-0 left-0 items-center px-2 h-6 bg-primary-400/90 dark:bg-primary-500/90">
                         <span className="text-[9px] text-white truncate">
                           {creator.title || "Event"}
                         </span>
-                      </div>
+                      </div> */}
 
                       {/* Bottom Bar */}
-                      <div className="absolute bottom-0 left-0 right-0 px-2 py-1 bg-white/85 dark:bg-gray-900/85">
+                      <div className="absolute right-0 bottom-0 left-0 px-2 py-1 bg-white/85 dark:bg-gray-900/85">
                         <p className="text-[9px] font-semibold text-gray-800 dark:text-gray-200 truncate">
                           {creator.event || "Nama Event"}
                         </p>
@@ -175,7 +175,7 @@ const CreatorSection = () => {
                   </div>
 
                   {/* Creator Photo */}
-                  <div className="w-full h-full overflow-hidden rounded-2xl">
+                  <div className="overflow-hidden w-full h-full rounded-2xl">
                     <img
                       loading="lazy"
                       src={creator.photo}
@@ -185,7 +185,7 @@ const CreatorSection = () => {
                   </div>
 
                   {/* Soft gradient overlay */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/10 via-transparent to-black/10"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t via-transparent rounded-2xl from-black/10 to-black/10"></div>
                 </div>
               </SwiperSlide>
             ))}
