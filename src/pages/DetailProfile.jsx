@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Edit, Users, Trophy, Share2 } from "lucide-react";
+import {
+  Edit,
+  Users,
+  Trophy,
+  Share2,
+  Layers,
+  MoreVertical,
+} from "lucide-react";
 import { useGET, useDELETE } from "../services/api.js";
 import Navbar from "../components/layoutpage/Navbar.jsx";
 import Bg1 from "../assets/images/background_hero.png";
@@ -75,6 +82,10 @@ const DetailProfile = () => {
     url: "",
     description: "",
   });
+
+  // State untuk dropdown menu
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   const [showDeleteCollectionModal, setShowDeleteCollectionModal] =
     useState(false);
@@ -198,6 +209,23 @@ const DetailProfile = () => {
       }
     };
   }, [hasNextPage, myTwibbonsLoading, isLoadingMore]);
+
+  // Handle click outside dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
 
   // Semua tabs muncul untuk semua role
   const availableTabs = [
@@ -361,7 +389,7 @@ const DetailProfile = () => {
           </p>
           <button
             onClick={() => navigate("/membership")}
-            className="w-full px-3 py-2 text-xs font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+            className="px-3 py-2 w-full text-xs font-medium text-white rounded-lg transition-colors bg-primary-500 hover:bg-primary-600"
           >
             {t("profile.membership_status.subscribe_now")}
           </button>
@@ -402,7 +430,7 @@ const DetailProfile = () => {
                   ? navigate("/checkout?type=contributor")
                   : navigate("/checkout?type=participant");
               }}
-              className="w-full px-3 py-2 text-xs font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+              className="px-3 py-2 w-full text-xs font-medium text-white rounded-lg transition-colors bg-primary-500 hover:bg-primary-600"
             >
               {t("profile.membership_status.continue_payment")}
             </button>
@@ -414,7 +442,7 @@ const DetailProfile = () => {
             </p>
             <button
               onClick={() => navigate("/membership")}
-              className="w-full px-3 py-2 text-xs font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+              className="px-3 py-2 w-full text-xs font-medium text-white rounded-lg transition-colors bg-primary-500 hover:bg-primary-600"
             >
               {t("profile.membership_status.subscribe_now")}
             </button>
@@ -426,7 +454,7 @@ const DetailProfile = () => {
             </p>
             <button
               onClick={() => navigate("/membership")}
-              className="w-full px-3 py-2 text-xs font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+              className="px-3 py-2 w-full text-xs font-medium text-white rounded-lg transition-colors bg-primary-500 hover:bg-primary-600"
             >
               {t("profile.membership_status.renew_subscription")}
             </button>
@@ -438,7 +466,7 @@ const DetailProfile = () => {
             </p>
             <button
               onClick={() => navigate("/membership")}
-              className="w-full px-3 py-2 text-xs font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
+              className="px-3 py-2 w-full text-xs font-medium text-white rounded-lg transition-colors bg-primary-500 hover:bg-primary-600"
             >
               {t("profile.membership_status.subscribe_now")}
             </button>
@@ -462,139 +490,172 @@ const DetailProfile = () => {
       {/* Hero Section with Profile */}
       <div className="relative">
         <div
-          className="relative overflow-hidden bg-center bg-cover h-80"
+          className="overflow-hidden relative h-60 bg-center bg-cover md:h-52"
           style={{
             backgroundImage: `url(${Bg1})`,
           }}
-        >
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="absolute inset-0 opacity-10"></div>
-        </div>
+        ></div>
 
         {/* Profile Content */}
-        <div className="container relative px-6 mx-auto">
-          <div className="flex flex-col gap-8 lg:flex-row">
-            {/* Main Profile Section */}
-            <div className="flex-1">
-              {/* Profile Avatar and Info */}
-              <div className="flex items-end mb-8 -mt-20">
-                <div className="relative">
-                  <div className="flex items-center justify-center w-32 h-32 bg-white border-4 border-white rounded-full shadow-lg dark:bg-gray-800 dark:border-gray-700">
-                    <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary-100 dark:bg-primary-900">
-                      <Users className="w-10 h-10 text-primary-600 dark:text-primary-400" />
+        <div className="container mt-10">
+          <div className="flex flex-col gap-8 md:flex-row md:gap-8">
+            {/* Profile Section */}
+            <div className="flex flex-col flex-1 gap-6 items-start md:flex-row md:gap-8">
+              {/* Avatar */}
+              <div className="relative w-auto">
+                <div className="flex justify-center items-center p-2 -mt-20 w-full bg-white rounded-xl border-4 border-white shadow-lg dark:bg-gray-800 dark:border-gray-700">
+                  <div className="flex justify-center items-center w-40 h-40 rounded-xl bg-primary-100 dark:bg-primary-900 md:w-48 md:h-48">
+                    <Users className="w-16 h-16 text-primary-600 dark:text-primary-400 md:w-20 md:h-20" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Profile Info */}
+              <div className="flex flex-col flex-1 w-full">
+                {/* Name and Actions */}
+                <div className="mb-6">
+                  <h1 className="mb-3 text-2xl font-bold text-gray-900 md:text-3xl dark:text-white">
+                    {userFullname}
+                  </h1>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    @{ProfilData?.data?.username}
+                  </p>
+                </div>
+
+                {/* Stats */}
+                <div className="flex gap-8">
+                  {/* Supporters */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                      {t("main.supporters")}
+                    </span>
+                    <div className="flex gap-2 items-center">
+                      <Users className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+                      <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                        {supports}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Campaigns */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                      {t("profile.campaigns")}
+                    </span>
+                    <div className="flex gap-2 items-center">
+                      <Trophy className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+                      <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                        {twibbonData?.length}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Posts */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                      {t("profile.posts")}
+                    </span>
+                    <div className="flex gap-2 items-center">
+                      <Layers className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+                      <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                        {userPosts?.length}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <div className="mb-6">
-                <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
-                  {userFullname}
-                </h1>
-                <p className="text-lg text-gray-600 dark:text-gray-400">
-                  @{userEmail}
-                </p>
-              </div>
-
-              <div className="flex gap-4 mb-8">
-                <Link to="/EditProfile">
-                  <button className="flex items-center gap-2 px-4 py-2 transition-colors bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <Edit className="w-4 h-4 dark:text-white" />
-                    <p className="text-gray-700 dark:text-gray-300">
-                      {t("profile.edit_profile")}
-                    </p>
-                  </button>
-                </Link>
-
-                {/* Share Profile Button */}
-                <button
-                  onClick={handleProfileShare}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
-                >
-                  <Share2 className="w-4 h-4" />
-                  {t("main.share_profile")}
-                </button>
-              </div>
             </div>
 
-            {/* Stats Sidebar */}
-            <div className="mt-5 lg:w-80">
-              <div className="p-6 space-y-4 bg-white border border-gray-200 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
-                {/* Supporters */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                    <span className="font-medium text-gray-700 dark:text-gray-200">
-                      {t("main.supporters")}
-                    </span>
-                  </div>
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">
-                    {supports}
-                  </span>
+            {/* RIGHT SIDE - Membership Status */}
+            <div className="md:w-fit md:mt-0">
+              {/* Dropdown Menu */}
+              <div className="relative mb-1" ref={dropdownRef}>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="hidden gap-2 justify-center items-center p-2 ml-auto md:flex"
+                >
+                  <MoreVertical className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                </button>
+                <div className="flex gap-2 mb-2 md:hidden">
+                  <Link
+                    to="/EditProfile"
+                    className="flex gap-2 items-center px-3 py-2 w-2/3 text-white rounded-xl border h-fit bg-primary-600 hover:bg-primary-700 border-primary-600"
+                  >
+                    <Edit className="w-4 h-4" /> Edit
+                  </Link>
+                  <button
+                    className="flex gap-2 items-center px-3 py-2 w-1/3 text-gray-700 bg-white rounded-xl border-2 border-gray-300 dark:text-gray-300 h-fit dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    onClick={() => {
+                      handleProfileShare();
+                      setShowDropdown(false);
+                    }}
+                  >
+                    <Share2 className="w-4 h-4" /> Share
+                  </button>
                 </div>
-
-                {/* Campaigns */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                    <span className="font-medium text-gray-700 dark:text-gray-200">
-                      {`${t("profile.campaigns")}`}
-                    </span>
-                  </div>
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">
-                    {twibbonData?.length}
-                  </span>
-                </div>
-
-                {/* Posts */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                    <span className="font-medium text-gray-700 dark:text-gray-200">
-                      {`${t("profile.posts")}`}
-                    </span>
-                  </div>
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">
-                    {userPosts?.length}
-                  </span>
-                </div>
-              </div>
-
-              {/* Subscription Status Box */}
-              <div className="mt-5 lg:w-80">
-                {subscribeLoading ? (
-                  <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl dark:border-gray-700 dark:bg-gray-800">
-                    <p className="text-gray-500 dark:text-gray-400">
-                      Memuat status...
-                    </p>
-                  </div>
-                ) : (
-                  <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl dark:border-gray-700 dark:bg-gray-800">
-                    <h3 className="mb-4 text-sm font-semibold text-gray-600 uppercase dark:text-gray-300">
-                      {t("profile.membership_status.title")}
-                    </h3>
-
-                    {/* Contributor Subscription */}
-                    {renderSubscriptionStatus(
-                      contributorSubscription,
-                      "contributor"
-                    )}
-
-                    {/* Participant Subscription */}
-                    {renderSubscriptionStatus(
-                      participantSubscription,
-                      "participant"
-                    )}
+                {/* Dropdown Content */}
+                {showDropdown && (
+                  <div className="absolute right-0 z-10 mt-2 w-48 bg-white rounded-lg border border-gray-200 shadow-lg dark:bg-gray-800 dark:border-gray-700">
+                    <div className="py-1">
+                      <button
+                        onClick={() => {
+                          handleProfileShare();
+                          setShowDropdown(false);
+                        }}
+                        className="flex gap-3 items-center px-4 py-2 w-full text-sm text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        <Share2 className="w-4 h-4" />
+                        Share
+                      </button>
+                      <Link to="/EditProfile">
+                        <button
+                          onClick={() => setShowDropdown(false)}
+                          className="flex gap-3 items-center px-4 py-2 w-full text-sm text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          <Edit className="w-4 h-4" />
+                          Edit
+                        </button>
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
+
+              {/* Membership Status Card */}
+              {subscribeLoading ? (
+                <div className="p-6 w-full bg-white rounded-xl border border-gray-200 shadow-sm md:w-auto dark:border-gray-700 dark:bg-gray-800">
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Memuat status...
+                  </p>
+                </div>
+              ) : (
+                <div className="p-6 w-full bg-white rounded-xl border border-gray-200 shadow-sm md:w-auto dark:border-gray-700 dark:bg-gray-800">
+                  <h3 className="mb-5 text-sm font-semibold text-center text-gray-600 uppercase dark:text-gray-300">
+                    {t("profile.membership_status.title")}
+                  </h3>
+                  <div className="flex flex-col gap-4 md:flex-row md:gap-6">
+                    <div className="flex-1">
+                      {renderSubscriptionStatus(
+                        contributorSubscription,
+                        "contributor"
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      {renderSubscriptionStatus(
+                        participantSubscription,
+                        "participant"
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
       {/* Rest of the component remains the same */}
-      <div className="container w-full px-4 mx-auto sm:px-6 lg:px-8">
+      <div className="container px-4 mx-auto w-full sm:px-6 lg:px-8">
         {/* Content Section */}
         <div className="container px-6 py-8 mx-auto">
           <div className="flex flex-col gap-8 lg:flex-row">
@@ -630,10 +691,10 @@ const DetailProfile = () => {
 
               {/* Campaign Content */}
               {activeTab === "Campaign" && (
-                <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-5">
+                <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
                   {twibbonData.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center col-span-4 py-16 text-center">
-                      <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
+                    <div className="flex flex-col col-span-4 justify-center items-center py-16 text-center">
+                      <div className="flex justify-center items-center mb-4 w-16 h-16 bg-gray-100 rounded-full dark:bg-gray-800">
                         <Edit className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                       </div>
                       <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
@@ -665,8 +726,8 @@ const DetailProfile = () => {
 
                       {/* Loading more indicator for infinite scroll */}
                       {isLoadingMore && (
-                        <div className="flex items-center justify-center py-6 col-span-full">
-                          <div className="w-8 h-8 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
+                        <div className="flex col-span-full justify-center items-center py-6">
+                          <div className="w-8 h-8 rounded-full border-4 border-gray-300 animate-spin border-t-blue-500"></div>
                         </div>
                       )}
 
@@ -683,12 +744,12 @@ const DetailProfile = () => {
               {activeTab === "Posts" && (
                 <div>
                   {postsLoading ? (
-                    <div className="flex items-center justify-center py-16">
-                      <div className="w-8 h-8 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
+                    <div className="flex justify-center items-center py-16">
+                      <div className="w-8 h-8 rounded-full border-4 border-gray-300 animate-spin border-t-blue-500"></div>
                     </div>
                   ) : userPosts.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                      <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
+                    <div className="flex flex-col justify-center items-center py-16 text-center">
+                      <div className="flex justify-center items-center mb-4 w-16 h-16 bg-gray-100 rounded-full dark:bg-gray-800">
                         <Edit className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                       </div>
                       <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
@@ -699,7 +760,7 @@ const DetailProfile = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-4 ">
+                    <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                       {userPosts.map((post) => (
                         <CardPost
                           key={post.id}
@@ -719,12 +780,12 @@ const DetailProfile = () => {
               {activeTab === "Collections" && (
                 <div>
                   {collectionsLoading ? (
-                    <div className="flex items-center justify-center py-16">
-                      <div className="w-8 h-8 border-4 border-gray-300 rounded-full border-t-blue-500 animate-spin"></div>
+                    <div className="flex justify-center items-center py-16">
+                      <div className="w-8 h-8 rounded-full border-4 border-gray-300 animate-spin border-t-blue-500"></div>
                     </div>
                   ) : userCollectionsData?.data?.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                      <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full dark:bg-gray-800">
+                    <div className="flex flex-col justify-center items-center py-16 text-center">
+                      <div className="flex justify-center items-center mb-4 w-16 h-16 bg-gray-100 rounded-full dark:bg-gray-800">
                         <Trophy className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                       </div>
                       <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">

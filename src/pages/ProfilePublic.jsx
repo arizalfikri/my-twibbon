@@ -400,7 +400,9 @@ const ProfilePublic = () => {
 
               {/* Campaign Content */}
               {activeTab === "Campaign" && (
-                <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-5">
+                <div>
+
+                  
                   {allMyTwibbons.length === 0 ? (
                     renderEmptyState(
                       <Edit className="w-8 h-8 text-gray-400 dark:text-gray-500" />,
@@ -409,22 +411,24 @@ const ProfilePublic = () => {
                     )
                   ) : (
                     <>
-                      {allMyTwibbons.map((twibon) => (
-                        <CardHome
-                          key={twibon.id}
-                          twibon={{
-                            id: twibon.id,
-                            title: twibon.title || t("explore.untitled"),
-                            author: twibon?.contributor?.fullname || "Gypem",
-                            supports: twibon?.supports || 0,
-                            slug: twibon.slug_event_twibbon,
-                            image: twibon.template_twibbon,
-                            date: twibon.createdAt,
-                            username: twibon?.contributor?.username || "",
-                          }}
-                          onShare={() => handleTwibbonShare(twibon)}
-                        />
-                      ))}
+                      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-5">
+                        {allMyTwibbons.map((twibon) => (
+                          <CardHome
+                            key={twibon.id}
+                            twibon={{
+                              id: twibon.id,
+                              title: twibon.title || t("explore.untitled"),
+                              author: twibon?.contributor?.fullname || "Gypem",
+                              supports: twibon?.supports || 0,
+                              slug: twibon.slug_event_twibbon,
+                              image: twibon.template_twibbon,
+                              date: twibon.createdAt,
+                              username: twibon?.contributor?.username || "",
+                            }}
+                            onShare={() => handleTwibbonShare(twibon)}
+                          />
+                        ))}
+                      </div>
 
                       {isLoadingMore && (
                         <div className="flex col-span-full justify-center items-center py-6">
