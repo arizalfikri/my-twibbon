@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Fleur+De+Leah&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -131,6 +132,12 @@
     font-weight: 400;
     font-style: normal;
   }
+
+.lobster-regular {
+  font-family: "Lobster", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
   /* Styles to help Swiper scroll smoothly */
   .smooth-swiper .swiper-wrapper {
