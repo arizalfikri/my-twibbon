@@ -182,10 +182,23 @@ function CardEditor({
       setResultImage(dataUrl);
       navigate("/result");
 
+      // Track support
       await mutateAsync({
         url: "/support",
         data: { event_twibbon_id },
       });
+
+      // Track download
+      try {
+        await mutateAsync({
+          url: `/twibbon/${event_twibbon_id}/download`,
+          data: {},
+        });
+        console.log("Download tracked successfully");
+      } catch (downloadError) {
+        console.error("Failed to track download:", downloadError);
+        // Don't show error to user, just log it
+      }
     } catch (err) {
       console.error(err);
       alert("Download gagal. Silakan coba lagi.");

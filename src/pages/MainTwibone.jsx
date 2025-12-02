@@ -27,7 +27,7 @@ import { useModalStore } from "../helper/store/modal.store";
 import NotFound from "./NotfoundPage";
 import ModalLogin from "../components/modal/modalLogin";
 import { useGlobalStore } from "../helper/store/global.store";
-
+import ShareModal from "../components/modal/ShareModal";
 function MainTwibone() {
   const { t } = useTranslation();
   const { image, setImage, setFrameImage, frameImage } = useImageStore();
@@ -45,6 +45,7 @@ function MainTwibone() {
   const { token, role } = useGlobalStore();
   const BookmarkMutation = usePOST(`/bookmark`);
   const DeleteBookmarkMutation = useDELETE(`/bookmark`);
+  const ViewTrackingMutation = usePOST(`/twibbon/view`);
   const [cards, setCards] = useState([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
@@ -52,6 +53,13 @@ function MainTwibone() {
   const [bookmarked, setBookmarked] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [viewTracked, setViewTracked] = useState(false);
+  const [shareData, setShareData] = useState({
+    title: "",
+    url: "",
+    description: "",
+  });
 
   // State untuk infinite scroll fullscreen
   const [fullscreenPage, setFullscreenPage] = useState(1);
@@ -131,6 +139,33 @@ function MainTwibone() {
     if (image) {
       setImage(null);
     }
+  }, [slug]);
+
+  // Track view when page loads
+  useEffect(() => {
+    const trackView = async () => {
+      // Only track if twibbon data is loaded and we haven't tracked yet
+      if (twibbon?.data?.id && !viewTracked) {
+        try {
+          await ViewTrackingMutation.mutateAsync({
+            url: `/twibbon/${twibbon.data.id}/view`,
+            data: {},
+          });
+          setViewTracked(true);
+          console.log("View tracked successfully");
+        } catch (error) {
+          console.error("Failed to track view:", error);
+          // Don't show error to user, just log it
+        }
+      }
+    };
+
+    trackView();
+  }, [twibbon?.data?.id]);
+
+  // Reset view tracking when slug changes
+  useEffect(() => {
+    setViewTracked(false);
   }, [slug]);
 
   // Reset pagination saat buka fullscreen
@@ -218,56 +253,14 @@ function MainTwibone() {
   };
 
   // Fungsi untuk menangani share
-  const handleShare = async (card) => {
-    try {
-      // Data untuk di-share
-      const shareData = {
-        url: window.location.href,
-      };
-
-      // Cek apakah browser support Web Share API
-      if (
-        navigator.share &&
-        navigator.canShare &&
-        navigator.canShare(shareData)
-      ) {
-        await navigator.share(shareData);
-      } else {
-        // Fallback untuk browser yang tidak support Web Share API
-        await handleFallbackShare(card);
-      }
-    } catch (error) {
-      console.log("Error sharing:", error);
-      // Jika native share gagal, gunakan fallback
-      await handleFallbackShare(card);
-    }
-  };
-
-  // Fallback share method
-  const handleFallbackShare = async (card) => {
-    try {
-      const shareUrl = window.location.href;
-      await navigator.clipboard.writeText(shareUrl);
-
-      alert(t("main.link_copied"));
-    } catch (error) {
-      console.log("Error copying to clipboard:", error);
-      openSocialShare(card);
-    }
-  };
-
-  // Share ke social media
-  const openSocialShare = (card) => {
-    const shareUrl = window.location.href;
-    const shareText = encodeURIComponent(
-      card.description || t("main.share_text", { title: card.title })
-    );
-
-    // Contoh share ke WhatsApp
-    const whatsappUrl = `https://wa.me/?text=${shareText}%20${encodeURIComponent(
-      shareUrl
-    )}`;
-    window.open(whatsappUrl, "_blank");
+  const handleShare = (card) => {
+    setShareData({
+      title: card.title,
+      url: window.location.href,
+      description:
+        card.description || t("main.share_text", { title: card.title }),
+    });
+    setShowShareModal(true);
   };
 
   const toggleFullscreen = () => {
@@ -384,10 +377,10 @@ function MainTwibone() {
         <div className="flex flex-col items-center space-y-4 text-center">
           {/* Icon */}
           <div className="relative">
-            <div className="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full dark:bg-gray-800">
+            <div className="flex justify-center items-center w-20 h-20 bg-gray-100 rounded-full dark:bg-gray-800">
               <ImageOff className="w-10 h-10 text-gray-400 dark:text-gray-500" />
             </div>
-            <div className="absolute flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 -bottom-1 -right-1">
+            <div className="flex absolute -right-1 -bottom-1 justify-center items-center w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900">
               <Users className="w-4 h-4 text-primary-500 dark:text-primary-400" />
             </div>
           </div>
@@ -404,9 +397,9 @@ function MainTwibone() {
 
           {/* Decorative Elements */}
           <div className="flex mt-6 space-x-2">
-            <div className="w-2 h-2 rounded-full bg-primary-200 dark:bg-primary-600 animate-pulse"></div>
-            <div className="w-2 h-2 delay-100 rounded-full bg-primary-300 dark:bg-primary-500 animate-pulse"></div>
-            <div className="w-2 h-2 delay-200 rounded-full bg-primary-400 dark:bg-primary-400 animate-pulse"></div>
+            <div className="w-2 h-2 rounded-full animate-pulse bg-primary-200 dark:bg-primary-600"></div>
+            <div className="w-2 h-2 rounded-full delay-100 animate-pulse bg-primary-300 dark:bg-primary-500"></div>
+            <div className="w-2 h-2 rounded-full delay-200 animate-pulse bg-primary-400 dark:bg-primary-400"></div>
           </div>
         </div>
       </div>
@@ -417,9 +410,9 @@ function MainTwibone() {
     if (!isLoadingMoreFullscreen) return null;
 
     return (
-      <div className="flex items-center justify-center py-8 col-span-full">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 rounded-full border-primary-400 dark:border-primary-500 border-t-transparent animate-spin"></div>
+      <div className="flex col-span-full justify-center items-center py-8">
+        <div className="flex gap-3 items-center">
+          <div className="w-8 h-8 rounded-full border-4 animate-spin border-primary-400 dark:border-primary-500 border-t-transparent"></div>
           <span className="text-gray-600 dark:text-gray-400">
             {t("explore.loading_more") || "Loading more..."}
           </span>
@@ -483,7 +476,7 @@ function MainTwibone() {
     <div className="bg-white dark:bg-gray-900 dark:text-white">
       <Navbar />
       <header className="container px-3 py-3 m-5 mx-auto bg-white dark:bg-gray-900 dark:text-white">
-        <div className="grid items-center grid-cols-1 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-center lg:grid-cols-3">
           <div className="flex flex-col min-w-0">
             <h1 className="text-lg font-medium capitalize truncate">
               {twibbon?.data?.title || t("main.no_title")}
@@ -495,7 +488,7 @@ function MainTwibone() {
             </p>
           </div>
 
-          <div className="flex items-center justify-start mt-2 space-x-2 lg:justify-center">
+          <div className="flex justify-start items-center mt-2 space-x-2 lg:justify-center">
             <User className="w-5 h-5 dark:text-gray-300" />
             <div>
               <span className="text-sm">{t("main.supporters")}</span>
@@ -504,8 +497,8 @@ function MainTwibone() {
               </div>
             </div>
           </div>
-          <div className="items-center justify-end hidden space-x-4 lg:flex">
-            <div className="relative flex items-center overflow-hidden bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600">
+          <div className="hidden justify-end items-center space-x-4 lg:flex">
+            <div className="flex overflow-hidden relative items-center bg-gray-100 rounded-lg border border-gray-300 dark:bg-gray-800 dark:border-gray-600">
               <span className="px-3 py-2 text-sm text-gray-500 bg-gray-200 select-none dark:bg-gray-700 dark:text-gray-300">
                 MyTwibbon/
               </span>
@@ -527,7 +520,7 @@ function MainTwibone() {
                   navigator.clipboard.writeText(twibbon?.data?.link);
                   openToast("toast", true, t("main.copy_success"), "success");
                 }}
-                className="absolute p-1 text-gray-500 transition-all rounded right-2 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="absolute right-2 p-1 text-gray-500 rounded transition-all hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 <Copy size={16} />
               </button>
@@ -536,9 +529,9 @@ function MainTwibone() {
         </div>
       </header>
 
-      <div className="grid h-full grid-cols-1 lg:grid-cols-2">
+      <div className="grid grid-cols-1 h-full lg:grid-cols-2">
         <div
-          className="relative flex items-center justify-center p-4"
+          className="flex relative justify-center items-center p-4"
           style={{
             backgroundImage: `url(${Bg1})`,
             backgroundSize: "cover",
@@ -546,7 +539,7 @@ function MainTwibone() {
           }}
         >
           {/* Overlay khusus dark mode */}
-          <div className="absolute inset-0 hidden bg-black/60 dark:block"></div>
+          <div className="hidden absolute inset-0 bg-black/60 dark:block"></div>
 
           {/* Konten */}
           <div className="relative z-10 w-full lg:max-w-lg">
@@ -561,11 +554,11 @@ function MainTwibone() {
           </div>
         </div>
 
-        <div className="relative justify-center h-full p-4 overflow-y-auto bg-white dark:bg-gray-900">
+        <div className="overflow-y-auto relative justify-center p-4 h-full bg-white dark:bg-gray-900">
           {cards.length > 9 && (
             <button
               onClick={toggleFullscreen}
-              className="absolute z-10 flex items-center justify-center p-3 text-white transition-colors duration-200 rounded-full shadow-lg bg-primary-600 opacity-85 top-4 right-4 hover:bg-primary-700 hover:opacity-100"
+              className="flex absolute top-4 right-4 z-10 justify-center items-center p-3 text-white rounded-full shadow-lg transition-colors duration-200 bg-primary-600 opacity-85 hover:bg-primary-700 hover:opacity-100"
               aria-label={t("main.view_all_images")}
               title={t("main.view_all_images")}
             >
@@ -594,14 +587,14 @@ function MainTwibone() {
       {/* HPSHARE */}
       <div className="mb-6 border-t border-gray-200 dark:border-gray-600 lg:hidden"></div>
       <div className="lg:hidden">
-        <div className="flex flex-col min-w-0 mx-3">
+        <div className="flex flex-col mx-3 min-w-0">
           <h3 className="font-medium capitalize truncate text-md">
             {twibbon?.data?.title || t("main.no_title")}
           </h3>
         </div>
         <div className="flex items-center mx-3 my-10 mt-2 space-x-2">
           {/* Box Link */}
-          <div className="flex flex-1 overflow-hidden bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600">
+          <div className="flex overflow-hidden flex-1 bg-gray-100 rounded-lg border border-gray-300 dark:bg-gray-800 dark:border-gray-600">
             <span className="px-3 py-2 text-sm text-gray-500 bg-gray-200 select-none dark:bg-gray-700 dark:text-gray-300">
               TwibbonGypem/
             </span>
@@ -621,7 +614,7 @@ function MainTwibone() {
           {/* Tombol Bookmark */}
           <button
             onClick={toggleBookmark}
-            className="flex items-center justify-center w-10 h-10 transition bg-gray-100 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg border border-gray-300 transition dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
             aria-label="Bookmark"
           >
             <Bookmark
@@ -636,6 +629,11 @@ function MainTwibone() {
         </div>
       </div>
       <Footer />
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        shareData={shareData}
+      />
       {showLoginModal && (
         <ModalLogin
           isOpen={showLoginModal}

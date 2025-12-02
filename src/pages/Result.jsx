@@ -25,6 +25,7 @@ function Result() {
   const [isPosted, setIsPosted] = useState(false);
   const { twibbonData } = useTwibbonStore();
   const { mutateAsync, isPending } = usePOST("/event-user-twibbon");
+  const DownloadTrackingMutation = usePOST("/twibbon/download");
   const { openToast } = useModalStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -130,7 +131,7 @@ function Result() {
           break;
       }
     } finally {
-      setIsSubmitting(false); // ⬅️ Reset kembali di akhir (sukses/gagal)
+      setIsSubmitting(false);
     }
   };
 
@@ -155,11 +156,26 @@ function Result() {
     }
   };
 
+  const handleRedownload = async (e) => {
+    // Track download
+    try {
+      await DownloadTrackingMutation.mutateAsync({
+        url: `/twibbon/${twibbonData?.id}/download`,
+        data: {},
+      });
+      console.log("Re-download tracked successfully");
+    } catch (error) {
+      console.error("Failed to track re-download:", error);
+      // Don't prevent download, just log the error
+    }
+    // Let the default download behavior continue
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <NavbarEditor title={twibbonData?.title} />
 
-      <div className="container items-center justify-center gap-6 p-6 mx-auto md:grid md:grid-cols-2">
+      <div className="container gap-6 justify-center items-center p-6 mx-auto md:grid md:grid-cols-2">
         {/* Result photo section */}
         <div className="md:col-span-1">
           <div className="relative mx-auto w-fit max-w-[250px] md:max-w-[350px]">
@@ -177,6 +193,7 @@ function Result() {
               <a
                 href={resultImage}
                 download="twibbon-result.png"
+                onClick={handleRedownload}
                 className="font-semibold text-primary-600 dark:text-primary-400 hover:underline"
               >
                 {t("result.redownload")}
@@ -185,7 +202,7 @@ function Result() {
           </div>
         </div>
         {/* Desktop Control Panel */}
-        <div className="hidden p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 md:block">
+        <div className="hidden p-6 bg-white rounded-lg border border-gray-200 shadow-sm dark:bg-gray-800 dark:border-gray-700 md:block">
           {isPosted ? (
             <div className="text-center">
               <h2 className="mb-4 text-xl font-semibold text-green-600 dark:text-green-400">
@@ -196,7 +213,8 @@ function Result() {
               </p>
               <button
                 onClick={handleRestart}
-                className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg dark:text-gray-200 hover:bg-yellow-600"
+                disabled={isPending || isSubmitting}
+                className="px-4 py-3 w-full font-medium text-center text-gray-700 bg-yellow-400 rounded-lg transition-colors dark:text-gray-200 hover:bg-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("result.create_twibbon_again")}
               </button>
@@ -210,7 +228,7 @@ function Result() {
                 <div className="space-y-4">
                   {/* Caption + Copy */}
                   <div>
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex justify-between items-center mb-1">
                       <label
                         htmlFor="caption"
                         className="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -220,7 +238,7 @@ function Result() {
                       <button
                         type="button"
                         onClick={handleCopyCaption}
-                        className="px-2 py-1 text-xs border rounded text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-gray-700"
+                        className="px-2 py-1 text-xs rounded border text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-gray-700"
                       >
                         <Copy className="w-5 h-5" />
                       </button>
@@ -241,7 +259,7 @@ function Result() {
                     type="button"
                     onClick={handlePostClick}
                     disabled={isPending || isSubmitting}
-                    className="w-full px-4 py-2 font-medium text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-500 dark:hover:bg-primary-600"
+                    className="px-4 py-2 w-full font-medium text-white rounded-lg transition-colors bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-500 dark:hover:bg-primary-600"
                   >
                     {isPending || isSubmitting
                       ? t("result.posting")
@@ -252,7 +270,8 @@ function Result() {
 
                   <button
                     onClick={handleRestart}
-                    className="w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900"
+                    disabled={isPending || isSubmitting}
+                    className="px-4 py-3 w-full font-medium text-center text-gray-700 bg-yellow-400 rounded-lg transition-colors hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {t("result.create_again")}
                   </button>
@@ -263,7 +282,7 @@ function Result() {
         </div>
 
         {/* Mobile Control Panel */}
-        <div className="p-4 mt-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 md:hidden">
+        <div className="p-4 mt-6 bg-white rounded-lg border border-gray-200 shadow-sm dark:bg-gray-800 dark:border-gray-700 md:hidden">
           {isPosted ? (
             <div className="text-center">
               <h3 className="mb-4 text-lg font-semibold text-green-600 dark:text-green-400">
@@ -274,7 +293,8 @@ function Result() {
               </p>
               <button
                 onClick={handleRestart}
-                className="flex items-center justify-center w-full px-4 py-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg dark:text-gray-200 hover:bg-yellow-600"
+                disabled={isPending || isSubmitting}
+                className="flex justify-center items-center px-4 py-3 w-full font-medium text-center text-gray-700 bg-yellow-400 rounded-lg transition-colors dark:text-gray-200 hover:bg-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("result.create_twibbon_again")}
               </button>
@@ -287,7 +307,7 @@ function Result() {
                 </h3>
                 {/* Caption + Copy */}
                 <div>
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex justify-between items-center mb-1">
                     <label
                       htmlFor="caption"
                       className="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -297,7 +317,7 @@ function Result() {
                     <button
                       type="button"
                       onClick={handleCopyCaption}
-                      className="px-2 py-1 text-xs border rounded text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-gray-700"
+                      className="px-2 py-1 text-xs rounded border text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-gray-700"
                     >
                       <Copy className="w-5" />
                     </button>
@@ -320,7 +340,7 @@ function Result() {
                 type="button"
                 onClick={handlePostClick}
                 disabled={isPending || isSubmitting}
-                className="w-full px-4 py-2 font-medium text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-500 dark:hover:bg-primary-600"
+                className="px-4 py-2 w-full font-medium text-white rounded-lg transition-colors bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-500 dark:hover:bg-primary-600"
               >
                 {isPending || isSubmitting
                   ? t("result.posting")
@@ -331,7 +351,8 @@ function Result() {
 
               <button
                 onClick={handleRestart}
-                className="w-full px-4 py-3 mt-3 font-medium text-center text-gray-700 transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900"
+                disabled={isPending || isSubmitting}
+                className="px-4 py-3 mt-3 w-full font-medium text-center text-gray-700 bg-yellow-400 rounded-lg transition-colors hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("result.create_again")}
               </button>
