@@ -188,7 +188,7 @@ function ExploreTwibone() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white">
       <Navbar />
 
-      <div className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50 dark:bg-gray-900 dark:border-gray-800">
+      <div className="sticky top-0 z-10 bg-gray-50 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
         <div className="container px-4 py-4 mx-auto">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <TabButtons
@@ -210,7 +210,7 @@ function ExploreTwibone() {
       </div>
 
       <main className="container px-4 py-8 mx-auto">
-        <div className={`grid ${gridCols} gap-6`}>
+        <div className={`grid gap-6 ${gridCols}`}>
           {currentData.length === 0 && isLoading && currentPage === 1
             ? renderEmptyState()
             : currentData.length === 0 && searchFromUrl
@@ -226,7 +226,7 @@ function ExploreTwibone() {
                       author: twibon?.contributor?.fullname || "Gypem",
                       supports: twibon?.supports || 0,
                       slug: twibon.slug_event_twibbon,
-                      image: twibon.template_twibbon,
+                      image: twibon.thumbnail,
                       date: twibon.createdAt,
                       username: twibon?.contributor?.username || "",
                       isSupport: sortBy === "popular",
@@ -322,10 +322,10 @@ const FilterSection = ({
 
 
 const LoadingState = ({ selectedTab, t }) => (
-  <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
-    <div className="max-w-md space-y-6 text-center">
-      <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary-100 to-pink-100 dark:from-primary-900/30 dark:to-pink-900/30">
-        <div className="w-16 h-16 border-4 rounded-full border-primary-400 dark:border-primary-500 border-t-transparent animate-spin"></div>
+  <div className="flex flex-col col-span-full justify-center items-center px-8 py-20">
+    <div className="space-y-6 max-w-md text-center">
+      <div className="flex justify-center items-center mx-auto w-32 h-32 bg-gradient-to-br to-pink-100 rounded-full from-primary-100 dark:from-primary-900/30 dark:to-pink-900/30">
+        <div className="w-16 h-16 rounded-full border-4 animate-spin border-primary-400 dark:border-primary-500 border-t-transparent"></div>
       </div>
       <div className="space-y-3">
         <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
@@ -349,10 +349,10 @@ const SearchEmptyState = ({
   clearSearch,
   t,
 }) => (
-  <div className="flex flex-col items-center justify-center px-8 py-20 col-span-full">
-    <div className="max-w-md space-y-6 text-center">
+  <div className="flex flex-col col-span-full justify-center items-center px-8 py-20">
+    <div className="space-y-6 max-w-md text-center">
       <div className="relative">
-        <div className="flex items-center justify-center w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-blue-100 to-primary-100 dark:from-blue-900/30 dark:to-primary-900/30">
+        <div className="flex justify-center items-center mx-auto w-32 h-32 bg-gradient-to-br from-blue-100 rounded-full to-primary-100 dark:from-blue-900/30 dark:to-primary-900/30">
           <Search className="w-16 h-16 text-blue-400 dark:text-blue-500" />
         </div>
       </div>
@@ -368,7 +368,7 @@ const SearchEmptyState = ({
       </div>
       <button
         onClick={clearSearch}
-        className="px-6 py-3 font-semibold transition-all duration-300 border-2 rounded-full text-primary-700 border-primary-200 dark:text-primary-400 dark:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20"
+        className="px-6 py-3 font-semibold rounded-full border-2 transition-all duration-300 text-primary-700 border-primary-200 dark:text-primary-400 dark:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20"
       >
         {t("explore.clear_search")}
       </button>
@@ -377,9 +377,9 @@ const SearchEmptyState = ({
 );
 
 const LoadingMoreIndicator = ({ t }) => (
-  <div className="flex items-center justify-center py-8 col-span-full">
-    <div className="flex items-center gap-3">
-      <div className="w-8 h-8 border-4 rounded-full border-primary-400 dark:border-primary-500 border-t-transparent animate-spin"></div>
+  <div className="flex col-span-full justify-center items-center py-8">
+    <div className="flex gap-3 items-center">
+      <div className="w-8 h-8 rounded-full border-4 animate-spin border-primary-400 dark:border-primary-500 border-t-transparent"></div>
       <span className="text-gray-600 dark:text-gray-400">
         {t("explore.loading_more") || "Loading more..."}
       </span>
