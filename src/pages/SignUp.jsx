@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { InputType } from "../components/FormControl";
 import { usePOST } from "../services/api";
 import { useModalStore } from "../helper/store/modal.store";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signUpSchema } from "../helper/yup";
 
@@ -20,9 +20,13 @@ function SignUp() {
   const [selectedProvince, setSelectedProvince] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { openToast } = useModalStore();
   const { mutateAsync, isPending } = usePOST("/auth/register");
   const [selectedRole, setSelectedRole] = useState(null);
+
+  // Ambil data dari state navigasi
+  const { googleUser, fromGoogle } = location.state || {};
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -31,8 +35,23 @@ function SignUp() {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(signUpSchema) });
+  } = useForm({ 
+    resolver: yupResolver(signUpSchema),
+    defaultValues: {
+      fullname: googleUser?.name || "",
+      email: googleUser?.email || "",
+    }
+  });
+
+  // Auto-fill form jika ada data dari Google
+  useEffect(() => {
+    if (googleUser) {
+      setValue("fullname", googleUser.name);
+      setValue("email", googleUser.email);
+    }
+  }, [googleUser, setValue]);
 
   const forms = [
     {
@@ -71,7 +90,11 @@ function SignUp() {
       });
 
       if (response.status === 201) {
-        openToast("toast", true, t("auth.register_success"), "success");
+        if (fromGoogle) {
+          openToast("toast", true, "Pendaftaran berhasil! Silakan login dengan Google.", "success");
+        } else {
+          openToast("toast", true, t("auth.register_success"), "success");
+        }
         navigate("/signin");
       }
     } catch (error) {
@@ -109,6 +132,17 @@ function SignUp() {
             />
           </a>
 
+          {/* Info banner jika dari Google */}
+          {fromGoogle && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 mt-4 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-900 dark:text-blue-300"
+            >
+              <p>Informasi dari akun Google Anda telah diisi otomatis. Silakan lengkapi password untuk menyelesaikan pendaftaran.</p>
+            </motion.div>
+          )}
+
           <form
             className="mt-10 md:mt-5"
             onSubmit={handleSubmit(handleOnSubmit)}
@@ -119,7 +153,7 @@ function SignUp() {
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
               <div className="flex flex-col gap-3 mt-10 md:gap-5 md:mt-5">
-                {forms.map(({ id, label, type, placeholder }) =>
+                {forms.map(({ id, label, type, placeholder, disabled }) =>
                   type === "password" ? (
                     <InputPassword
                       key={id}
@@ -143,6 +177,7 @@ function SignUp() {
                       name={id}
                       control={control}
                       error={errors}
+                      disabled={disabled}
                     />
                   )
                 )}

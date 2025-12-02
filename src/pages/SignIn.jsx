@@ -34,6 +34,9 @@ const SignIn = () => {
   } = useGlobalStore();
   const navigate = useNavigate();
 
+  // State untuk menyimpan data Google user yang belum terdaftar
+  const [pendingGoogleUser, setPendingGoogleUser] = useState(null);
+
   useEffect(() => {
     if (email && token && fullname && role) {
       navigate("/");
@@ -56,6 +59,7 @@ const SignIn = () => {
         );
 
         const email = googleUser.data.email;
+        const name = googleUser.data.name;
 
         const response = await googleLoginAPI.mutateAsync({
           url: "/auth/login-sosmed",
@@ -86,7 +90,45 @@ const SignIn = () => {
         }
       } catch (err) {
         console.error(err);
-        openToast("toast", true, "Login with Google failed", "error");
+        
+        // Jika error 404 (Not Found), artinya akun belum terdaftar
+        if (err.response?.status === 401) {
+          const googleUser = await axios.get(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            {
+              headers: {
+                Authorization: `Bearer ${tokenResponse.access_token}`,
+              },
+            }
+          );
+
+          const userData = {
+            email: googleUser.data.email,
+            name: googleUser.data.name,
+            picture: googleUser.data.picture
+          };
+
+          // Simpan data user Google untuk auto-fill di signup
+          setPendingGoogleUser(userData);
+          
+          // Tampilkan toast informasi
+          openToast(
+            "toast", 
+            true, 
+            "Akun kamu belum terdaftar. Silakan daftar terlebih dahulu.", 
+            "info"
+          );
+          
+          // Redirect ke halaman signup dengan state
+          navigate("/SignUp", { 
+            state: { 
+              googleUser: userData,
+              fromGoogle: true 
+            } 
+          });
+        } else {
+          openToast("toast", true, "Login with Google failed", "error");
+        }
       }
     },
     onError: () => {
