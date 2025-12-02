@@ -2,20 +2,19 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { X, Copy, Facebook, Twitter, Link2, Share2 } from "lucide-react";
+import { useModalStore } from "../../helper/store/modal.store";
 
 const ShareModal = ({ isOpen, onClose, shareData }) => {
   const { t } = useTranslation();
-
+  const { openToast } = useModalStore();
   if (!isOpen) return null;
 
   const { title, url, description } = shareData;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(url).then(() => {
-      // Anda perlu mengirimkan openToast melalui props atau context
-      if (window.openToast) {
-        window.openToast("toast", true, t("main.link_copied"), "success");
-      }
+      openToast("toast", true, t("main.copy_success"), "success");
+
       onClose();
     });
   };
@@ -63,16 +62,16 @@ const ShareModal = ({ isOpen, onClose, shareData }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-md mx-4 bg-white rounded-lg dark:bg-gray-800">
+    <div className="flex fixed inset-0 z-50 justify-center items-center bg-black bg-opacity-50">
+      <div className="mx-4 w-full max-w-md bg-white rounded-lg dark:bg-gray-800">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             {t("main.share")}
           </h3>
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 transition-colors rounded-full hover:text-gray-600 dark:hover:text-gray-300"
+            className="p-1 text-gray-400 rounded-full transition-colors hover:text-gray-600 dark:hover:text-gray-300"
           >
             <X className="w-5 h-5" />
           </button>
@@ -90,9 +89,9 @@ const ShareModal = ({ isOpen, onClose, shareData }) => {
             {navigator.share && (
               <button
                 onClick={handleShareNative}
-                className="flex flex-col items-center p-3 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex flex-col items-center p-3 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <div className="flex items-center justify-center w-12 h-12 mb-2 bg-blue-100 rounded-full dark:bg-blue-900">
+                <div className="flex justify-center items-center mb-2 w-12 h-12 bg-blue-100 rounded-full dark:bg-blue-900">
                   <Share2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <span className="text-xs text-gray-700 dark:text-gray-300">
@@ -104,9 +103,9 @@ const ShareModal = ({ isOpen, onClose, shareData }) => {
             {/* Facebook */}
             <button
               onClick={() => handleSocialShare("facebook")}
-              className="flex flex-col items-center p-3 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="flex flex-col items-center p-3 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <div className="flex items-center justify-center w-12 h-12 mb-2 bg-blue-100 rounded-full dark:bg-blue-900">
+              <div className="flex justify-center items-center mb-2 w-12 h-12 bg-blue-100 rounded-full dark:bg-blue-900">
                 <Facebook className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <span className="text-xs text-gray-700 dark:text-gray-300">
@@ -117,9 +116,9 @@ const ShareModal = ({ isOpen, onClose, shareData }) => {
             {/* Twitter */}
             <button
               onClick={() => handleSocialShare("twitter")}
-              className="flex flex-col items-center p-3 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="flex flex-col items-center p-3 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <div className="flex items-center justify-center w-12 h-12 mb-2 bg-blue-100 rounded-full dark:bg-blue-900">
+              <div className="flex justify-center items-center mb-2 w-12 h-12 bg-blue-100 rounded-full dark:bg-blue-900">
                 <Twitter className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <span className="text-xs text-gray-700 dark:text-gray-300">
@@ -130,9 +129,9 @@ const ShareModal = ({ isOpen, onClose, shareData }) => {
             {/* Copy Link */}
             <button
               onClick={handleCopyLink}
-              className="flex flex-col items-center p-3 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="flex flex-col items-center p-3 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <div className="flex items-center justify-center w-12 h-12 mb-2 bg-green-100 rounded-full dark:bg-green-900">
+              <div className="flex justify-center items-center mb-2 w-12 h-12 bg-green-100 rounded-full dark:bg-green-900">
                 <Copy className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
               <span className="text-xs text-gray-700 dark:text-gray-300">
@@ -142,9 +141,9 @@ const ShareModal = ({ isOpen, onClose, shareData }) => {
           </div>
 
           {/* Link Preview */}
-          <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-            <div className="flex items-start gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded bg-primary-100 dark:bg-primary-900">
+          <div className="p-3 bg-gray-50 rounded-lg dark:bg-gray-700">
+            <div className="flex gap-3 items-start">
+              <div className="flex justify-center items-center w-10 h-10 rounded bg-primary-100 dark:bg-primary-900">
                 <Link2 className="w-5 h-5 text-primary-600 dark:text-primary-400" />
               </div>
               <div className="flex-1 min-w-0">
