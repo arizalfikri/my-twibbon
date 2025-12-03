@@ -79,6 +79,8 @@ const SignIn = () => {
 
           openToast("toast", true, "Login with Google successful", "success");
           queryClient.removeQueries();
+          // Refetch ads after login
+          queryClient.invalidateQueries(["/ads"]);
           navigate("/");
         } else {
           openToast(
@@ -90,7 +92,7 @@ const SignIn = () => {
         }
       } catch (err) {
         console.error(err);
-        
+
         // Jika error 404 (Not Found), artinya akun belum terdaftar
         if (err.response?.status === 401) {
           const googleUser = await axios.get(
@@ -105,26 +107,26 @@ const SignIn = () => {
           const userData = {
             email: googleUser.data.email,
             name: googleUser.data.name,
-            picture: googleUser.data.picture
+            picture: googleUser.data.picture,
           };
 
           // Simpan data user Google untuk auto-fill di signup
           setPendingGoogleUser(userData);
-          
+
           // Tampilkan toast informasi
           openToast(
-            "toast", 
-            true, 
-            "Akun kamu belum terdaftar. Silakan daftar terlebih dahulu.", 
+            "toast",
+            true,
+            "Akun kamu belum terdaftar. Silakan daftar terlebih dahulu.",
             "info"
           );
-          
+
           // Redirect ke halaman signup dengan state
-          navigate("/SignUp", { 
-            state: { 
+          navigate("/SignUp", {
+            state: {
               googleUser: userData,
-              fromGoogle: true 
-            } 
+              fromGoogle: true,
+            },
           });
         } else {
           openToast("toast", true, "Login with Google failed", "error");
@@ -161,6 +163,8 @@ const SignIn = () => {
         setFullName(response.data.user.fullname);
         setRole(response.data.user.role);
         queryClient.removeQueries();
+        // Refetch ads after login
+        queryClient.invalidateQueries(["/ads"]);
 
         navigate("/");
       }

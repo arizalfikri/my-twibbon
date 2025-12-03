@@ -6,10 +6,15 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { useModalStore } from "../../helper/store/modal.store";
+import { useAdsStore } from "../../helper/store/ads.store";
+import { useSubscriptionStore } from "../../helper/store/subscription.store";
 
 function ModalLogout({ isOpen, onClose }) {
   const queryClient = useQueryClient();
   const { setToken, setEmail, setFullName, setRole } = useGlobalStore();
+  const { clearAds } = useAdsStore();
+  const { clearSubscriptions } = useSubscriptionStore();
+
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { openToast } = useModalStore();
@@ -24,8 +29,12 @@ function ModalLogout({ isOpen, onClose }) {
     setFullName(null);
     setRole(null);
     openToast("toast", true, "Logout Berhasil", "success");
+    clearAds();
+    clearSubscriptions();
 
     queryClient.removeQueries();
+    // Refetch ads after logout
+    queryClient.invalidateQueries(["/ads"]);
     onClose();
     navigate("/");
   };
@@ -34,14 +43,14 @@ function ModalLogout({ isOpen, onClose }) {
 
   return (
     <ModalAlert onClose={onClose}>
-      <div className="max-w-lg mx-auto overflow-hidden bg-white border border-gray-200 shadow-2xl dark:bg-gray-900 rounded-3xl dark:border-gray-700">
+      <div className="overflow-hidden mx-auto max-w-lg bg-white rounded-3xl border border-gray-200 shadow-2xl dark:bg-gray-900 dark:border-gray-700">
         {/* Header Section */}
         <div className="relative px-8 pt-8 pb-6 border-b border-gray-200 dark:border-gray-800">
-          <div className="flex items-center gap-4">
+          <div className="flex gap-4 items-center">
             {/* Icon Warning */}
             <div className="flex-shrink-0">
-              <div className="flex items-center justify-center border border-red-200 w-14 h-14 bg-red-50 dark:bg-red-500/10 rounded-2xl dark:border-red-500/20">
-                <AlertTriangle className="text-red-500 w-7 h-7" />
+              <div className="flex justify-center items-center w-14 h-14 bg-red-50 rounded-2xl border border-red-200 dark:bg-red-500/10 dark:border-red-500/20">
+                <AlertTriangle className="w-7 h-7 text-red-500" />
               </div>
             </div>
 
@@ -61,14 +70,14 @@ function ModalLogout({ isOpen, onClose }) {
         <div className="grid grid-cols-1 gap-4 px-8 py-6 bg-gray-50 dark:bg-gray-800/50 md:grid-cols-2">
           <button
             onClick={onClose}
-            className="w-full px-6 py-3 text-sm font-semibold text-gray-700 transition-all duration-200 bg-white border border-gray-300 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-600"
+            className="px-6 py-3 w-full text-sm font-semibold text-gray-700 bg-white rounded-xl border border-gray-300 transition-all duration-200 dark:text-gray-400 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-600"
           >
             {t("logout.cancel")}
           </button>
 
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center w-full gap-2 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 bg-red-600 shadow-md rounded-xl hover:bg-red-700 hover:shadow-red-500/30"
+            className="flex gap-2 justify-center items-center px-6 py-3 w-full text-sm font-semibold text-white bg-red-600 rounded-xl shadow-md transition-all duration-200 hover:bg-red-700 hover:shadow-red-500/30"
           >
             <LogOut className="w-4 h-4" />
             <span>{t("logout.confirm")}</span>

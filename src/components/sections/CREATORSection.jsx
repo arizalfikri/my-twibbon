@@ -87,7 +87,9 @@ const CreatorSection = () => {
         "py-20 overflow-hidden dark:bg-[#0f172a] transition-colors duration-300 font-creator"
       }
     >
+     
       <div className="container relative p-24 px-4 mx-auto bg-gray-900 rounded-2xl">
+        
         <div className="hidden absolute top-0 bottom-0 left-0 z-20 w-28 pointer-events-none md:block">
           <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-transparent rounded-2xl opacity-90"></div>
         </div>

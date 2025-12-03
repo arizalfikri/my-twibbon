@@ -57,7 +57,7 @@ function TwiboneCreatePage() {
     setError,
     clearErrors,
   } = useForm({
-    resolver: yupResolver(createTwiboneSchema),
+    resolver: yupResolver(createTwiboneSchema(uploadType)),
     mode: "onChange",
     defaultValues: {
       template: null,
@@ -187,7 +187,7 @@ function TwiboneCreatePage() {
 
       <div className="flex flex-col flex-1 md:flex-row md:overflow-hidden">
         {isDesktop && (
-          <div className="w-1/2 border-r bg-gray-50 dark:bg-gray-800">
+          <div className="w-1/2 bg-gray-50 border-r dark:bg-gray-800">
             <ImageUploadArea
               name="template"
               setValue={setValue}
@@ -261,7 +261,7 @@ function TwiboneCreatePage() {
                 </div>
               </div>
 
-              <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t md:static md:p-6 dark:bg-gray-900">
+              <div className="fixed right-0 bottom-0 left-0 p-4 bg-white border-t md:static md:p-6 dark:bg-gray-900">
                 <button
                   type="button"
                   disabled={isSubmitDisabled}
@@ -273,7 +273,7 @@ function TwiboneCreatePage() {
                   }`}
                 >
                   {isPending ? (
-                    <span className="flex items-center justify-center">
+                    <span className="flex justify-center items-center">
                       <Loader2 size={20} className="mr-2 animate-spin" />
                       {t("create.buttons.saving")}
                     </span>

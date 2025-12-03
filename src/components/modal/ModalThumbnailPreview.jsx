@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { X, Shuffle } from "lucide-react";
+import { X, Shuffle, Upload } from "lucide-react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { toPng, toBlob } from "html-to-image";
 
@@ -41,28 +41,6 @@ const compressImage = async (blob, maxSize = 2 * 1024 * 1024) => {
   });
 };
 
-// Utility function to generate SVG thumbnail (ultra-lightweight)
-const generateSvgThumbnail = async (canvas) => {
-  return new Promise((resolve) => {
-    canvas.toBlob(async (blob) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onload = (e) => {
-        const base64 = e.target.result.split(",")[1];
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="144" height="144">
-          <image href="data:image/png;base64,${base64}" width="144" height="144"/>
-        </svg>`;
-
-        const svgBlob = new Blob([svg], { type: "image/svg+xml" });
-        const svgFile = new File([svgBlob], "thumbnail.svg", {
-          type: "image/svg+xml",
-        });
-        resolve(svgFile);
-      };
-    });
-  });
-};
-
 function ModalThumbnailPreview({
   isOpen,
   onClose,
@@ -74,7 +52,9 @@ function ModalThumbnailPreview({
   const canvasRef = useRef(null);
   const [displayThumbs, setDisplayThumbs] = useState([]);
   const [frameSrc, setFrameSrc] = useState(null);
-  const [compressionFormat, setCompressionFormat] = useState("png"); // "png" or "svg"
+  const [isAdjusting, setIsAdjusting] = useState(false);
+  const [adjustedThumb, setAdjustedThumb] = useState(null);
+  const transformRef = useRef(null);
 
   const thumbnails = [
     // Male
@@ -102,6 +82,15 @@ function ModalThumbnailPreview({
     setDisplayThumbs(getRandomThree());
   }, []);
 
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedThumb(null);
+      setAdjustedThumb(null);
+      setIsAdjusting(false);
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     let mounted = true;
     setFrameSrc(null);
@@ -124,12 +113,14 @@ function ModalThumbnailPreview({
 
   const handleShuffle = () => {
     setDisplayThumbs(getRandomThree());
+    setAdjustedThumb(null);
   };
 
   if (!isOpen) return null;
 
   const handlePublish = async () => {
-    if (!canvasRef.current || !selectedThumb) return;
+    const thumbToUse = adjustedThumb || selectedThumb;
+    if (!canvasRef.current || !thumbToUse) return;
 
     try {
       const blob = await toBlob(canvasRef.current, {
@@ -142,20 +133,16 @@ function ModalThumbnailPreview({
 
       if (!blob) throw new Error("Blob export failed");
 
-      let finalFile;
-      if (compressionFormat === "svg") {
-        // Generate SVG version
-        finalFile = await generateSvgThumbnail(canvasRef.current);
-      } else {
-        // Compress PNG to under 2MB
-        const compressedBlob = await compressImage(blob);
-        finalFile = new File([compressedBlob], "thumbnail.png", {
-          type: "image/png",
-        });
-      }
+      // Compress PNG to under 2MB
+      const compressedBlob = await compressImage(blob);
+      const finalFile = new File([compressedBlob], "thumbnail.png", {
+        type: "image/png",
+      });
 
       console.log(
-        `Thumbnail created: ${finalFile.name} (${(finalFile.size / 1024).toFixed(2)} KB)`
+        `Thumbnail created: ${finalFile.name} (${(
+          finalFile.size / 1024
+        ).toFixed(2)} KB)`
       );
       onConfirm(finalFile);
     } catch (err) {
@@ -164,7 +151,7 @@ function ModalThumbnailPreview({
       try {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        img.src = selectedThumb;
+        img.src = thumbToUse;
 
         img.onload = async () => {
           try {
@@ -178,18 +165,15 @@ function ModalThumbnailPreview({
             const res = await fetch(fallbackDataUrl);
             const blob = await res.blob();
 
-            let finalFile;
-            if (compressionFormat === "svg") {
-              finalFile = await generateSvgThumbnail(canvas);
-            } else {
-              const compressedBlob = await compressImage(blob);
-              finalFile = new File([compressedBlob], "thumbnail.png", {
-                type: "image/png",
-              });
-            }
+            const compressedBlob = await compressImage(blob);
+            const finalFile = new File([compressedBlob], "thumbnail.png", {
+              type: "image/png",
+            });
 
             console.log(
-              `Thumbnail created (fallback): ${finalFile.name} (${(finalFile.size / 1024).toFixed(2)} KB)`
+              `Thumbnail created (fallback): ${finalFile.name} (${(
+                finalFile.size / 1024
+              ).toFixed(2)} KB)`
             );
             onConfirm(finalFile);
           } catch (convErr) {
@@ -215,7 +199,7 @@ function ModalThumbnailPreview({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center p-4 bg-black/40 md:items-center md:justify-center">
+    <div className="flex fixed inset-0 z-50 justify-center items-end p-4 bg-black/40 md:items-center md:justify-center">
       <div
         className="
      bg-white shadow-lg 
@@ -230,7 +214,7 @@ function ModalThumbnailPreview({
       >
         {/* Close */}
         <button
-          className="absolute text-gray-500 top-3 right-3"
+          className="absolute top-3 right-3 text-gray-500"
           onClick={onClose}
         >
           <X size={22} />
@@ -240,29 +224,29 @@ function ModalThumbnailPreview({
         <div className="flex flex-col items-center">
           <div
             ref={canvasRef}
-            className="relative mb-3 overflow-hidden border rounded-xl"
+            className="overflow-hidden relative mb-3 border"
             style={{ width: 144, height: 144 }}
           >
             {/* LAYER ORDER BERDASARKAN TYPE */}
             {uploadType === "frame" ? (
               <>
                 {/* Frame: Sample di belakang, frame di depan */}
-                {selectedThumb && (
+                {(adjustedThumb || selectedThumb) && (
                   <div className="absolute inset-0">
                     <TransformWrapper
                       defaultScale={1}
                       minScale={0.5}
-                      maxScale={8}
+                      maxScale={5}
                       centerOnInit
-                      wheel={{ disabled: false }}
+                      wheel={{ disabled: true }}
                       doubleClick={{ disabled: true }}
-                      pinch={{ disabled: false }}
-                      panning={{ disabled: false }}
+                      pinch={{ disabled: true }}
+                      panning={{ disabled: true }}
                     >
                       <TransformComponent>
                         <img
-                          src={selectedThumb}
-                          className="object-cover w-full h-full"
+                          src={adjustedThumb || selectedThumb}
+                          className="object-contain w-full h-full"
                           alt="thumb"
                           crossOrigin="anonymous"
                         />
@@ -275,7 +259,7 @@ function ModalThumbnailPreview({
                 {frameSrc && (
                   <img
                     src={frameSrc}
-                    className="absolute inset-0 z-10 object-cover w-full h-full pointer-events-none"
+                    className="object-cover absolute inset-0 z-10 w-full h-full pointer-events-none"
                     alt="frame"
                     crossOrigin="anonymous"
                   />
@@ -287,29 +271,29 @@ function ModalThumbnailPreview({
                 {frameSrc && (
                   <img
                     src={frameSrc}
-                    className="absolute inset-0 object-cover w-full h-full"
+                    className="object-cover absolute inset-0 w-full h-full"
                     alt="background"
                     crossOrigin="anonymous"
                   />
                 )}
 
-                {selectedThumb && (
+                {(adjustedThumb || selectedThumb) && (
                   <div className="absolute inset-0 z-10">
                     <TransformWrapper
                       defaultScale={1}
-                      minScale={0.1}
-                      maxScale={8}
+                      minScale={0.5}
+                      maxScale={5}
                       centerOnInit
                       limitToBounds={false}
-                      wheel={{ disabled: false }}
+                      wheel={{ disabled: true }}
                       doubleClick={{ disabled: true }}
-                      pinch={{ disabled: false }}
-                      panning={{ disabled: false }}
+                      pinch={{ disabled: true }}
+                      panning={{ disabled: true }}
                     >
                       <TransformComponent>
                         <img
-                          src={selectedThumb}
-                          className="object-cover w-full h-full"
+                          src={adjustedThumb || selectedThumb}
+                          className="object-contain w-full h-full"
                           alt="thumb"
                           crossOrigin="anonymous"
                         />
@@ -320,7 +304,172 @@ function ModalThumbnailPreview({
               </>
             )}
           </div>
+
+          {/* Sesuaikan Button */}
+          {selectedThumb && !isAdjusting && (
+            <div className="flex justify-center mb-4">
+              <button
+                onClick={() => setIsAdjusting(true)}
+                className="px-6 py-2 font-medium text-white rounded-lg bg-primary-500 hover:bg-primary-600"
+              >
+                Sesuaikan
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* Adjustment Modal */}
+        {isAdjusting && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60">
+            <div className="p-6 w-full max-w-md bg-white rounded-xl">
+              <h3 className="mb-4 text-lg font-semibold text-center">
+                Sesuaikan Foto
+              </h3>
+
+              <div
+                className="overflow-hidden relative mb-4 rounded-xl border"
+                style={{
+                  width: "100%",
+                  maxWidth: 400,
+                  height: 400,
+                  margin: "0 auto",
+                }}
+              >
+                {uploadType === "frame" ? (
+                  <>
+                    {selectedThumb && (
+                      <div className="absolute inset-0">
+                        <TransformWrapper
+                          ref={transformRef}
+                          defaultScale={1}
+                          minScale={0.5}
+                          maxScale={5}
+                          centerOnInit
+                          wheel={{ disabled: false }}
+                          doubleClick={{ disabled: true }}
+                          pinch={{ disabled: false }}
+                          panning={{ disabled: false }}
+                        >
+                          <TransformComponent
+                            wrapperStyle={{ width: "100%", height: "100%" }}
+                          >
+                            <img
+                              src={selectedThumb}
+                              className="object-contain w-full h-full"
+                              alt="adjust"
+                              crossOrigin="anonymous"
+                            />
+                          </TransformComponent>
+                        </TransformWrapper>
+                      </div>
+                    )}
+
+                    {frameSrc && (
+                      <img
+                        src={frameSrc}
+                        className="object-cover absolute inset-0 z-10 w-full h-full pointer-events-none"
+                        alt="frame"
+                        crossOrigin="anonymous"
+                      />
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {frameSrc && (
+                      <img
+                        src={frameSrc}
+                        className="object-cover absolute inset-0 w-full h-full"
+                        alt="background"
+                        crossOrigin="anonymous"
+                      />
+                    )}
+
+                    {selectedThumb && (
+                      <div className="absolute inset-0 z-10">
+                        <TransformWrapper
+                          ref={transformRef}
+                          defaultScale={1}
+                          minScale={0.5}
+                          maxScale={5}
+                          centerOnInit
+                          limitToBounds={false}
+                          wheel={{ disabled: false }}
+                          doubleClick={{ disabled: true }}
+                          pinch={{ disabled: false }}
+                          panning={{ disabled: false }}
+                        >
+                          <TransformComponent
+                            wrapperStyle={{ width: "100%", height: "100%" }}
+                          >
+                            <img
+                              src={selectedThumb}
+                              className="object-contain w-full h-full"
+                              alt="adjust"
+                              crossOrigin="anonymous"
+                            />
+                          </TransformComponent>
+                        </TransformWrapper>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              <p className="mb-4 text-sm text-center text-gray-600">
+                Gunakan scroll untuk zoom, drag untuk menggeser foto
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsAdjusting(false)}
+                  className="flex-1 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={async () => {
+                    // Capture the adjusted image
+                    const adjustCanvas = document.createElement("canvas");
+                    adjustCanvas.width = 144;
+                    adjustCanvas.height = 144;
+                    const ctx = adjustCanvas.getContext("2d");
+
+                    try {
+                      const blob = await toBlob(
+                        document.querySelector(
+                          ".fixed.inset-0.z-\\[60\\] .relative"
+                        ),
+                        {
+                          pixelRatio: 2,
+                          useCORS: true,
+                          cacheBust: true,
+                          backgroundColor: "transparent",
+                        }
+                      );
+
+                      if (blob) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                          setAdjustedThumb(e.target.result);
+                          setIsAdjusting(false);
+                        };
+                        reader.readAsDataURL(blob);
+                      }
+                    } catch (err) {
+                      console.error("Failed to capture adjusted image:", err);
+                      // Fallback: just use the selected thumb
+                      setAdjustedThumb(selectedThumb);
+                      setIsAdjusting(false);
+                    }
+                  }}
+                  className="flex-1 py-2 font-medium text-white rounded-lg bg-primary-500 hover:bg-primary-600"
+                >
+                  Konfirmasi
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Thumbnail Picker */}
         <div className="mt-6">
@@ -337,37 +486,58 @@ function ModalThumbnailPreview({
                     ? "border-primary-500"
                     : "border-gray-300"
                 }`}
-                onClick={() => setSelectedThumb(item)}
+                onClick={() => {
+                  setSelectedThumb(item);
+                  setAdjustedThumb(null);
+                }}
               >
                 <img src={item} className="object-cover w-20 h-20 rounded-md" />
               </div>
             ))}
 
             {/* Upload Button */}
-            <label className="flex items-center justify-center w-full h-20 border border-gray-300 rounded-lg cursor-pointer">
+            <label className="flex justify-center items-center w-full h-full text-gray-600 rounded-lg border border-gray-300 cursor-pointer">
               <input
                 type="file"
+                accept="image/png,image/jpeg,image/jpg,image/webp"
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files[0];
                   if (!file) return;
 
+                  // Validate file type
+                  const allowedTypes = [
+                    "image/png",
+                    "image/jpeg",
+                    "image/jpg",
+                    "image/webp",
+                  ];
+                  if (!allowedTypes.includes(file.type)) {
+                    alert(
+                      "Format file tidak didukung. Gunakan PNG, JPG, JPEG, atau WEBP."
+                    );
+                    e.target.value = "";
+                    return;
+                  }
+
                   const reader = new FileReader();
-                  reader.onload = () => setSelectedThumb(reader.result);
+                  reader.onload = () => {
+                    setSelectedThumb(reader.result);
+                    setAdjustedThumb(null);
+                  };
                   reader.readAsDataURL(file);
+                  e.target.value = "";
                 }}
               />
-              Upload
+              <Upload size={18} />
             </label>
           </div>
-
-  
 
           {/* Shuffle button */}
           <div className="flex justify-center mb-6">
             <button
               onClick={handleShuffle}
-              className="flex items-center gap-2 px-4 py-2 text-white rounded-lg bg-primary-500"
+              className="flex gap-2 items-center px-4 py-2 text-white rounded-lg bg-primary-500"
             >
               <Shuffle size={18} />
               Shuffle
@@ -378,14 +548,14 @@ function ModalThumbnailPreview({
           <button
             onClick={handlePublish}
             disabled={!selectedThumb}
-            className="w-full py-3 mb-3 font-medium text-white rounded-lg bg-primary-500 disabled:bg-gray-400"
+            className="py-3 mb-3 w-full font-medium text-white rounded-lg bg-primary-500 disabled:bg-gray-400"
           >
             Publish Campaign
           </button>
 
           <button
             onClick={onClose}
-            className="w-full py-3 text-gray-700 bg-gray-200 rounded-lg"
+            className="py-3 w-full text-gray-700 bg-gray-200 rounded-lg"
           >
             Back
           </button>

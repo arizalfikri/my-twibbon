@@ -30,25 +30,32 @@ export const forgotPasswordSchema = yup.object({
     email: yup.string().required(() => t('validation.email_required')),
 });
 
-export const createTwiboneSchema = yup.object({
-    title: yup.string().required(() => t('validation.title_required')),
-    caption: yup
-        .string()
-        .required(() => t('validation.caption_required'))
-        .test("len", () => t('validation.caption_max_length', { max: 500 }), (val) => {
-            return val ? val.length <= 500 : false;
-        }),
-    template: yup
-        .mixed()
-        .required(() => t('validation.image_required'))
-        .test("fileType", () => t('validation.image_format_unsupported'), (value) => {
-            return value && ["image/png"].includes(value.type);
-        }),
-    link: yup   
-        .string()
-        .required(() => t('validation.link_required'))
-        .matches(/^\S*$/, () => t('validation.link_no_spaces')),
-});
+export const createTwiboneSchema = (uploadType = "frame") => {
+    // Allowed types based on upload type
+    const allowedTypes = uploadType === "frame"
+        ? ["image/png", "image/webp"] // frame harus transparan
+        : ["image/png", "image/jpeg", "image/jpg", "image/webp"]; // background bisa semua
+
+    return yup.object({
+        title: yup.string().required(() => t('validation.title_required')),
+        caption: yup
+            .string()
+            .required(() => t('validation.caption_required'))
+            .test("len", () => t('validation.caption_max_length', { max: 500 }), (val) => {
+                return val ? val.length <= 500 : false;
+            }),
+        template: yup
+            .mixed()
+            .required(() => t('validation.image_required'))
+            .test("fileType", () => t('validation.image_format_unsupported'), (value) => {
+                return value && allowedTypes.includes(value.type);
+            }),
+        link: yup
+            .string()
+            .required(() => t('validation.link_required'))
+            .matches(/^\S*$/, () => t('validation.link_no_spaces')),
+    });
+};
 
 export const setCaptionSchema = yup.object({
     caption: yup

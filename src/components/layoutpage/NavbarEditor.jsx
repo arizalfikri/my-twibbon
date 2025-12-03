@@ -16,7 +16,7 @@ function NavbarEditor({ title, onExit, disableModalExit = false, twibbon }) {
   };
   return (
     <>
-      <nav className="border-b shadow-lg bg-primary-600 dark:bg-gray-900 border-prime-600 dark:border-gray-700">
+      <nav className="border-b shadow-lg bg-primary-600 dark:bg-gray-900 border-prime-600 dark:border-gray-700 relative z-10">
         <div className="container mx-auto sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Desktop */}

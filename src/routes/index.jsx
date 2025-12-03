@@ -22,112 +22,62 @@ import PaymentSuccessPage from "../pages/PaymentSuccesPage.jsx";
 import PaymentFailedPage from "../pages/PaymentFailedPage.jsx";
 import PaymentCanceledPage from "../pages/PaymentCanceledPage.jsx";
 import ProfilePublic from "../pages/ProfilePublic.jsx";
+import AdsLayout from "../components/layoutpage/AdsLayout.jsx";
+import Historypage from "../pages/Historypage.jsx";
+import DetailPaymentPage from "../pages/DetailPaymentPage.jsx";
+import AdvanceAnalyticsPage from "../pages/AdvanceAnalyticsPage.jsx";
 
 export const router = createBrowserRouter([
+  // ========== ROUTE DENGAN LAYOUT ==========
+  {
+    path: "/",
+    element: <AdsLayout />,
+    children: [
+      { path: "privacy-policy", element: <PrivacyPolicy /> },
+      { path: "explore", element: <ExploreTwibone /> },
+
+      { path: ":slug", element: <MainTwibone /> },
+      { path: ":slug/editorPage", element: <EditorPage /> },
+
+      { path: "result", element: <Result /> },
+
+      { path: "create/frame", element: <TwiboneCreatePage /> },
+      { path: "create/background", element: <TwiboneCreatePage /> },
+
+      { path: "detailprofile", element: <DetailProfile /> },
+      { path: "editprofile", element: <EditProfile /> },
+
+      { path: "user/:username", element: <ProfilePublic /> },
+      { path: "history", element: <Historypage /> },
+      { path: "history/detail", element: <DetailPaymentPage /> },
+    ],
+  },
+
+  // ========== ROUTE TANPA LAYOUT ==========
   {
     path: "/",
     children: [
-      {
-        index: true,
-        element: <TwiboneHomepage />,
-      },
-      {
-        path: "privacy-policy",
-        element: <PrivacyPolicy />,
-      },
-      {
-        path: "explore",
-        element: <ExploreTwibone />,
-      },
-      {
-        path: ":slug/editorPage",
-        element: <EditorPage />,
-      },
-      {
-        path: "result",
-        element: <Result />,
-      },
-      {
-        path: "signin",
-        element: <SignIn />,
-      },
-      {
-        path: "signup",
-        element: <SignUp />,
-      },
-      {
-        path: "forgot-password",
-        element: <ForgotPassword />,
-      },
-      {
-        path: "reset-password/:token",
-        element: <SetPassword />,
-      },
-      {
-        path: ":slug",
-        element: <MainTwibone />,
-      },
+      { index: true, element: <TwiboneHomepage /> },
+      { path: "signin", element: <SignIn /> },
+      { path: "signup", element: <SignUp /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
+      { path: "reset-password/:token", element: <SetPassword /> },
 
-      {
-        path: "create/frame",
-        element: <TwiboneCreatePage />,
-      },
-      {
-        path: "create/background",
-        element: <TwiboneCreatePage />,
-      },
-      {
-        path: "detailprofile",
-        element: <DetailProfile />,
-      },
-          {
-        path: "user/:username",
-        element: <ProfilePublic />,
-      },
-      {
-        path: "editprofile",
-        element: <EditProfile />,
-      },
-      {
-        path: "membership",
-        element: <MembershipPage />,
-      },
-      {
-        path: "checkout",
-        element: <CheckoutPage />,
-      },
-      {
-        path: "checkout/qris/:referer",
-        element: <QrisPage />,
-      },
-      {
-        path: "checkout/ewallet/:referer",
-        element: <EwalletPage />,
-      },
-      {
-        path: "checkout/va/:referer",
-        element: <VirtualAccountPage />,
-      },
-      {
-        path: "payment-cancelled",
-        element: <PaymentCanceledPage />,
-      },
-      {
-        path: "payment-failed",
-        element: <PaymentFailedPage />,
-      },
-      {
-        path: "payment-success",
-        element: <PaymentSuccessPage />,
-      },
-      {
-        path: "404",
-        element: <NotFound />,
-      },
-      {
-        path: "*",
-        element: <NotFound />,
-      },
+      { path: "membership", element: <MembershipPage /> },
+
+      { path: "checkout", element: <CheckoutPage /> },
+      { path: "checkout/qris/:referer", element: <QrisPage /> },
+      { path: "checkout/ewallet/:referer", element: <EwalletPage /> },
+      { path: "checkout/va/:referer", element: <VirtualAccountPage /> },
+
+      { path: "payment-success", element: <PaymentSuccessPage /> },
+      { path: "payment-failed", element: <PaymentFailedPage /> },
+      { path: "payment-cancelled", element: <PaymentCanceledPage /> },
+
+      { path: "analytics", element: <AdvanceAnalyticsPage /> },
     ],
   },
+
+  // ========== 404 / wildcard ==========
+  { path: "*", element: <NotFound /> },
 ]);

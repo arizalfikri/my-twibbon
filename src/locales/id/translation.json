@@ -1,6 +1,6 @@
 {
   "title": "MyTwibbon",
-  "add_twibone": "Buat Twibbon",
+  "add_twibone": "Mulai Membuat",
   "add": "Tambah",
   "login": "Masuk",
   "logout_label": "Keluar",
@@ -15,7 +15,7 @@
     "start_creating": "Mulai Membuat",
     "explore_twibone": "Jelajahi Twibbon",
     "twibbon_title": "Twibbon Terbaru",
-    "twibbon_Subtitle": "Kampanye Twibbon yang Baru Dirilis",
+    "twibbon_Subtitle": "Twibbon Twibbon yang Baru Dirilis",
     "loading_latest": "Memuat Twibbon terbaru...",
     "view_all": "Lihat Semua",
     "category_all": "Semua",
@@ -63,19 +63,19 @@
   "create": {
     "page_title_frame": "Buat Frame Twibbon",
     "page_title_background": "Buat Background Twibbon",
-    "step_description": "Lengkapi informasi kampanye Anda",
+    "step_description": "Lengkapi informasi Twibbon Anda",
     "step_counter": "Langkah {{current}} dari {{total}}",
     "steps": {
       "image": "Gambar",
-      "campaign_details": "Rincian Kampanye"
+      "campaign_details": "Rincian Twibbon"
     },
     "form": {
-      "campaign_title": "Judul Kampanye",
-      "title_placeholder": "Masukkan judul kampanye",
+      "campaign_title": "Judul Twibbon",
+      "title_placeholder": "Masukkan judul Twibbon",
       "caption": "Deskripsi",
-      "caption_placeholder": "Tulis deskripsi singkat tentang kampanye Anda",
-      "campaign_link": "Tautan Kampanye",
-      "link_placeholder": "Masukkan tautan unik untuk kampanye (contoh: lof6)"
+      "caption_placeholder": "Tulis deskripsi singkat tentang Twibbon Anda",
+      "campaign_link": "Tautan Twibbon",
+      "link_placeholder": "Masukkan tautan unik untuk Twibbon (contoh: lof6)"
     },
     "buttons": {
       "back": "Kembali",
@@ -84,8 +84,8 @@
       "saving": "Menyimpan..."
     },
     "errors": {
-      "duplicate_title": "Judul kampanye sudah digunakan.",
-      "duplicate_link": "Tautan kampanye sudah digunakan.",
+      "duplicate_title": "Judul Twibbon sudah digunakan.",
+      "duplicate_link": "Tautan Twibbon sudah digunakan.",
       "contributor_required": "Anda harus login sebagai kontributor untuk membuat Twibbon.",
       "data_already_used": "Data sudah digunakan.",
       "server_error": "Terjadi kesalahan pada server. Silakan coba lagi nanti."
@@ -190,11 +190,11 @@
     "hue_desc": "Rona Warna"
   },
   "profile": {
-    "campaign": "Kampanye",
+    "campaign": "Twibbon",
     "posts": "Postingan",
     "collections": "Koleksi",
     "edit_profile": "Edit Profil",
-    "campaigns": "Kampanye",
+    "campaigns": "Twibbon",
     "twibbone_will_appear": "Twibbone yang kamu buat akan muncul di sini.",
     "posts_will_appear": "Postingan yang Anda buat akan muncul di sini",
     "no_collections": "Belum Ada Koleksi",
@@ -301,14 +301,14 @@
     "preview_image": "Preview Gambar",
     "no_image": "Tidak ada gambar",
     "form": {
-      "campaign_title": "Judul Kampanye",
-      "title_placeholder": "Masukkan judul kampanye...",
+      "campaign_title": "Judul Twibbon",
+      "title_placeholder": "Masukkan judul Twibbon...",
       "title_required": "Wajib diisi",
       "caption": "Caption",
       "caption_placeholder": "Tulis caption untuk twibbon ini...",
       "caption_description": "Caption akan ditampilkan sebagai deskripsi twibbon",
-      "campaign_link": "Link Kampanye",
-      "link_placeholder": "link-kampanye",
+      "campaign_link": "Link Twibbon",
+      "link_placeholder": "link-Twibbon",
       "link_required": "Wajib diisi",
       "link_description": "Link yang akan digunakan untuk mengakses twibbon",
       "checking_status": "(Memeriksa...)"
@@ -323,8 +323,8 @@
       "wait_checking": "Tunggu sebentar, sedang memeriksa data...",
       "fix_errors": "Perbaiki error sebelum menyimpan",
       "update_success": "Twibbon berhasil diperbarui!",
-      "duplicate_title": "Judul sudah digunakan oleh kampanye lain",
-      "duplicate_link": "Link kampanye sudah digunakan"
+      "duplicate_title": "Judul sudah digunakan oleh Twibbon lain",
+      "duplicate_link": "Link Twibbon sudah digunakan"
     },
     "errors": {
       "invalid_data": "Data tidak valid",
@@ -428,7 +428,7 @@
       "district": "Kel. Kebon Sirih, Kec. Menteng",
       "city_postal": "Jakarta Pusat 10340"
     },
-    "copyright": "© {{year}} MyTwibbon by Digital Edu Indonesia. All rights reserved.",
+    "copyright": "© {{year}} MyTwibbon . All rights reserved.",
     "privacy_policy": "Privacy Policy",
     "terms_of_service": "Terms of Service",
     "contact_us": "WhatsApp"
@@ -563,7 +563,7 @@
     "select_upload_thumbnail": "Pilih atau Upload Thumbnail",
     "upload": "Upload",
     "shuffle": "Acak",
-    "publish_campaign": "Publikasikan Kampanye",
+    "publish_campaign": "Publikasikan Twibbon",
     "back": "Kembali",
     "free_ratio": "Rasio Bebas",
     "export": "Export",

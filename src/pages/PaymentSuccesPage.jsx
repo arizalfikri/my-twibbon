@@ -1,11 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import {
-  CheckCircle,
-  House,
-} from "lucide-react";
+import { CheckCircle, House } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layoutpage/Navbar";
+import { useQueryClient } from "@tanstack/react-query";
 
 function PaymentSuccessPage() {
   const containerRef = useRef(null);
@@ -17,8 +15,12 @@ function PaymentSuccessPage() {
   const listItem2Ref = useRef(null);
   const finalMessageRef = useRef(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
+    // Refetch ads after successful payment
+    queryClient.invalidateQueries(["/ads"]);
+
     const tl = gsap.timeline();
 
     // Animasi container masuk
@@ -209,19 +211,21 @@ function PaymentSuccessPage() {
             >
               Selamat! Membership Anda telah berhasil diaktifkan. Pembayaran
               Anda sudah kami konfirmasi dan akun Anda kini memiliki status{" "}
-              <strong className="text-green-600 dark:text-green-400">Member Aktif</strong>. Dengan membership aktif, Anda
-              mendapatkan akses ke:
+              <strong className="text-green-600 dark:text-green-400">
+                Member Aktif
+              </strong>
+              . Dengan membership aktif, Anda mendapatkan akses ke:
             </p>
 
             <ul className="mb-6 space-y-3 text-gray-600 dark:text-gray-300">
-              <li 
+              <li
                 ref={listItem1Ref}
                 className="flex items-center justify-center gap-2 p-3 transition-all duration-300 rounded-lg bg-green-50 dark:bg-green-900/20 hover:scale-105"
               >
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="font-medium">Fitur premium tanpa batas</span>
               </li>
-              <li 
+              <li
                 ref={listItem2Ref}
                 className="flex items-center justify-center gap-2 p-3 transition-all duration-300 rounded-lg bg-green-50 dark:bg-green-900/20 hover:scale-105"
               >
@@ -230,7 +234,7 @@ function PaymentSuccessPage() {
               </li>
             </ul>
 
-            <p 
+            <p
               ref={finalMessageRef}
               className="mb-8 text-lg leading-relaxed text-gray-600 dark:text-gray-300"
             >
