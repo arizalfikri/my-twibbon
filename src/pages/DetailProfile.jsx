@@ -253,7 +253,7 @@ const DetailProfile = () => {
 
   // Share handlers
   const handlePostShare = (post) => {
-    const shareUrl = `${window.location.origin}/post/${post.id}`;
+    const shareUrl = `${window.location.origin}/${post.event_twibbon.slug_event_twibbon}`;
     const title = post.caption || "Check out this post!";
 
     setShareData({

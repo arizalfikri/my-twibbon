@@ -3,6 +3,17 @@ import { X, Shuffle, Upload } from "lucide-react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { toPng, toBlob } from "html-to-image";
 
+// Import local thumbnails
+import SampleBg1 from "../../assets/images/thumbnails/sample_bg.png";
+import SampleBg2 from "../../assets/images/thumbnails/sample_bg4.png";
+import SampleBg3 from "../../assets/images/thumbnails/sample_bg2.png";
+import SampleBg4 from "../../assets/images/thumbnails/sample_bg3.png";
+
+import SampleNoBg1 from "../../assets/images/thumbnails/sample_nobg.png";
+import SampleNoBg2 from "../../assets/images/thumbnails/sample_nobg4.png";
+import SampleNoBg3 from "../../assets/images/thumbnails/sample_nobg2.png";
+import SampleNoBg4 from "../../assets/images/thumbnails/sample_nobg3.png";
+
 // Utility function to compress image to under 2MB
 const compressImage = async (blob, maxSize = 2 * 1024 * 1024) => {
   if (blob.size <= maxSize) return blob;
@@ -56,31 +67,18 @@ function ModalThumbnailPreview({
   const [adjustedThumb, setAdjustedThumb] = useState(null);
   const transformRef = useRef(null);
 
-  const thumbnails = [
-    // Male
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-
-    // Female
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde",
-
-    // Neutral / Random portraits
-    "https://picsum.photos/id/1005/600/600",
-    "https://picsum.photos/id/1011/600/600",
-    "https://picsum.photos/id/1027/600/600",
-  ];
+  const bgThumbnails = [SampleBg1, SampleBg2, SampleBg3, SampleBg4];
+  const nobgThumbnails = [SampleNoBg1, SampleNoBg2, SampleNoBg3, SampleNoBg4];
 
   const getRandomThree = () => {
-    const shuffled = [...thumbnails].sort(() => 0.5 - Math.random());
+    const sourceThumbs = uploadType === "frame" ? bgThumbnails : nobgThumbnails;
+    const shuffled = [...sourceThumbs].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 3);
   };
 
   useEffect(() => {
     setDisplayThumbs(getRandomThree());
-  }, []);
+  }, [uploadType]);
 
   // Reset state when modal opens
   useEffect(() => {

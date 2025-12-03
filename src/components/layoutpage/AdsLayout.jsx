@@ -45,7 +45,7 @@ function AdsHeader() {
 
       const interval = setInterval(() => {
         setCurrentAds(getRandomAds(ads));
-      }, 5000); // 5 seconds
+      }, 5000); //   seconds
 
       return () => clearInterval(interval);
     }
@@ -56,11 +56,11 @@ function AdsHeader() {
 
   return (
     <div className="h-[33vh] w-full dark:bg-gray-800 bg-white flex items-center justify-center relative">
-      <div className="flex gap-4 justify-center items-center p-4 md:h-full w-fit">
+      <div className="flex items-center justify-center gap-4 p-4 md:h-full w-fit">
         {currentAds.map((ad) => (
           <div
             key={ad.id}
-            className="overflow-hidden flex-1 w-full h-full bg-contain rounded-2xl shadow-lg transition-shadow cursor-pointer hover:shadow-xl"
+            className="flex-1 w-full h-full overflow-hidden transition-shadow bg-contain shadow-lg cursor-pointer rounded-2xl hover:shadow-xl"
             onClick={() => {
               if (ad.link) {
                 window.open(ad.link, "_blank");
@@ -76,7 +76,7 @@ function AdsHeader() {
         ))}
       </div>
 <Link to="/membership">
-  <div className="flex absolute -bottom-3 right-5 z-0 justify-center items-center w-24 h-10 text-sm font-semibold text-white bg-gradient-to-r rounded-xl border shadow-lg transition-all cursor-pointer select-none from-primary-600 to-primary-800 shadow-primary-300/40 border-white/10 hover:scale-105 hover:brightness-110 hover:shadow-primary-400/50"
+  <div className="absolute z-0 flex items-center justify-center w-24 h-10 text-sm font-semibold text-white transition-all border shadow-lg cursor-pointer select-none -bottom-3 right-5 bg-gradient-to-r rounded-xl from-primary-600 to-primary-300 shadow-primary-300/40 border-white/10 hover:scale-105 hover:brightness-110 hover:shadow-primary-400/50"
   >
     Hapus Iklan
   </div>

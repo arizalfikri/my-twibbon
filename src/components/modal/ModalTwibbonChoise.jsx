@@ -5,6 +5,8 @@ import Kartini from "../../assets/images/BannerScroll/Kartini-Scroll.png";
 import LOF6 from "../../assets/images/BannerScroll/LOF6-Scroll.webp";
 import Pahlawan from "../../assets/images/BannerScroll/Pahlawan-Scroll.png";
 import NatalBG from "../../assets/images/BannerScroll/Natal_Bg.png";
+import ltbg from "../../assets/images/BannerScroll/lt_bg.png";
+import MuhaBg from "../../assets/images/BannerScroll/Muha_bg.png";
 
 export default function ModalTwibbonChoice({ open, onClose }) {
   const navigate = useNavigate();
@@ -167,7 +169,7 @@ export default function ModalTwibbonChoice({ open, onClose }) {
               </div>
               <div className="relative group">
               <img
-                  src={NatalBG}
+                  src={ltbg}
                   alt="Sample background 2"
                   className="object-cover w-14 h-14 rounded-lg shadow-md transition-transform group-hover:scale-110"
                 />
@@ -175,7 +177,7 @@ export default function ModalTwibbonChoice({ open, onClose }) {
               </div>
               <div className="relative group">
                 <img
-                  src={NatalBG}
+                  src={MuhaBg}
                   alt="Sample background 3"
                   className="object-cover w-14 h-14 rounded-lg shadow-md transition-transform group-hover:scale-110"
                 />

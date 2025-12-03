@@ -5,7 +5,7 @@ function CardHistory({ payment, onViewDetails }) {
 
   const { id, amount, status, createdAt, subscription } = payment;
 
-  const planName = subscription?.plan?.name || "Unknown Plan";
+  const planName = subscription?.plan?.name || "Paket Tidak Diketahui";
   const expirationDate = subscription?.end_date;
 
   const formatDate = (dateString) => {
@@ -26,14 +26,14 @@ function CardHistory({ payment, onViewDetails }) {
   };
 
   const statusConfig = {
-    PENDING: { label: "Pending", color: "bg-orange-100 text-orange-800" },
-    PAID: { label: "Paid", color: "bg-green-100 text-green-800" },
-    FAILED: { label: "Failed", color: "bg-red-100 text-red-800" },
-    EXPIRED: { label: "Expired", color: "bg-gray-100 text-gray-800" },
-    SETTLED: { label: "Settled", color: "bg-blue-100 text-blue-800" },
-    VOIDED: { label: "Voided", color: "bg-gray-100 text-gray-800" },
-    SUCCEEDED: { label: "Succeeded", color: "bg-green-100 text-green-800" },
-    CANCELED: { label: "Canceled", color: "bg-red-100 text-red-800" },
+    PENDING: { label: "Menunggu", color: "bg-orange-100 text-orange-800" },
+    PAID: { label: "Dibayar", color: "bg-green-100 text-green-800" },
+    FAILED: { label: "Gagal", color: "bg-red-100 text-red-800" },
+    EXPIRED: { label: "Kadaluarsa", color: "bg-gray-100 text-gray-800" },
+    SETTLED: { label: "Diselesaikan", color: "bg-blue-100 text-blue-800" },
+    VOIDED: { label: "Dibatalkan", color: "bg-gray-100 text-gray-800" },
+    SUCCEEDED: { label: "Berhasil", color: "bg-green-100 text-green-800" },
+    CANCELED: { label: "Dibatalkan", color: "bg-red-100 text-red-800" },
   };
 
   const statusInfo = statusConfig[status] || {
@@ -72,7 +72,7 @@ function CardHistory({ payment, onViewDetails }) {
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            <span>Date: {formatDate(createdAt)}</span>
+            <span>Tanggal: {formatDate(createdAt)}</span>
           </div>
 
           {expirationDate && (
@@ -90,13 +90,9 @@ function CardHistory({ payment, onViewDetails }) {
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>Expires: {formatDate(expirationDate)}</span>
+              <span>Berakhir: {formatDate(expirationDate)}</span>
             </div>
           )}
-        </div>
-
-        <div className="text-xs text-gray-500 dark:text-gray-400">
-          Transaction ID: #{id}
         </div>
       </div>
 
@@ -111,7 +107,7 @@ function CardHistory({ payment, onViewDetails }) {
             onClick={() => onViewDetails(payment)}
             className="text-sm text-gray-600 underline transition-colors hover:text-primary dark:text-gray-400 dark:hover:text-primary-400"
           >
-            View Details
+            Lihat Detail
           </button>
         </div>
       </div>

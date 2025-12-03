@@ -8,18 +8,18 @@ const FAQSection = () => {
     {
       question: "Apa saja yang termasuk dalam versi gratis MyTwibbon?",
       answer:
-        "Versi gratis MyTwibbon menyediakan fitur dasar untuk membuat, mendukung, dan membagikan kampanye. Namun terdapat beberapa batasan seperti hasil twibbon yang memiliki watermark, adanya iklan, serta tidak tersedianya fitur Campaign Analytics dan opsi kustomisasi lanjutan.",
+        "Versi gratis MyTwibbon menyediakan fitur dasar untuk membuat, mendukung, dan membagikan twibbon. Namun terdapat beberapa batasan seperti hasil twibbon yang memiliki watermark, adanya iklan, serta tidak tersedianya fitur Campaign Analytics dan opsi kustomisasi lanjutan.",
     },
     {
       question:
-        "Saya pengguna Premium, tetapi kampanye saya masih ada watermark. Mengapa bisa begitu?",
+        "Saya pengguna Premium, tetapi twibbon saya masih ada watermark. Mengapa bisa begitu?",
       answer:
-        "Dengan langganan Premium Supporter, Anda dapat mendukung kampanye manapun dan menghasilkan foto twibbon tanpa watermark. Namun, jika Anda membuat kampanye, hasil twibbon orang lain yang mendukung kampanye Anda tetap menyertakan watermark. Pastikan Anda sudah login menggunakan akun dengan langganan Premium Supporter.",
+        "Dengan langganan Premium Supporter, Anda dapat mendukung twibbon manapun dan menghasilkan foto twibbon tanpa watermark. Namun, jika Anda membuat twibbon, hasil twibbon orang lain yang mendukung twibbon Anda tetap menyertakan watermark. Pastikan Anda sudah login menggunakan akun dengan langganan Premium Supporter.",
     },
     {
       question: "Apa perbedaan antara Premium Supporter dan Premium Creator?",
       answer:
-        "Premium Supporter cocok jika Anda hanya ingin membuat twibbon tanpa watermark untuk penggunaan pribadi. Namun jika Anda ingin kampanye Anda menghasilkan twibbon tanpa watermark bagi semua pendukungnya, maka Premium Creator adalah pilihan yang tepat.",
+        "Premium Supporter cocok jika Anda hanya ingin membuat twibbon tanpa watermark untuk penggunaan pribadi. Namun jika Anda ingin twibbon Anda menghasilkan twibbon tanpa watermark bagi semua pendukungnya, maka Premium Creator adalah pilihan yang tepat.",
     },
     {
       question:
@@ -34,20 +34,20 @@ const FAQSection = () => {
     },
     {
       question:
-        "Bisakah saya menghapus iklan di halaman kampanye untuk semua orang?",
+        "Bisakah saya menghapus iklan di halaman twibbon untuk semua orang?",
       answer:
         "Sayangnya tidak. Iklan hanya dihilangkan untuk pengguna MyTwibbon Premium, mirip seperti YouTube Premium yang hanya menghapus iklan untuk pengguna premium.",
     },
     {
       question: "Informasi apa saja yang tersedia di Campaign Analytics?",
       answer:
-        "Campaign Analytics menyediakan data tentang performa kampanye Anda, seperti total pendukung kampanye, total pengunjung kampanye, serta rincian asal pengunjung berdasarkan negara dan kota. Data ini akan hilang jika Anda tidak lagi berlangganan Premium Creator.",
+        "Campaign Analytics menyediakan data tentang performa twibbon Anda, seperti total pendukung twibbon, total pengunjung twibbon, serta rincian asal pengunjung berdasarkan negara dan kota. Data ini akan hilang jika Anda tidak lagi berlangganan Premium Creator.",
     },
     {
       question:
-        "Apakah saya bisa melihat siapa saja yang mendukung kampanye saya?",
+        "Apakah saya bisa melihat siapa saja yang mendukung twibbon saya?",
       answer:
-        "Anda dapat melihat total jumlah pendukung kampanye Anda di Campaign Analytics. Untuk melihat profil pendukung, Anda hanya dapat melihat mereka yang mengunggah foto twibbon ke galeri pendukung kampanye Anda.",
+        "Anda dapat melihat total jumlah pendukung twibbon Anda di Campaign Analytics. Untuk melihat profil pendukung, Anda hanya dapat melihat mereka yang mengunggah foto twibbon ke galeri pendukung twibbon Anda.",
     },
 
     {

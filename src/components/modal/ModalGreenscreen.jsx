@@ -10,8 +10,8 @@ function ModalGreenscreen({ isOpen, isProcessing, forceRender = false }) {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm ">
       <div className="w-full max-w-md bg-white rounded-lg shadow-xl dark:bg-gray-800">
         {/* Header */}
-        <div className="flex items-center gap-3 p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30">
+        <div className="flex gap-3 items-center p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex justify-center items-center w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30">
             <Sparkles className="w-6 h-6 text-primary-600 dark:text-primary-400" />
           </div>
           <div>
@@ -26,13 +26,13 @@ function ModalGreenscreen({ isOpen, isProcessing, forceRender = false }) {
 
         <div className="p-6">
           {/* Animation Section */}
-          <div className="p-4 mb-6 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700/50 dark:border-gray-600">
-            <div className="flex items-center justify-between">
+          <div className="p-4 mb-6 bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-700/50 dark:border-gray-600">
+            <div className="flex justify-between items-center">
               {/* Before - With Background */}
               <div className="flex flex-col items-center">
-                <div className="relative w-16 h-16 mb-2">
+                <div className="relative mb-2 w-16 h-16">
                   <div className="absolute inset-0 rounded-lg bg-primary-400"></div>
-                  <div className="absolute flex items-center justify-center bg-white rounded-full inset-1 dark:bg-gray-800">
+                  <div className="flex absolute inset-1 justify-center items-center bg-white rounded-full dark:bg-gray-800">
                     <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                   </div>
                 </div>
@@ -42,9 +42,9 @@ function ModalGreenscreen({ isOpen, isProcessing, forceRender = false }) {
               </div>
 
               {/* Animated Arrow */}
-              <div className="flex items-center justify-center">
+              <div className="flex justify-center items-center">
                 <svg
-                  className="w-6 h-6 text-primary-500 animate-pulse"
+                  className="w-6 h-6 animate-pulse text-primary-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -60,7 +60,7 @@ function ModalGreenscreen({ isOpen, isProcessing, forceRender = false }) {
 
               {/* After - Transparent Background */}
               <div className="flex flex-col items-center">
-                <div className="relative w-16 h-16 mb-2">
+                <div className="relative mb-2 w-16 h-16">
                   {/* Checkerboard background untuk transparan */}
                   <div
                     className="absolute inset-0 rounded-lg"
@@ -75,12 +75,12 @@ function ModalGreenscreen({ isOpen, isProcessing, forceRender = false }) {
                       backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0px",
                     }}
                   ></div>
-                  <div className="absolute flex items-center justify-center bg-white border border-gray-300 rounded-full inset-1 dark:bg-gray-800 dark:border-gray-600">
+                  <div className="flex absolute inset-1 justify-center items-center bg-white rounded-full border border-gray-300 dark:bg-gray-800 dark:border-gray-600">
                     <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                   </div>
 
                   {/* Animated scanning effect */}
-                  <div className="absolute inset-0 overflow-hidden rounded-lg">
+                  <div className="overflow-hidden absolute inset-0 rounded-lg">
                     <div className="absolute top-0 left-0 w-full h-0.5 bg-primary-400 animate-scan shadow-lg shadow-primary-400/50"></div>
                   </div>
                 </div>
@@ -92,11 +92,11 @@ function ModalGreenscreen({ isOpen, isProcessing, forceRender = false }) {
           </div>
 
           {/* Loading Indicator */}
-          <div className="flex flex-col items-center justify-center p-4">
-            <div className="w-12 h-12 mb-4 border-4 rounded-full border-primary-500 border-t-transparent animate-spin"></div>
+          <div className="flex flex-col justify-center items-center p-4">
+            <div className="mb-4 w-12 h-12 rounded-full border-4 animate-spin border-primary-500 border-t-transparent"></div>
             <p className="text-center text-gray-700 dark:text-gray-300">
               {isProcessing 
-                ? "🎨 Sedang menghapus background..." 
+                ? "Sedang menghapus background..." 
                 : "Mempersiapkan proses..."}
             </p>
             <p className="mt-2 text-xs text-center text-gray-500 dark:text-gray-400">

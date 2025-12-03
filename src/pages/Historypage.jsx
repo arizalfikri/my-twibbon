@@ -16,15 +16,15 @@ function Historypage() {
   } = useGET(`/all-payments?status=${status}`);
 
   const statuses = [
-    { label: "All Status", value: "" },
-    { label: "Pending", value: "PENDING" },
-    { label: "Paid", value: "PAID" },
-    { label: "Failed", value: "FAILED" },
-    { label: "Expired", value: "EXPIRED" },
-    { label: "Settled", value: "SETTLED" },
-    { label: "Voided", value: "VOIDED" },
-    { label: "Succeeded", value: "SUCCEEDED" },
-    { label: "Canceled", value: "CANCELED" },
+    { label: "Semua Status", value: "" },
+    { label: "Menunggu", value: "PENDING" },
+    { label: "Dibayar", value: "PAID" },
+    { label: "Gagal", value: "FAILED" },
+    { label: "Kadaluarsa", value: "EXPIRED" },
+    { label: "Diselesaikan", value: "SETTLED" },
+    { label: "Dibatalkan", value: "VOIDED" },
+    { label: "Berhasil", value: "SUCCEEDED" },
+    { label: "Dibatalkan", value: "CANCELED" },
   ];
 
   const handleViewDetails = (payment) => {
@@ -34,11 +34,11 @@ function Historypage() {
   return (
     <div>
       <Navbar />
-      <div className="pt-20 pb-10 min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container px-4 mx-auto">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="container px-4 py-4 mx-auto">
           <div className="flex flex-col gap-4 justify-between mb-8 md:flex-row md:items-center">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-              History Page
+              Riwayat Transaksi
             </h1>
 
             {/* Filter Dropdown */}
@@ -82,7 +82,7 @@ function Historypage() {
               </div>
             ) : error ? (
               <div className="p-4 text-center text-red-600 bg-red-50 rounded-lg dark:bg-red-900/20 dark:text-red-400">
-                Failed to load history. Please try again later.
+                Gagal memuat riwayat. Silakan coba lagi nanti.
               </div>
             ) : paymentsData?.data?.length > 0 ? (
               paymentsData.data.map((payment) => (
@@ -94,7 +94,7 @@ function Historypage() {
               ))
             ) : (
               <div className="py-10 text-center text-gray-500 dark:text-gray-400">
-                No payment history found.
+                Tidak ada riwayat pembayaran ditemukan.
               </div>
             )}
           </div>

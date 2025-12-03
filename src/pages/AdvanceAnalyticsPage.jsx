@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/layoutpage/Navbar";
 import Footer from "../components/layoutpage/Footer";
 import {
@@ -20,8 +21,11 @@ import {
   Eye,
   Download,
   Layers,
+  Lock,
 } from "lucide-react";
 import { useGET } from "../services/api";
+import { useGlobalStore } from "../helper/store/global.store";
+import { useSubscriptionStore } from "../helper/store/subscription.store";
 
 function AdvanceAnalyticsPage() {
   const currentYear = new Date().getFullYear();
@@ -30,14 +34,21 @@ function AdvanceAnalyticsPage() {
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
 
+  const { token } = useGlobalStore();
+  const { hasActiveContributor } = useSubscriptionStore();
+
+  const isLocked = !token || !hasActiveContributor;
+
   // Fetch Monthly Analytics for the Chart (Yearly view broken down by month)
   const { data: monthlyAnalyticsData, isLoading: isLoadingMonthly } = useGET(
-    `/contributor/analytics/monthly?year=${selectedYear}`
+    `/contributor/analytics/monthly?year=${selectedYear}`,
+    { enabled: !isLocked }
   );
 
   // Fetch Summary Analytics for the Cards (Specific Month view)
   const { data: summaryData, isLoading: isLoadingSummary } = useGET(
-    `/contributor/summary?month=${selectedMonth}&year=${selectedYear}`
+    `/contributor/summary?month=${selectedMonth}&year=${selectedYear}`,
+    { enabled: !isLocked }
   );
 
   const chartData = useMemo(() => {
@@ -57,33 +68,59 @@ function AdvanceAnalyticsPage() {
     return summaryData.data;
   }, [summaryData]);
 
-  const years = Array.from({ length:5 }, (_, i) => currentYear - i);
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
   const months = [
-    { value: 1, label: "January" },
-    { value: 2, label: "February" },
-    { value: 3, label: "March" },
+    { value: 1, label: "Januari" },
+    { value: 2, label: "Februari" },
+    { value: 3, label: "Maret" },
     { value: 4, label: "April" },
-    { value: 5, label: "May" },
-    { value: 6, label: "June" },
-    { value: 7, label: "July" },
-    { value: 8, label: "August" },
+    { value: 5, label: "Mei" },
+    { value: 6, label: "Juni" },
+    { value: 7, label: "Juli" },
+    { value: 8, label: "Agustus" },
     { value: 9, label: "September" },
-    { value: 10, label: "October" },
+    { value: 10, label: "Oktober" },
     { value: 11, label: "November" },
-    { value: 12, label: "December" },
+    { value: 12, label: "Desember" },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br via-blue-50 to-indigo-50 from-slate-50">
       <Navbar />
-      <div className="container py-8 min-h-screen">
+      <div className="container relative py-8 min-h-screen">
+        {/* Locked Overlay */}
+        {isLocked && (
+          <div className="flex absolute inset-0 z-30 flex-col justify-center items-center rounded-3xl backdrop-blur-md bg-white/30">
+            <div className="p-8 mx-4 max-w-md text-center bg-white rounded-2xl shadow-2xl">
+              <div className="flex justify-center mb-6">
+                <div className="p-4 bg-gray-100 rounded-full">
+                  <Lock className="w-12 h-12 text-gray-400" />
+                </div>
+              </div>
+              <h2 className="mb-3 text-2xl font-bold text-gray-900 font-outfit">
+                Buka Analitik Lanjutan
+              </h2>
+              <p className="mb-8 text-gray-600 font-outfit">
+                Dapatkan wawasan mendalam tentang performa twibbon Anda, tren
+                pengunjung, dan lainnya dengan paket Kontributor kami.
+              </p>
+              <Link
+                to="/membership"
+                className="inline-flex items-center justify-center px-8 py-3 text-base font-semibold text-white bg-primary-600 rounded-xl transition-all hover:bg-primary-700 hover:shadow-lg hover:-translate-y-0.5"
+              >
+                Tingkatkan ke Kontributor
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="mb-2 text-4xl font-bold text-gray-800 font-outfit">
-            Advanced Analytics
+            Analitik Lanjutan
           </h1>
           <p className="text-gray-600 font-outfit">
-            Monitor your campaign performance with detailed insights
+            Pantau performa twibbon Anda dengan wawasan mendalam
           </p>
         </div>
 
@@ -92,13 +129,13 @@ function AdvanceAnalyticsPage() {
           <div className="flex gap-3 items-center mb-4">
             <Calendar className="text-blue-600" size={24} />
             <h2 className="text-xl font-semibold text-gray-800 font-outfit">
-              Time Period
+              Periode Waktu
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-700 font-outfit">
-                Year
+                Tahun
               </label>
               <select
                 value={selectedYear}
@@ -114,7 +151,7 @@ function AdvanceAnalyticsPage() {
             </div>
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-700 font-outfit">
-                Month (for Summary Cards)
+                Bulan (untuk Ringkasan)
               </label>
               <select
                 value={selectedMonth}
@@ -140,7 +177,7 @@ function AdvanceAnalyticsPage() {
                 <div className="p-3 rounded-xl backdrop-blur-sm bg-white/20">
                   <Layers size={24} />
                 </div>
-                <h3 className="text-lg font-semibold font-outfit">Twibbons</h3>
+                <h3 className="text-lg font-semibold font-outfit">Twibbon</h3>
               </div>
             </div>
             <div className="mb-2">
@@ -151,7 +188,7 @@ function AdvanceAnalyticsPage() {
               </p>
             </div>
             <p className="text-sm text-emerald-100 font-outfit">
-              Total campaigns created
+              Total kampanye dibuat
             </p>
           </div>
 
@@ -162,7 +199,7 @@ function AdvanceAnalyticsPage() {
                 <div className="p-3 rounded-xl backdrop-blur-sm bg-white/20">
                   <Eye size={24} />
                 </div>
-                <h3 className="text-lg font-semibold font-outfit">Views</h3>
+                <h3 className="text-lg font-semibold font-outfit">Dilihat</h3>
               </div>
             </div>
             <div className="mb-2">
@@ -173,7 +210,7 @@ function AdvanceAnalyticsPage() {
               </p>
             </div>
             <p className="text-sm text-purple-100 font-outfit">
-              Total page views
+              Total halaman dilihat
             </p>
           </div>
 
@@ -184,7 +221,7 @@ function AdvanceAnalyticsPage() {
                 <div className="p-3 rounded-xl backdrop-blur-sm bg-white/20">
                   <Users size={24} />
                 </div>
-                <h3 className="text-lg font-semibold font-outfit">Supports</h3>
+                <h3 className="text-lg font-semibold font-outfit">Dukungan</h3>
               </div>
             </div>
             <div className="mb-2">
@@ -194,9 +231,7 @@ function AdvanceAnalyticsPage() {
                   : summary.total_supports.toLocaleString()}
               </p>
             </div>
-            <p className="text-sm text-blue-100 font-outfit">
-              Total supporters
-            </p>
+            <p className="text-sm text-blue-100 font-outfit">Total pendukung</p>
           </div>
 
           {/* Total Downloads */}
@@ -206,7 +241,7 @@ function AdvanceAnalyticsPage() {
                 <div className="p-3 rounded-xl backdrop-blur-sm bg-white/20">
                   <Download size={24} />
                 </div>
-                <h3 className="text-lg font-semibold font-outfit">Downloads</h3>
+                <h3 className="text-lg font-semibold font-outfit">Unduhan</h3>
               </div>
             </div>
             <div className="mb-2">
@@ -216,9 +251,7 @@ function AdvanceAnalyticsPage() {
                   : summary.total_download.toLocaleString()}
               </p>
             </div>
-            <p className="text-sm text-orange-100 font-outfit">
-              Total downloads
-            </p>
+            <p className="text-sm text-orange-100 font-outfit">Total unduhan</p>
           </div>
         </div>
 
@@ -227,17 +260,17 @@ function AdvanceAnalyticsPage() {
           <div className="flex gap-3 items-center mb-6">
             <TrendingUp className="text-blue-600" size={24} />
             <h2 className="text-2xl font-semibold text-gray-800 font-outfit">
-              Yearly Trends ({selectedYear})
+              Tren Tahunan ({selectedYear})
             </h2>
           </div>
           <p className="mb-6 text-gray-600 font-outfit">
-            Monthly distribution of views, supports, and downloads
+            Distribusi bulanan dilihat, dukungan, dan unduhan
           </p>
           <div className="w-full h-96">
             {isLoadingMonthly ? (
               <div className="flex justify-center items-center w-full h-full">
                 <p className="text-gray-500 font-outfit">
-                  Loading chart data...
+                  Memuat data grafik...
                 </p>
               </div>
             ) : (
@@ -313,7 +346,7 @@ function AdvanceAnalyticsPage() {
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorViews)"
-                    name="Views"
+                    name="Dilihat"
                   />
                   <Area
                     type="monotone"
@@ -322,7 +355,7 @@ function AdvanceAnalyticsPage() {
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorSupports)"
-                    name="Supports"
+                    name="Dukungan"
                   />
                   <Area
                     type="monotone"
@@ -331,7 +364,7 @@ function AdvanceAnalyticsPage() {
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorDownloads)"
-                    name="Downloads"
+                    name="Unduhan"
                   />
                 </AreaChart>
               </ResponsiveContainer>
