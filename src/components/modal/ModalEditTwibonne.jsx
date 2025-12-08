@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Image, Link, Type, FileText } from "lucide-react";
+import { X, Image, Link, Type, FileText, Tag } from "lucide-react";
 import ModalAlert from "../../layout/ModalAlert";
 import { useForm } from "react-hook-form";
 import { useGET, usePATCH } from "../../services/api";
@@ -19,6 +19,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
   const { data: twibbonsData } = useGET("/twibbons", {
     enabled: visibel,
   });
+  // Fetch detailed twibbon data from API
 
   const {
     register,
@@ -34,6 +35,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
       title: "",
       caption: "",
       link: "",
+      type: "",
     },
     resolver: yupResolver(editTwiboneSchema),
     mode: "onChange",
@@ -45,9 +47,9 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
       setValue("title", itemData.title || "");
       setValue("caption", itemData.caption || "");
       setValue("link", itemData.slug || "");
+      setValue("type", itemData.type || "");
     }
   }, [itemData, setValue]);
-
   const watchTitle = watch("title");
   const watchLink = watch("link");
   const [debouncedTitle] = useDebounce(watchTitle, 600);
@@ -55,12 +57,14 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
 
   useEffect(() => {
     if (!twibbonsData?.data) return;
+
+    // Set checking state to true if values are still being debounced
     if (watchTitle !== debouncedTitle || watchLink !== debouncedLink) {
       setIsCheckingDuplicates(true);
-    } else {
-      setIsCheckingDuplicates(false);
+      return; // Exit early, don't run validation yet
     }
 
+    // Values are now debounced, run duplicate checks
     if (debouncedTitle) {
       const isDuplicateTitle = twibbonsData.data.some(
         (item) =>
@@ -91,6 +95,9 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
         clearErrors("link");
       }
     }
+
+    // All checks complete, set checking to false
+    setIsCheckingDuplicates(false);
   }, [
     debouncedTitle,
     debouncedLink,
@@ -203,7 +210,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
 
   return (
     <ModalAlert onClose={onClose}>
-      <div className="fixed inset-0 z-50 flex items-end justify-center p-4 md:items-center bg-black/50">
+      <div className="flex fixed inset-0 z-50 justify-center items-end p-4 md:items-center bg-black/50">
         <div
           className="
       w-full 
@@ -219,9 +226,9 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
     "
         >
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary-50 to-pink-50 dark:from-gray-800 dark:to-gray-800">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+          <div className="px-6 py-4 bg-gradient-to-r to-pink-50 border-b border-gray-200 dark:border-gray-700 from-primary-50 dark:from-gray-800 dark:to-gray-800">
+            <div className="flex justify-between items-center">
+              <div className="flex gap-3 items-center">
                 <div className="p-2.5 bg-primary-100 dark:bg-gray-700 rounded-xl">
                   <FileText className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
@@ -236,7 +243,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-500 transition-colors rounded-lg hover:text-gray-700 hover:bg-white/60 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700/60"
+                className="p-2 text-gray-500 rounded-lg transition-colors hover:text-gray-700 hover:bg-white/60 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700/60"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -244,7 +251,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
           </div>
 
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="overflow-y-auto flex-1">
             <div className="p-6 space-y-6">
               {/* Image Section */}
               <div className="flex flex-col items-center space-y-3">
@@ -252,7 +259,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                   {t("modaledit.preview_image")}
                 </h3>
                 <div className="w-full max-w-sm">
-                  <div className="w-full overflow-hidden border-2 border-gray-200 border-dashed dark:border-gray-700 aspect-square bg-gray-50 dark:bg-gray-800 rounded-2xl">
+                  <div className="overflow-hidden w-full bg-gray-50 rounded-2xl border-2 border-gray-200 border-dashed dark:border-gray-700 aspect-square dark:bg-gray-800">
                     {itemData?.image ? (
                       <img
                         src={`${import.meta.env.VITE_FILE_URL}${
@@ -262,9 +269,9 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                         className="object-cover w-full h-full"
                       />
                     ) : (
-                      <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500">
+                      <div className="flex justify-center items-center h-full text-gray-400 dark:text-gray-500">
                         <div className="space-y-3 text-center">
-                          <Image className="w-12 h-12 mx-auto opacity-60" />
+                          <Image className="mx-auto w-12 h-12 opacity-60" />
                           <p className="text-sm font-medium">
                             {t("modaledit.no_image")}
                           </p>
@@ -277,11 +284,37 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
 
               {/* Form Fields */}
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {/* Type (Read-only) */}
+                <div className="space-y-2">
+                  <label
+                    htmlFor="type"
+                    className="flex gap-2 items-center text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
+                    <Tag className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                    Type
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="type"
+                      {...register("type")}
+                      value={watch("type") || ""}
+                      readOnly
+                      disabled
+                      className="px-4 py-3 w-full text-sm text-gray-600 bg-gray-100 rounded-xl border border-gray-300 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600"
+                    />
+                  </div>
+                  <p className="flex gap-1 items-center text-xs text-gray-500 dark:text-gray-400">
+                    <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
+                    Type tidak dapat diubah
+                  </p>
+                </div>
+
                 {/* Title */}
                 <div className="space-y-2">
                   <label
                     htmlFor="title"
-                    className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                    className="flex gap-2 items-center text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
                     <Type className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                     {t("modaledit.form.campaign_title")}
@@ -304,7 +337,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     placeholder={t("modaledit.form.title_placeholder")}
                   />
                   {errors.title && (
-                    <p className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400">
+                    <p className="flex gap-1 items-center text-sm text-red-600 dark:text-red-400">
                       <span className="w-1 h-1 bg-red-500 rounded-full"></span>
                       {errors.title.message}
                     </p>
@@ -315,7 +348,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                 <div className="space-y-2">
                   <label
                     htmlFor="caption"
-                    className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                    className="flex gap-2 items-center text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
                     <FileText className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                     {t("modaledit.form.caption")}
@@ -324,10 +357,10 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     id="caption"
                     {...register("caption")}
                     rows={4}
-                    className="w-full px-4 py-3 text-sm text-gray-900 transition-all duration-200 bg-white border border-gray-300 resize-none rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
+                    className="px-4 py-3 w-full text-sm text-gray-900 bg-white rounded-xl border border-gray-300 transition-all duration-200 resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
                     placeholder={t("modaledit.form.caption_placeholder")}
                   />
-                  <p className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                  <p className="flex gap-1 items-center text-xs text-gray-500 dark:text-gray-400">
                     <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
                     {t("modaledit.form.caption_description")}
                   </p>
@@ -337,7 +370,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                 <div className="space-y-2">
                   <label
                     htmlFor="link"
-                    className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                    className="flex gap-2 items-center text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
                     <Link className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                     {t("modaledit.form.campaign_link")}
@@ -349,7 +382,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                     )}
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                    <div className="flex absolute inset-y-0 left-0 items-center pl-4 pointer-events-none">
                       <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         MyTwibbon/
                       </span>
@@ -365,15 +398,15 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                       }`}
                       placeholder={t("modaledit.form.link_placeholder")}
                     />
-                    <Link className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none dark:text-gray-500 top-1/2 right-4" />
+                    <Link className="absolute right-4 top-1/2 w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none dark:text-gray-500" />
                   </div>
                   {errors.link && (
-                    <p className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400">
+                    <p className="flex gap-1 items-center text-sm text-red-600 dark:text-red-400">
                       <span className="w-1 h-1 bg-red-500 rounded-full"></span>
                       {errors.link.message}
                     </p>
                   )}
-                  <p className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                  <p className="flex gap-1 items-center text-xs text-gray-500 dark:text-gray-400">
                     <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
                     {t("modaledit.form.link_description")}
                   </p>
@@ -389,7 +422,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                 type="button"
                 onClick={handleCancel}
                 disabled={isPending}
-                className="flex-1 px-6 py-3 text-sm font-semibold text-gray-700 transition-all duration-200 bg-white border border-gray-300 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-6 py-3 text-sm font-semibold text-gray-700 bg-white rounded-xl border border-gray-300 transition-all duration-200 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("modaledit.buttons.cancel")}
               </button>
@@ -399,7 +432,7 @@ function ModalEditTwibonne({ visibel, onClose, onEditSuccess, itemData }) {
                 disabled={isSubmitDisabled}
                 className={`flex-1 px-6 py-3 font-semibold text-white text-sm rounded-xl transition-all duration-200 shadow-lg ${
                   isSubmitDisabled
-                    ? "bg-primary-400 cursor-not-allowed"
+                    ? "cursor-not-allowed bg-primary-400"
                     : "bg-primary-600 hover:bg-primary-700"
                 }`}
               >

@@ -718,6 +718,7 @@ const DetailProfile = () => {
                             image: twibon.template_twibbon,
                             caption: twibon.caption,
                             url: twibon.url,
+                            type: twibon.type,
                           }}
                           onDelete={handleDeleteClick}
                           onEdit={handleEditClick}
