@@ -4,13 +4,13 @@ export default function ModalDeleteLayout({ children }) {
   const { t } = useTranslation();
 
   return (
-    <div className="max-w-lg mx-auto overflow-hidden bg-white border border-gray-200 shadow-2xl dark:bg-gray-900 rounded-3xl dark:border-gray-700">
+    <div className="overflow-hidden mx-auto max-w-lg bg-white rounded-3xl border border-gray-200 shadow-2xl dark:bg-gray-900 dark:border-gray-700">
       {/* Header Section */}
       <div className="relative px-8 pt-8 pb-6 border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center gap-4">
+        <div className="flex gap-4 items-center">
           {/* Icon Warning */}
           <div className="flex-shrink-0">
-            <div className="flex items-center justify-center border border-red-200 w-14 h-14 bg-red-50 dark:bg-red-500/10 rounded-2xl dark:border-red-500/20">
+            <div className="flex justify-center items-center w-14 h-14 bg-red-50 rounded-2xl border border-red-200 dark:bg-red-500/10 dark:border-red-500/20">
               <svg
                 width="28"
                 height="28"

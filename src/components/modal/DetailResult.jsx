@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import ModalAlert from "../../layout/ModalAlert";
 import {
   X,
@@ -11,13 +11,14 @@ import {
   XIcon,
 } from "lucide-react";
 import { useGET, usePOST, usePATCH, useDELETE } from "../../services/api";
+import { keepPreviousData } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import ModalLogin from "./modalLogin";
 import ModalDeleteComment from "./ModalDeleteComment";
-import { useTranslation } from "react-i18next"; // Add this import
+import { useTranslation } from "react-i18next";
 
 function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
-  const { t } = useTranslation(); // Add translation hook
+  const { t } = useTranslation();
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [komentars, setKomentars] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -26,6 +27,17 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   const [editContent, setEditContent] = useState("");
   const [deleteCommentId, setDeleteCommentId] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
+
+  // Pagination State
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const perPage = 20;
+
+  // State untuk menyimpan scroll position
+  const [shouldPreserveScroll, setShouldPreserveScroll] = useState(false);
+  const commentsContainerRef = useRef(null);
+  const previousScrollHeightRef = useRef(0);
+  const newCommentAddedRef = useRef(false);
 
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 1024 : true
@@ -43,7 +55,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   const { data: infoUser } = useGET(
     id_user_twibbons ? `event-user-twibbon/${id_user_twibbons}` : null,
     {
-      enabled: isOpen && !!id_user_twibbons, 
+      enabled: isOpen && !!id_user_twibbons,
     }
   );
 
@@ -51,10 +63,14 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     data: KomentarData,
     isLoading,
     refetch,
+    isFetching,
   } = useGET(
-    id_user_twibbons ? `twibbon/user/${id_user_twibbons}/comments` : null,
+    id_user_twibbons
+      ? `twibbon/user/${id_user_twibbons}/comments?page=${page}&perPage=${perPage}`
+      : null,
     {
-      enabled: isOpen && !!id_user_twibbons, 
+      enabled: isOpen && !!id_user_twibbons,
+      placeholderData: keepPreviousData,
     }
   );
 
@@ -165,7 +181,13 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
       if (response.status === 200) {
         setEditingComment(null);
         setEditContent("");
-        refetch();
+
+        // Update local state instead of refetching to preserve pagination
+        setKomentars((prev) =>
+          prev.map((c) =>
+            c.id === commentId ? { ...c, comment: editContent } : c
+          )
+        );
       }
     } catch (error) {
       console.error("Error updating comment:", error);
@@ -183,8 +205,55 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
 
   // Handle delete success
   const handleDeleteSuccess = () => {
+    // Hanya refetch tanpa reset page
     refetch();
   };
+
+  // Fungsi untuk mempertahankan scroll position setelah update
+  const preserveScrollPosition = () => {
+    if (commentsContainerRef.current && shouldPreserveScroll) {
+      const container = commentsContainerRef.current;
+      const currentScrollTop = container.scrollTop;
+      const newScrollHeight = container.scrollHeight;
+      const heightDifference = newScrollHeight - previousScrollHeightRef.current;
+      
+      // Jika ada komentar baru ditambahkan di atas (biasanya komentar terbaru)
+      if (newCommentAddedRef.current && heightDifference > 0) {
+        // Scroll ke atas untuk melihat komentar baru
+        container.scrollTop = 0;
+        newCommentAddedRef.current = false;
+      } else {
+        // Pertahankan posisi scroll relatif
+        container.scrollTop = currentScrollTop + heightDifference;
+      }
+      
+      previousScrollHeightRef.current = newScrollHeight;
+      setShouldPreserveScroll(false);
+    }
+  };
+
+  // Effect untuk mempertahankan scroll position setelah komentar di-update
+  useEffect(() => {
+    if (shouldPreserveScroll) {
+      preserveScrollPosition();
+    }
+  }, [komentars, shouldPreserveScroll]);
+
+  // Infinite Scroll Observer
+  const observer = useRef();
+  const lastElementRef = useCallback(
+    (node) => {
+      if (isFetching) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          setPage((prevPage) => prevPage + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [isFetching, hasNextPage]
+  );
 
   useEffect(() => {
     if (KomentarData?.data) {
@@ -199,18 +268,38 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
         email: comment?.author_gypem?.user_email || comment?.author?.email,
         replies: comment.replies || [],
       }));
-      setKomentars(transformedComments);
-    } else {
-      setKomentars([]);
-    }
-  }, [KomentarData, id_user_twibbons]);
 
-  // Refetch comments when modal opens
+      // Simpan scroll height sebelum update
+      if (commentsContainerRef.current) {
+        previousScrollHeightRef.current = commentsContainerRef.current.scrollHeight;
+      }
+
+      if (KomentarData.meta?.page === 1) {
+        setKomentars(transformedComments);
+      } else {
+        setKomentars((prev) => {
+          // Prevent duplicates just in case
+          const newIds = new Set(transformedComments.map((c) => c.id));
+          const existing = prev.filter((c) => !newIds.has(c.id));
+          return [...existing, ...transformedComments];
+        });
+      }
+      setHasNextPage(KomentarData.meta?.has_next || false);
+
+      // Set flag untuk mempertahankan scroll position
+      setShouldPreserveScroll(true);
+    }
+  }, [KomentarData]);
+
+  // Reset state ketika modal dibuka dengan data baru
   useEffect(() => {
     if (isOpen && id_user_twibbons) {
-      refetch();
+      setPage(1);
+      setKomentars([]);
+      newCommentAddedRef.current = false;
+      previousScrollHeightRef.current = 0;
     }
-  }, [isOpen, id_user_twibbons, refetch]);
+  }, [isOpen, id_user_twibbons]);
 
   if (!isOpen || !cardData) return null;
 
@@ -231,6 +320,11 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
     }
 
     try {
+      // Simpan scroll height sebelum menambahkan komentar baru
+      if (commentsContainerRef.current) {
+        previousScrollHeightRef.current = commentsContainerRef.current.scrollHeight;
+      }
+
       const response = await postComment({
         url: `twibbon/user/${id_user_twibbons}/comments`,
         data: {
@@ -240,7 +334,20 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
 
       if (response.status === 201) {
         reset();
-        refetch();
+        // Set flag bahwa komentar baru ditambahkan
+        newCommentAddedRef.current = true;
+        
+        // Hanya refetch jika di page 1, jika tidak, pertahankan page saat ini
+        if (page === 1) {
+          refetch();
+        } else {
+          // Jika sedang di page > 1, kita perlu memuat ulang dari page 1
+          // untuk memastikan komentar baru muncul di atas
+          // Tapi kita tidak ingin kehilangan komentar yang sudah diload
+          // Solusi: Load page 1 dan append ke existing comments
+          setPage(1);
+          // Akan otomatis refetch karena dependency pada page berubah
+        }
       }
     } catch (error) {
       switch (error?.response?.status) {
@@ -251,7 +358,6 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
           setShowLoginModal(true);
           break;
         default:
-          // Handle other errors if needed
           console.error("Server error:", error);
           break;
       }
@@ -268,9 +374,11 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
       refetch();
     }
   };
+  
   const showDeleteConfirmation = (commentId) => {
     setDeleteCommentId(commentId);
   };
+  
   const data = cardData;
 
   // Render comment component
@@ -284,14 +392,14 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
 
     return (
       <div key={c.id} className="flex space-x-3">
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600">
+        <div className="flex justify-center items-center w-8 h-8 bg-gradient-to-br from-green-500 to-teal-600 rounded-full">
           <span className="text-xs font-bold text-white">
             {getUserInitials(c.user)}
           </span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="px-3 py-2 bg-gray-100 rounded-lg dark:bg-gray-700">
-            <div className="flex items-center justify-between">
+            <div className="flex justify-between items-center">
               <div className="text-sm font-medium text-gray-800 truncate dark:text-gray-200">
                 {truncateText(c.user, 25)}
               </div>
@@ -320,7 +428,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  className="w-full px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded resize-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+                  className="px-2 py-1 w-full text-sm text-gray-900 bg-white rounded border border-gray-300 resize-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
                   rows="3"
                   placeholder={t("detailresult.edit_comment")}
                   autoFocus
@@ -335,14 +443,14 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                     onClick={handleCancelEdit}
                     className="flex items-center px-2 py-1 text-xs text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
                   >
-                    <XIcon className="w-3 h-3 mr-1" />
+                    <XIcon className="mr-1 w-3 h-3" />
                     {t("detailresult.cancel")}
                   </button>
                   <button
                     onClick={() => handleSaveEdit(c.id)}
                     className="flex items-center px-2 py-1 text-xs text-white bg-blue-500 rounded dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700"
                   >
-                    <Check className="w-3 h-3 mr-1" />
+                    <Check className="mr-1 w-3 h-3" />
                     {t("detailresult.save")}
                   </button>
                 </div>
@@ -374,12 +482,12 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   // Mobile full screen version
   const MobileVersion = () => (
     <ModalAlert onClose={onClose}>
-      <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-900">
+      <div className="flex fixed inset-0 z-50 flex-col bg-white dark:bg-gray-900">
         {/* App Bar */}
-        <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 shadow-sm dark:bg-gray-900 dark:border-gray-700">
+        <div className="flex justify-between items-center p-4 bg-white border-b border-gray-200 shadow-sm dark:bg-gray-900 dark:border-gray-700">
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="flex justify-center items-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
@@ -390,7 +498,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="overflow-y-auto flex-1">
           {/* Image - Centered for Surface Pro 7 width */}
           <div className="flex justify-center p-4 bg-gray-50 dark:bg-gray-800">
             <div className="w-full max-w-md">
@@ -431,7 +539,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
             </div>
 
             <div className="flex items-center mb-6 space-x-3 text-sm text-gray-500 dark:text-gray-400">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-primary-600">
+              <div className="flex justify-center items-center w-10 h-10 bg-gradient-to-br from-blue-500 rounded-full to-primary-600">
                 <span className="text-sm font-bold text-white">
                   {getUserInitials(
                     infoUser?.data?.author?.fullname ||
@@ -460,7 +568,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
             {/* Komentar Section */}
             <div className="border-t border-gray-200 dark:border-gray-700">
               <div className="py-4">
-                <h3 className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-800 dark:text-white">
+                <h3 className="flex gap-2 items-center mb-4 text-lg font-semibold text-gray-800 dark:text-white">
                   <MessageCircle className="w-5 h-5" />{" "}
                   {t("detailresult.comments")}
                 </h3>
@@ -475,7 +583,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                       {...register("comment", { required: true })}
                       type="text"
                       placeholder={t("detailresult.comment_input_placeholder")}
-                      className="flex-1 px-4 py-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-full dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+                      className="flex-1 px-4 py-3 text-sm text-gray-900 bg-white rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
                       disabled={isPending || !id_user_twibbons}
                       onFocus={() => {
                         if (!isAuthenticated()) {
@@ -490,7 +598,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                       className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white transition-colors bg-blue-500 dark:bg-blue-600 rounded-full hover:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed min-w-[60px]"
                     >
                       {isPending ? (
-                        <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin" />
+                        <div className="w-4 h-4 rounded-full border-2 border-white animate-spin border-t-transparent" />
                       ) : (
                         <Send className="w-4 h-4" />
                       )}
@@ -498,8 +606,8 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                   </div>
                 </form>
 
-                {/* Loading state for comments */}
-                {isLoading && (
+                {/* Loading state for comments (only show on page 1 initial load) */}
+                {isLoading && page === 1 && (
                   <div className="py-4 text-center">
                     <p className="text-gray-500 dark:text-gray-400">
                       {t("detailresult.loading_comments")}
@@ -508,7 +616,10 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 )}
 
                 {/* Daftar komentar */}
-                <div className="space-y-4">
+                <div 
+                  ref={commentsContainerRef}
+                  className="space-y-4 overflow-y-auto max-h-[calc(100vh-400px)]"
+                >
                   {!isLoading && komentars.length === 0 ? (
                     <div className="py-8 text-center">
                       <p className="text-gray-500 dark:text-gray-400">
@@ -520,6 +631,16 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                     </div>
                   ) : (
                     komentars.map((c) => renderComment(c))
+                  )}
+                  {/* Infinite Scroll Sentinel Mobile */}
+                  {hasNextPage && (
+                    <div ref={lastElementRef} className="pt-4 text-center">
+                      {isFetching && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {t("detailresult.loading_more") || "Loading..."}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -533,19 +654,19 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
   const DesktopVersion = () => (
     <ModalAlert onClose={onClose}>
       <div
-        className="relative w-full max-w-4xl mx-auto bg-white rounded-lg shadow-xl dark:bg-gray-900"
+        className="relative mx-auto w-full max-w-4xl bg-white rounded-lg shadow-xl dark:bg-gray-900"
         style={{ height: "80vh" }}
       >
         <button
           onClick={onClose}
-          className="absolute z-10 p-2 transition-colors bg-white rounded-full shadow-md dark:bg-gray-800 top-4 right-4 hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-md transition-colors dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
         >
           <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
         </button>
 
         <div className="flex h-full">
           {/* Image side */}
-          <div className="flex items-center justify-center p-4 bg-gray-100 dark:bg-gray-800 lg:w-1/2">
+          <div className="flex justify-center items-center p-4 bg-gray-100 rounded-xl dark:bg-gray-800 lg:w-1/2">
             <div className="relative w-full max-w-md lg:max-w-full">
               <img
                 src={data.image}
@@ -564,7 +685,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
               </h2>
 
               <div className="mb-3">
-                <div className="overflow-hidden overflow-y-auto text-sm text-gray-600 dark:text-gray-300 max-h-20">
+                <div className="overflow-hidden overflow-y-auto max-h-20 text-sm text-gray-600 dark:text-gray-300">
                   {showFullDescription
                     ? infoUser?.data?.caption || ""
                     : infoUser?.data?.caption?.slice(0, 100) ?? ""}
@@ -582,7 +703,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
               </div>
 
               <div className="flex items-center space-x-3 text-sm text-gray-500 dark:text-gray-400">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary-200">
+                <div className="flex justify-center items-center w-8 h-8 rounded-full bg-primary-400">
                   <span className="text-xs font-bold text-white">
                     {getUserInitials(
                       infoUser?.data?.author?.fullname ||
@@ -613,7 +734,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
             {/* Komentar Section */}
             <div className="flex flex-col flex-1 min-h-0">
               <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="flex items-center gap-2 font-semibold text-gray-800 dark:text-white">
+                <h3 className="flex gap-2 items-center font-semibold text-gray-800 dark:text-white">
                   <MessageCircle className="w-5 h-5" />{" "}
                   {t("detailresult.comments")}
                 </h3>
@@ -630,7 +751,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                       {...register("comment", { required: true })}
                       type="text"
                       placeholder={t("detailresult.comment_input_placeholder")}
-                      className="flex-1 px-4 py-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-full dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+                      className="flex-1 px-4 py-3 text-sm text-gray-900 bg-white rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
                       disabled={isPending || !id_user_twibbons}
                       onFocus={() => {
                         if (!isAuthenticated()) {
@@ -645,7 +766,7 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                       className="flex items-center justify-center px-4 py-3 text-sm font-medium text-white transition-colors bg-blue-500 dark:bg-blue-600 rounded-full hover:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed min-w-[60px]"
                     >
                       {isPending ? (
-                        <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin" />
+                        <div className="w-4 h-4 rounded-full border-2 border-white animate-spin border-t-transparent" />
                       ) : (
                         <Send className="w-4 h-4" />
                       )}
@@ -654,8 +775,8 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                 </form>
               </div>
 
-              {isLoading && (
-                <div className="flex items-center justify-center flex-1">
+              {isLoading && page === 1 && (
+                <div className="flex flex-1 justify-center items-center">
                   <p className="text-gray-500 dark:text-gray-400">
                     {t("detailresult.loading_comments")}
                   </p>
@@ -664,8 +785,11 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
 
               {/* Daftar komentar */}
               {!isLoading && (
-                <div className="flex-1 min-h-0 px-6 py-4 space-y-4 overflow-y-auto">
-                  {komentars.length === 0 ? (
+                <div 
+                  ref={commentsContainerRef}
+                  className="overflow-y-auto flex-1 px-6 py-4 space-y-4 min-h-0"
+                >
+                  {komentars.length === 0 && !isLoading ? (
                     <div className="py-8 text-center">
                       <p className="text-gray-500 dark:text-gray-400">
                         {t("detailresult.no_comments_yet")}
@@ -676,6 +800,16 @@ function DetailResult({ isOpen, onClose, cardData, id_user_twibbons }) {
                     </div>
                   ) : (
                     komentars.map((c) => renderComment(c))
+                  )}
+                  {/* Infinite Scroll Sentinel Desktop */}
+                  {hasNextPage && (
+                    <div ref={lastElementRef} className="pt-4 text-center">
+                      {isFetching && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {t("detailresult.loading_more") || "Loading..."}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               )}
