@@ -10,6 +10,7 @@ import { useGET } from "../services/api.js";
 import { useSearchParams } from "react-router-dom";
 import EmptyTwibbon from "../components/common/EmptyTwibbon.jsx";
 import { useTranslation } from "react-i18next";
+import ExploreSkeleton from "../components/skeletons/ExploreSkeleton.jsx";
 
 function ExploreTwibone() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -318,29 +319,10 @@ const FilterSection = ({
       />
     </div>
   </div>
-)
+);
 
-
-const LoadingState = ({ selectedTab, t }) => (
-  <div className="flex flex-col col-span-full justify-center items-center px-8 py-20">
-    <div className="space-y-6 max-w-md text-center">
-      <div className="flex justify-center items-center mx-auto w-32 h-32 bg-gradient-to-br to-pink-100 rounded-full from-primary-100 dark:from-primary-900/30 dark:to-pink-900/30">
-        <div className="w-16 h-16 rounded-full border-4 animate-spin border-primary-400 dark:border-primary-500 border-t-transparent"></div>
-      </div>
-      <div className="space-y-3">
-        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-          {selectedTab === "twibbon"
-            ? t("explore.loading_twibone")
-            : t("explore.loading_creators")}
-        </h3>
-        <p className="leading-relaxed text-gray-600 dark:text-gray-400">
-          {selectedTab === "twibbon"
-            ? t("explore.loading_collection")
-            : t("explore.loading_users")}
-        </p>
-      </div>
-    </div>
-  </div>
+const LoadingState = ({ selectedTab }) => (
+  <ExploreSkeleton type={selectedTab} />
 );
 
 const SearchEmptyState = ({

@@ -63,6 +63,7 @@ import CTASection from "../components/sections/CTASection.jsx";
 import TUTORIALSection from "../components/sections/TUTORIALSection.jsx";
 import CreatorSection from "../components/sections/CREATORSection.jsx";
 import ModalTwibbonChoice from "../components/modal/ModalTwibbonChoise.jsx";
+import HomeSkeleton from "../components/skeletons/HomeSkeleton.jsx";
 function TwiboneHomepage() {
   const { data, isLoading } = useGET("twibbons");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
@@ -311,9 +312,7 @@ function TwiboneHomepage() {
               {/* Grid */}
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5">
                 {isLoading ? (
-                  <p className="col-span-full text-center">
-                    {t("homepage.loading")}
-                  </p>
+                  <HomeSkeleton />
                 ) : filteredTwibbons.length === 0 ? null : (
                   filteredTwibbons.map((twibbon) => (
                     <CardHome

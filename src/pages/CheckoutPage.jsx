@@ -7,6 +7,7 @@ import LoadingPage from "../components/layoutpage/LoadingPage";
 import { useTranslation } from "react-i18next";
 import { FaCheckCircle, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { CircleCheckBig } from "lucide-react";
+import CheckoutSkeleton from "../components/skeletons/CheckoutSkeleton.jsx";
 
 // Modal Konfirmasi Component
 function ConfirmationModal({
@@ -422,7 +423,7 @@ function CheckoutPage() {
   const methods = payment?.data?.methods;
 
   // Tampilkan loading jika masih fetching data
-  if (isLoading) return <LoadingPage />;
+  if (isLoading) return <CheckoutSkeleton />;
 
   // Jika payment error dan bukan 404 (karena 404 sudah dihandle redirect)
   if (paymentError && paymentError.response?.status !== 404) {

@@ -61,7 +61,7 @@ function DetailHistoryModal({ isOpen, onClose, payment }) {
         "
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             Payment Details
           </h2>
@@ -75,7 +75,7 @@ function DetailHistoryModal({ isOpen, onClose, payment }) {
 
         <div className="space-y-6">
           {/* Status & Amount */}
-          <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+          <div className="flex flex-col justify-center items-center p-4 bg-gray-50 rounded-lg dark:bg-gray-700/50">
             <span
               className={`px-3 py-1 mb-2 text-sm font-medium rounded-full ${
                 statusColors[status] || "bg-gray-100 text-gray-800"
@@ -157,7 +157,7 @@ function DetailHistoryModal({ isOpen, onClose, payment }) {
                 href={proof_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block overflow-hidden border border-gray-200 rounded-lg dark:border-gray-700"
+                className="block overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700"
               >
                 <img
                   src={proof_url}
@@ -172,7 +172,7 @@ function DetailHistoryModal({ isOpen, onClose, payment }) {
         <div className="mt-6">
           <button
             onClick={onClose}
-            className="w-full px-4 py-2 text-white transition-colors rounded-lg bg-primary hover:bg-primary/90"
+            className="px-4 py-2 w-full text-white rounded-lg transition-colors bg-primary hover:bg-primary/90"
           >
             Close
           </button>

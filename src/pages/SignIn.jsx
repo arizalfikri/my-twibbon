@@ -186,9 +186,9 @@ const SignIn = () => {
   const isPending = userLogin.isPending;
 
   return (
-    <div id="root" className="flex w-screen h-screen overflow-hidden">
+    <div id="root" className="flex overflow-hidden w-screen h-screen">
       {/* Left Side - Fixed Image */}
-      <div className="flex-shrink-0 hidden w-1/2 bg-white lg:flex dark:bg-gray-900">
+      <div className="hidden flex-shrink-0 w-1/2 bg-white lg:flex dark:bg-gray-900">
         <img
           className="object-cover w-full h-full"
           src={LoginImage}
@@ -197,13 +197,13 @@ const SignIn = () => {
       </div>
 
       {/* Right Side - Scrollable Form */}
-      <div className="flex-1 w-full overflow-y-auto bg-white lg:w-1/2 dark:bg-gray-900">
-        <div className="flex flex-col min-h-full px-4 py-16 md:px-32 md:py-20">
+      <div className="overflow-y-auto flex-1 w-full bg-white lg:w-1/2 dark:bg-gray-900">
+        <div className="flex flex-col px-4 py-16 min-h-full md:px-32 md:py-20">
           <a href="/">
             <img
               src={LogoGypem}
               alt={t("common.logo")}
-              className="block h-20 mx-auto aspect-square md:w-28 md:h-28"
+              className="block mx-auto h-20 aspect-square md:w-28 md:h-28"
             />
           </a>
 
@@ -251,7 +251,7 @@ const SignIn = () => {
               <button
                 type="submit"
                 disabled={isPending}
-                className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-white rounded-full transition-smooth bg-primary-500 hover:bg-primary-600 disabled:opacity-50"
+                className="inline-flex gap-3 justify-center items-center px-4 py-3 mt-5 w-full font-semibold text-white rounded-full transition-smooth bg-primary-500 hover:bg-primary-600 disabled:opacity-50"
               >
                 {isPending ? t("common.loading") : t("login")}
               </button>
@@ -260,7 +260,7 @@ const SignIn = () => {
             <button
               type="button"
               onClick={() => loginGoogle()}
-              className="inline-flex items-center justify-center w-full gap-3 px-4 py-3 mt-5 font-semibold text-gray-800 bg-white border border-gray-400 rounded-full shadow-sm hover:border-gray-700 hover:bg-gray-50 transition-smooth dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
+              className="inline-flex gap-3 justify-center items-center px-4 py-3 mt-5 w-full font-semibold text-gray-800 bg-white rounded-full border border-gray-400 shadow-sm hover:border-gray-700 hover:bg-gray-50 transition-smooth dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
             >
               <FcGoogle className="w-5 h-5" />
               google

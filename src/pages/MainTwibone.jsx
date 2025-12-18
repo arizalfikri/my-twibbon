@@ -28,6 +28,7 @@ import NotFound from "./NotfoundPage";
 import ModalLogin from "../components/modal/modalLogin";
 import { useGlobalStore } from "../helper/store/global.store";
 import ShareModal from "../components/modal/ShareModal";
+import DetailSkeleton from "../components/skeletons/DetailSkeleton.jsx";
 function MainTwibone() {
   const { t } = useTranslation();
   const { image, setImage, setFrameImage, frameImage } = useImageStore();
@@ -336,7 +337,7 @@ function MainTwibone() {
     setShowLoginModal(false);
   };
 
-  if (isLoading) return <LoadingPage />;
+  if (isLoading) return <DetailSkeleton />;
   if (!isLoading && !twibbon?.data) {
     return <NotFound />;
   }

@@ -156,9 +156,9 @@ function Navbar() {
     <>
       <nav className="sticky top-0 z-40 py-4 text-white bg-primary-600 dark:bg-gray-900 dark:border-b dark:border-gray-600">
         <div className="container">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             {isMobileSearchMode ? (
-              <div className="flex items-center space-x-3 w-full md:hidden">
+              <div className="flex items-center w-full space-x-3 md:hidden">
                 <form onSubmit={handleSearch} className="relative flex-1">
                   <input
                     type="text"
@@ -167,11 +167,11 @@ function Navbar() {
                     onChange={handleSearchInputChange}
                     onKeyPress={handleSearchKeyPress}
                     autoFocus
-                    className="px-4 py-2 pr-4 pl-10 w-full placeholder-gray-300 text-white rounded-full border bg-primary-500 border-primary-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
+                    className="w-full px-4 py-2 pl-10 pr-4 text-white placeholder-gray-300 border rounded-full bg-primary-500 border-primary-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
                   />
                   <button
                     type="submit"
-                    className="absolute left-3 top-1/2 text-gray-300 transform -translate-y-1/2 hover:text-white"
+                    className="absolute text-gray-300 transform -translate-y-1/2 left-3 top-1/2 hover:text-white"
                   >
                     <Search className="w-4 h-4" />
                   </button>
@@ -187,7 +187,7 @@ function Navbar() {
               <>
                 {/* Logo */}
                 <Link to="/" className="flex items-center space-x-2">
-                  <div className="flex justify-center items-center w-32 h-10 md:w-56">
+                  <div className="flex items-center justify-center w-32 h-10 md:w-56">
                     <img
                       src={logo}
                       alt="Logo"
@@ -197,7 +197,7 @@ function Navbar() {
                 </Link>
 
                 {/* Desktop Search */}
-                <div className="hidden flex-1 mx-8 max-w-md md:flex">
+                <div className="flex-1 hidden max-w-md mx-8 md:flex">
                   <form
                     onSubmit={handleDesktopSearch}
                     className="relative w-full"
@@ -207,11 +207,11 @@ function Navbar() {
                       placeholder={t("search_placeholder")}
                       value={searchQuery}
                       onChange={handleSearchInputChange}
-                      className="px-4 py-2 pr-10 pl-10 w-full placeholder-gray-500 text-gray-500 bg-white rounded-full border border-primary-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                      className="w-full px-4 py-2 pl-10 pr-10 text-gray-500 placeholder-gray-500 bg-white border rounded-full border-primary-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                     />
                     <button
                       type="submit"
-                      className="absolute left-3 top-1/2 text-gray-300 transform -translate-y-1/2 hover:text-white"
+                      className="absolute text-gray-300 transform -translate-y-1/2 left-3 top-1/2 hover:text-white"
                     >
                       <Search className="w-4 h-4" />
                     </button>
@@ -219,7 +219,7 @@ function Navbar() {
                       <button
                         type="button"
                         onClick={clearSearch}
-                        className="absolute right-3 top-1/2 text-gray-300 transform -translate-y-1/2 hover:text-white"
+                        className="absolute text-gray-300 transform -translate-y-1/2 right-3 top-1/2 hover:text-white"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -228,10 +228,10 @@ function Navbar() {
                 </div>
 
                 {/* Desktop Right */}
-                <div className="hidden items-center space-x-2 md:flex">
+                <div className="items-center hidden space-x-2 md:flex">
                   <button
                     onClick={() => setOpenModal(true)}
-                    className="flex items-center px-4 py-2 mx-1 space-x-2 font-semibold text-white rounded-full transition-colors bg-primary-300 hover:bg-primary-500"
+                    className="flex items-center px-4 py-2 mx-1 space-x-2 font-semibold text-white transition-colors rounded-full bg-primary-300 hover:bg-primary-500"
                   >
                     <Plus className="w-4 h-4" />
                     <span className="hidden capitalize lg:inline">
@@ -248,7 +248,7 @@ function Navbar() {
                     />
                   </button> */}
                   <button
-                    className="p-2 rounded-full transition-colors hover:bg-primary-700"
+                    className="p-2 transition-colors rounded-full hover:bg-primary-700"
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                   >
                     <Menu className="w-5 h-5" />
@@ -259,7 +259,7 @@ function Navbar() {
                 <div className="flex items-center space-x-2 md:hidden">
                   <button
                     onClick={handleMobileSearchToggle}
-                    className="p-2 rounded-full transition-colors hover:bg-primary-700"
+                    className="p-2 transition-colors rounded-full hover:bg-primary-700"
                   >
                     <Search className="w-5 h-5" />
                   </button>
@@ -272,7 +272,7 @@ function Navbar() {
                   </button> */}
                   <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-2 rounded-full transition-colors hover:bg-primary-700"
+                    className="p-2 transition-colors rounded-full hover:bg-primary-700"
                   >
                     <Menu className="w-5 h-5" />
                   </button>{" "}
@@ -286,7 +286,7 @@ function Navbar() {
       {/* Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 z-40 backdrop-blur-sm transition-all duration-300 bg-black/20"
+          className="fixed inset-0 z-40 transition-all duration-300 backdrop-blur-sm bg-black/20"
           onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
@@ -298,18 +298,18 @@ function Navbar() {
         } flex flex-col`}
       >
         {/* Sidebar Header */}
-        <div className="flex justify-between items-center p-4 text-white bg-primary-400 dark:bg-gray-700">
+        <div className="flex items-center justify-between p-4 text-white bg-primary-400 dark:bg-gray-700">
           <h2 className="text-lg font-semibold">Menu</h2>
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="p-2 rounded-full transition-colors hover:bg-primary-600 dark:hover:bg-gray-600"
+            className="p-2 transition-colors rounded-full hover:bg-primary-600 dark:hover:bg-gray-600"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Sidebar Content - scrollable */}
-        <div className="overflow-y-auto flex-1 p-6">
+        <div className="flex-1 p-6 overflow-y-auto">
           {/* Account */}
           <div className="mb-8 space-y-4">
             <h3 className="mb-4 text-sm font-medium tracking-wide text-gray-800 uppercase dark:text-gray-200">
@@ -322,7 +322,7 @@ function Navbar() {
                 className="grid grid-cols-[auto_1fr] gap-4 items-center bg-primary-100 px-4 py-3 rounded-lg dark:bg-gray-700"
                 onClick={() => setIsSidebarOpen(false)}
               >
-                <div className="flex justify-center items-center p-2 w-10 h-10 rounded-full bg-primary-500">
+                <div className="flex items-center justify-center w-10 h-10 p-2 rounded-full bg-primary-500">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -337,7 +337,7 @@ function Navbar() {
             ) : (
               <>
                 <button
-                  className="flex justify-center items-center px-6 py-3 space-x-2 w-full font-semibold text-white rounded-lg transition-colors bg-primary-500 hover:bg-primary-600"
+                  className="flex items-center justify-center w-full px-6 py-3 space-x-2 font-semibold text-white transition-colors rounded-lg bg-primary-500 hover:bg-primary-600"
                   onClick={() => {
                     navigate("/SignIn");
                     setIsSidebarOpen(false);
@@ -347,7 +347,7 @@ function Navbar() {
                   <span>Sign In</span>
                 </button>
                 <button
-                  className="flex justify-center items-center px-6 py-3 space-x-2 w-full font-semibold text-black bg-yellow-400 rounded-lg transition-colors hover:bg-yellow-300"
+                  className="flex items-center justify-center w-full px-6 py-3 space-x-2 font-semibold text-black transition-colors bg-yellow-400 rounded-lg hover:bg-yellow-300"
                   onClick={() => {
                     navigate("/SignUp");
                     setIsSidebarOpen(false);
@@ -368,7 +368,7 @@ function Navbar() {
               <li>
                 <Link
                   to="/analytics"
-                  className="flex gap-2 px-4 py-2 text-gray-700 rounded-lg transition dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="flex gap-2 px-4 py-2 text-gray-700 transition rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => setIsSidebarOpen(false)}
                 >
                   <BarChart3 className="w-5 h-5" /> Analytics
@@ -378,7 +378,7 @@ function Navbar() {
             <li>
               <Link
                 to="/explore"
-                className="flex gap-2 px-4 py-2 text-gray-700 rounded-lg transition dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex gap-2 px-4 py-2 text-gray-700 transition rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <Compass className="w-5 h-5" /> Explore
@@ -386,7 +386,7 @@ function Navbar() {
             </li>
             <Link
               to="/membership"
-              className="flex gap-2 px-4 py-2 text-gray-700 rounded-lg transition dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="flex gap-2 px-4 py-2 text-gray-700 transition rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
               onClick={() => setIsSidebarOpen(false)}
             >
               <Crown className="w-5 h-5" /> Membership
@@ -395,7 +395,7 @@ function Navbar() {
               <li>
                 <Link
                   to="/history"
-                  className="flex gap-2 px-4 py-2 text-gray-700 rounded-lg transition dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="flex gap-2 px-4 py-2 text-gray-700 transition rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => setIsSidebarOpen(false)}
                 >
                   <ReceiptText className="w-5 h-5" /> History Transaksi
@@ -409,7 +409,7 @@ function Navbar() {
                   setOpenModal(true);
                   setIsSidebarOpen(false);
                 }}
-                className="flex items-center px-4 py-2 mb-5 space-x-2 w-full font-semibold text-white rounded-full transition-colors bg-primary-300 hover:bg-primary-600 md:hidden"
+                className="flex items-center w-full px-4 py-2 mb-5 space-x-2 font-semibold text-white transition-colors rounded-full bg-primary-300 hover:bg-primary-600 md:hidden"
               >
                 <Plus className="w-4 h-4" />
                 <span>{t("add_twibone")}</span>
@@ -419,7 +419,7 @@ function Navbar() {
         </div>
 
         {/* Sidebar Footer */}
-        <div className="p-4 mt-auto space-y-4 bg-gray-50 border-t border-gray-200 dark:border-gray-600 dark:bg-gray-700">
+        <div className="p-4 mt-auto space-y-4 border-t border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700">
           {/* Theme Toggle */}
           <div className="mb-6 space-y-4">
             <h3 className="mb-4 text-sm font-medium tracking-wide text-gray-800 uppercase dark:text-gray-200">
@@ -427,7 +427,7 @@ function Navbar() {
             </h3>
             <button
               onClick={toggleTheme}
-              className="flex justify-between items-center p-3 w-full rounded-lg border border-gray-200 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700 dark:text-white"
+              className="flex items-center justify-between w-full p-3 transition-colors border border-gray-200 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700 dark:text-white"
             >
               <div className="flex items-center space-x-3">
                 <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
@@ -468,7 +468,7 @@ function Navbar() {
           {token && fullname && role && (
             <button
               onClick={handleLogoutClick}
-              className="px-4 py-2 w-full text-white bg-red-500 rounded-lg transition-colors hover:bg-red-600"
+              className="w-full px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
             >
               {t("logout_label")}
             </button>
