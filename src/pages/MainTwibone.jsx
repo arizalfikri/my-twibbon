@@ -95,7 +95,10 @@ function MainTwibone() {
 
       setBookmarked(isBookmarked);
 
-      useTwibbonStore.getState().setTwibbonData(twibbon.data);
+      useTwibbonStore.getState().setTwibbonData({
+        ...twibbon.data,
+        watermark: twibbon.watermark,
+      });
       const userCards = twibbon.data.user_twibbons.map((utw) => ({
         id: utw.id,
         image: `${import.meta.env.VITE_FILE_URL}${utw.image_url}`,
@@ -549,8 +552,12 @@ function MainTwibone() {
               event_twibbon_id={twibbon?.data?.id}
               SubscribeData={subscriptionData?.data}
               templateType={twibbon?.data?.type || "frame"}
-              watermarkRequired={twibbon?.data?.watermark || false}
-              isSubscribed={subscriptionData?.data?.[0]?.status === "ACTIVE"}
+              watermarkRequired={
+                twibbon?.watermark || twibbon?.data?.watermark || false
+              }
+              isSubscribed={subscriptionData?.data?.some(
+                (sub) => sub.status === "ACTIVE"
+              )}
             />
           </div>
         </div>

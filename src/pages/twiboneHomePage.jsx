@@ -28,7 +28,6 @@ import Language from "../assets/images/BannerScroll/Language-scroll.png";
 import LOF6 from "../assets/images/BannerScroll/LOF6-Scroll.webp";
 import Pahlawan from "../assets/images/BannerScroll/Pahlawan-Scroll.png";
 import Pelajar from "../assets/images/BannerScroll/Pelajar-Scroll.png";
-import Pelajar2 from "../assets/images/BannerScroll/Pelajar2-Scroll.png";
 import PMI from "../assets/images/BannerScroll/PMI-Scroll.png";
 import Reading from "../assets/images/BannerScroll/Reading-Scroll.png";
 import S2O from "../assets/images/BannerScroll/S2O-Scroll.png";
@@ -45,9 +44,8 @@ const samplePhotos = [
     Language,
     LOF6,
     Pahlawan,
-    Pelajar,
   ],
-  [Pelajar2, PMI, Reading, S2O, ASOE, Pelajar2, PMI, Reading, S2O, ASOE],
+  [PMI, Reading, S2O, ASOE, PMI, Reading, S2O, ASOE],
 ];
 
 import { Swiper, SwiperSlide } from "swiper/react";

@@ -71,8 +71,17 @@ function EditorPage() {
   };
 
   useEffect(() => {
-    if (!image && slug && twibbon?.data && !isTwibbonLoading && !twibbonLoaded) {
-      useTwibbonStore.getState().setTwibbonData(twibbon.data);
+    if (
+      !image &&
+      slug &&
+      twibbon?.data &&
+      !isTwibbonLoading &&
+      !twibbonLoaded
+    ) {
+      useTwibbonStore.getState().setTwibbonData({
+        ...twibbon.data,
+        watermark: twibbon.watermark,
+      });
       if (twibbon.data?.template_twibbon) {
         const imageURL = `${import.meta.env.VITE_FILE_URL}${
           twibbon.data.template_twibbon
@@ -81,7 +90,14 @@ function EditorPage() {
       }
       setTwibbonLoaded(true);
     }
-  }, [twibbon?.data?.id, isTwibbonLoading, twibbonLoaded, image, slug, setFrameImage]);
+  }, [
+    twibbon?.data?.id,
+    isTwibbonLoading,
+    twibbonLoaded,
+    image,
+    slug,
+    setFrameImage,
+  ]);
 
   useEffect(() => {
     if (!image && !slug) {
@@ -90,7 +106,13 @@ function EditorPage() {
   }, [slug, navigate, image]);
 
   useEffect(() => {
-    if (!image && slug && isTwibbonLoading === false && !twibbon?.data && twibbonLoaded) {
+    if (
+      !image &&
+      slug &&
+      isTwibbonLoading === false &&
+      !twibbon?.data &&
+      twibbonLoaded
+    ) {
       navigate("/");
     }
   }, [isTwibbonLoading, twibbon?.data, twibbonLoaded, navigate, slug, image]);
@@ -115,10 +137,10 @@ function EditorPage() {
     <QueryClientProvider client={queryClient}>
       <NavbarEditor title={twibbonData?.title} twibbon={frameImage} />
 
-      <div className="flex flex-col items-center justify-between min-h-screen bg-white dark:bg-gray-900 md:max-h-screen md:overflow-hidden">
+      <div className="flex flex-col justify-between items-center min-h-screen bg-white dark:bg-gray-900 md:max-h-screen md:overflow-hidden">
         {/* Mobile Layout */}
         <div className="flex flex-col flex-1 w-full md:hidden">
-          <div className="flex items-center justify-center flex-1 min-h-0 p-4 bg-gray-50 dark:bg-gray-900">
+          <div className="flex flex-1 justify-center items-center p-4 min-h-0 bg-gray-50 dark:bg-gray-900">
             <div ref={editorRef} className="w-full max-w-md">
               <CardEditor
                 frameImage={frameImage}
@@ -126,14 +148,18 @@ function EditorPage() {
                 event_twibbon_id={twibbonData?.id}
                 SubscribeData={SubscribeData}
                 templateType={twibbonData?.type || "frame"}
-                watermarkRequired={twibbonData?.watermark || false}
-                isSubscribed={SubscribeData?.[0]?.status === "ACTIVE"}
+                watermarkRequired={
+                  twibbon?.watermark || twibbonData?.watermark || false
+                }
+                isSubscribed={SubscribeData?.some(
+                  (sub) => sub.status === "ACTIVE"
+                )}
               />
             </div>
           </div>
 
           {/* Mobile Filter Panel */}
-          <div className="flex flex-col pb-20 bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700 h-80">
+          <div className="flex flex-col pb-20 h-80 bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700">
             <div className="flex flex-shrink-0 p-1 m-3 mb-2 bg-gray-100 rounded-lg dark:bg-gray-700">
               <button
                 onClick={() => setActiveTab("presets")}
@@ -171,7 +197,7 @@ function EditorPage() {
             </div>
 
             <div
-              className="flex-1 px-3 pb-3 overflow-y-auto"
+              className="overflow-y-auto flex-1 px-3 pb-3"
               style={{
                 opacity: image ? 1 : 0.5,
                 pointerEvents: image ? "auto" : "none",
@@ -179,7 +205,7 @@ function EditorPage() {
             >
               {activeTab === "presets" && (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex justify-between items-center mb-2">
                     <h3 className="text-sm font-medium text-gray-900 dark:text-gray-200">
                       {t("editor.filter_preset")}
                     </h3>
@@ -280,7 +306,7 @@ function EditorPage() {
                 <div className="space-y-2.5">
                   <div className="p-2.5 border border-yellow-200 rounded-lg dark:border-yellow-600/30 bg-yellow-50 dark:bg-yellow-900/20">
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-xs font-medium text-gray-900 dark:text-gray-200">
                           ☀️ {t("editor.brightness")}
                         </span>
@@ -302,7 +328,7 @@ function EditorPage() {
                   </div>
                   <div className="p-2.5 border rounded-lg border-primary-200 dark:border-primary-600/30 bg-primary-50 dark:bg-primary-900/20">
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-xs font-medium text-gray-900 dark:text-gray-200">
                           🔳 {t("editor.contrast")}
                         </span>
@@ -324,7 +350,7 @@ function EditorPage() {
                   </div>
                   <div className="p-2.5 border border-pink-200 rounded-lg dark:border-pink-600/30 bg-pink-50 dark:bg-pink-900/20">
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-xs font-medium text-gray-900 dark:text-gray-200">
                           🎨 {t("editor.saturation")}
                         </span>
@@ -351,7 +377,7 @@ function EditorPage() {
                 <div className="space-y-2.5">
                   <div className="p-2.5 border border-indigo-200 rounded-lg dark:border-indigo-600/30 bg-indigo-50 dark:bg-indigo-900/20">
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-xs font-medium text-gray-900 dark:text-gray-200">
                           🌀 {t("editor.hue")}
                         </span>
@@ -373,7 +399,7 @@ function EditorPage() {
                   </div>
                   <div className="p-2.5 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-600/30">
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-xs font-medium text-gray-900 dark:text-gray-200">
                           🍂 {t("editor.sepia")}
                         </span>
@@ -395,7 +421,7 @@ function EditorPage() {
                   </div>
                   <div className="p-2.5 border rounded-lg bg-slate-50 dark:bg-slate-800/20 border-slate-200 dark:border-slate-600/30">
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-xs font-medium text-gray-900 dark:text-gray-200">
                           ⬜ {t("editor.grayscale")}
                         </span>
@@ -423,7 +449,7 @@ function EditorPage() {
 
         {/* Desktop Layout */}
         <div className="hidden md:grid md:grid-cols-[1fr_320px] container p-6 gap-6 mx-auto w-full">
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col justify-center items-center">
             <div className="w-full max-w-[550px]">
               <CardEditor
                 frameImage={frameImage}
@@ -431,8 +457,12 @@ function EditorPage() {
                 event_twibbon_id={twibbonData?.id}
                 SubscribeData={SubscribeData}
                 templateType={twibbonData?.type || "frame"}
-                watermarkRequired={twibbonData?.watermark || false}
-                isSubscribed={SubscribeData?.[0]?.status === "ACTIVE"}
+                watermarkRequired={
+                  twibbon?.watermark || twibbonData?.watermark || false
+                }
+                isSubscribed={SubscribeData?.some(
+                  (sub) => sub.status === "ACTIVE"
+                )}
               />
             </div>
           </div>
@@ -445,7 +475,7 @@ function EditorPage() {
               pointerEvents: image ? "auto" : "none",
             }}
           >
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex justify-between items-center pb-3 mb-3 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-base font-semibold text-gray-900 dark:text-gray-200">
                 🎨 {t("editor.filter_settings")}
               </h2>
@@ -659,7 +689,7 @@ function EditorPage() {
                       ✨ {t("editor.effects")}
                     </div>
                     <div className="mb-2 space-y-1.5">
-                      <div className="flex items-center justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600 dark:text-gray-400">
                           🍂 {t("editor.sepia")}
                         </span>
@@ -679,7 +709,7 @@ function EditorPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <div className="flex items-center justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600 dark:text-gray-400">
                           ⬜ {t("editor.grayscale")}
                         </span>

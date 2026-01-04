@@ -46,14 +46,8 @@ function CardEditor({
   // State untuk menentukan apakah sedang dalam proses upload pertama kali
   const [isInitialUpload, setIsInitialUpload] = useState(true);
 
-  const shouldShowWatermark =
-    watermarkRequired === true &&
-    userRole === "contributor" &&
-    isSubscribed === false;
-  const shouldShowModal =
-    watermarkRequired === true &&
-    userRole === "contributor" &&
-    isSubscribed === false;
+  const shouldShowWatermark = watermarkRequired && !isSubscribed;
+  const shouldShowModal = watermarkRequired && !isSubscribed;
 
   const {
     showUploadModal,
@@ -297,10 +291,10 @@ function CardEditor({
   return (
     <>
       <div className="flex flex-col h-full">
-        <div className="flex flex-col items-center justify-center flex-1 p-4">
+        <div className="flex flex-col flex-1 justify-center items-center p-4">
           <div
             ref={containerRef}
-            className="relative w-full mx-auto overflow-hidden rounded-xl"
+            className="overflow-hidden relative mx-auto w-full rounded-xl"
             style={{
               aspectRatio: frameAspectRatio,
             }}
@@ -343,7 +337,7 @@ function CardEditor({
             <img
               src={frameImage}
               alt="Twibbon Frame"
-              className="absolute inset-0 object-cover w-full h-full pointer-events-none"
+              className="object-cover absolute inset-0 w-full h-full pointer-events-none"
               crossOrigin="anonymous"
               onLoad={handleImageLoad}
               style={{
@@ -352,45 +346,43 @@ function CardEditor({
                 zIndex: templateType === "background" ? 0 : 20,
               }}
             />
-            {isExporting && downloadWithWatermark && shouldShowWatermark && (
-              <div
-                id="watermark-fixed"
-                className="absolute flex items-center justify-center gap-1 px-2 py-[4px]
+            {(isExporting ? downloadWithWatermark : true) &&
+              shouldShowWatermark && (
+                <div
+                  id="watermark-fixed"
+                  className="absolute flex items-center justify-center gap-1 px-2 py-[4px]
       text-gray-700 bg-white/95 rounded-lg shadow-md shadow-gray-600
       bottom-[10px] right-[10px]"
-                style={{
-                  transformOrigin: "bottom right",
-                  scale: "clamp(0.7, 1vw, 1)",
-                  zIndex: 30,
-                }}
-              >
-                <span
                   style={{
-                    fontSize: "clamp(7px, 1.3vw, 10px)",
-                    fontWeight: 600,
-                    lineHeight: 1,
+                    transformOrigin: "bottom right",
+                    scale: "clamp(0.7, 1vw, 1)",
+                    zIndex: 30,
                   }}
                 >
-                  Made with
-                </span>
-                <img
-                  src={gypemLogo}
-                  alt="Logo"
-                  style={{
-                    height: "clamp(8px, 2vw, 13px)",
-                    width: "auto",
-                    objectFit: "contain",
-                  }}
-                  crossOrigin="anonymous"
-                />
-              </div>
-            )}
+                  <span
+                    style={{
+                      fontSize: "clamp(7px, 1.3vw, 10px)",
+                      fontWeight: 600,
+                      lineHeight: 1,
+                    }}
+                  >
+                    Made with
+                  </span>
+                  <img
+                    src={gypemLogo}
+                    alt="Logo"
+                    style={{
+                      height: "clamp(8px, 2vw, 13px)",
+                      width: "auto",
+                      objectFit: "contain",
+                    }}
+                    crossOrigin="anonymous"
+                  />
+                </div>
+              )}
           </div>
-
           <ControlPanel
             onDownload={() => {
-              const isSubscribed = SubscribeData?.[0]?.status === "ACTIVE";
-
               if (isSubscribed || !shouldShowModal) {
                 handleDownload(false);
               } else {
@@ -459,9 +451,9 @@ function CardEditor({
 
       {/* Loading Indicator saat process BG */}
       {isProcessingBg && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-4 p-6 bg-white rounded-lg shadow-xl dark:bg-gray-800">
-            <div className="w-12 h-12 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+        <div className="flex fixed inset-0 z-50 justify-center items-center backdrop-blur-sm bg-black/50">
+          <div className="flex flex-col gap-4 items-center p-6 bg-white rounded-lg shadow-xl dark:bg-gray-800">
+            <div className="w-12 h-12 rounded-full border-4 border-blue-500 animate-spin border-t-transparent"></div>
             <p className="text-center text-gray-700 dark:text-gray-200">
               🎨 Menghapus Background...
             </p>
