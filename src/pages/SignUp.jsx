@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import Logo from '../assets/images/Logo/Logo_Icon.png';
-import LoginImage from '../assets/images/login_image.svg';
+import LoginImage from '../assets/images/Login_Image.svg';
 import InputWithLabel from '../components/FormControl/InputWithLabel';
 import InputPassword from '../components/FormControl/InputPassword';
 import { useForm } from 'react-hook-form';
