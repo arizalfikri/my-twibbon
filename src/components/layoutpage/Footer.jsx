@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import Logo from '../../assets/images/Logo/logo_putih.png';
+import Logo from '../../assets/images/Logo/Logo_putih.png';
 import { Link } from 'react-router-dom';
 
 function Footer() {
