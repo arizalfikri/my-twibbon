@@ -1,6 +1,6 @@
 import InputWithLabel from '../components/FormControl/InputWithLabel';
 import LoginImage from '../assets/images/Login_Image.svg';
-import Logo from '../assets/images/logo/Logo_Icon.png';
+import Logo from '../assets/images/Logo/Logo_Icon.png';
 import { useTranslation } from 'react-i18next';
 import { useGlobalStore } from '../helper/store/global.store';
 import { useModalStore } from '../helper/store/modal.store';
